@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { getApiRoot, projectKey } from '../lib'
+import { getApiRoot } from '../lib'
 
 import './styles/App.css'
-
+const projectKey = process.env.CTP_PROJECT_KEY === undefined ? 'ecommerce-tools' : process.env.CTP_PROJECT_KEY;
 function App() {
   const [projectDetails, setProjectDetails] = useState({})
 

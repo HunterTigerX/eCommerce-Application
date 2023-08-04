@@ -11,13 +11,18 @@ import {
 } from '@commercetools/platform-sdk'
 const scopes = ['manage_project:ecommerce-tools', 'manage_api_clients:ecommerce-tools', 'view_audit_log:ecommerce-tools'];
 
-export const projectKey = 'ecommerce-tools';
+process.env.CTP_AUTH = 'https://auth.europe-west1.gcp.commercetools.com';
+process.env.CTP_API = 'https://api.europe-west1.gcp.commercetools.com';
+process.env.CTP_CLIENT_ID = '5tTOcryqEc0260UBCixdgSxM';
+process.env.CTP_CLIENT_SECRET = 'SIAJIycjtxb-ldLcU9e-6uEapfVrPJmo';
+process.env.CTP_PROJECT_KEY = 'ecommerce-tools';
+
 const authMiddlewareOptions: AuthMiddlewareOptions = {
-  host: 'https://auth.europe-west1.gcp.commercetools.com',
-  projectKey,
+  host: process.env.CTP_AUTH,
+  projectKey: process.env.CTP_PROJECT_KEY,
   credentials: {
-    clientId: '5tTOcryqEc0260UBCixdgSxM',
-    clientSecret: 'SIAJIycjtxb-ldLcU9e-6uEapfVrPJmo',
+    clientId: process.env.CTP_CLIENT_ID,
+    clientSecret: process.env.CTP_CLIENT_SECRET,
   },
   scopes: scopes,
   fetch,
@@ -29,7 +34,7 @@ const httpMiddlewareOptions: HttpMiddlewareOptions = {
 }
 
 const client: Client = new ClientBuilder()
-  .withProjectKey(projectKey)
+  .withProjectKey(process.env.CTP_PROJECT_KEY)
   .withClientCredentialsFlow(authMiddlewareOptions)
   .withHttpMiddleware(httpMiddlewareOptions)
   .withLoggerMiddleware()
