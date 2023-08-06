@@ -1,35 +1,39 @@
-import { useState } from "react";
-import reactLogo from "../assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./styles/App.css";
+import React, { useState, useEffect } from 'react';
+import { getApiRoot, projectKey } from '../lib'
+
+import './styles/App.css'
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [projectDetails, setProjectDetails] = useState({})
+
+  const getProject = async () => {
+    try {
+      const project = await getApiRoot()
+        .withProjectKey({ projectKey })
+        // .products()
+        // .get()
+        // .execute();
+
+        .customers()
+        .get()
+        .execute()
+
+      setProjectDetails(project.body);
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  useEffect(() => {
+    getProject()
+  }, [])
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((newCount) => newCount + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <div>Project Details</div>
+      {JSON.stringify(projectDetails, undefined, 2)}
     </>
-  );
+  )
 }
 
-export default App;
+export default App
