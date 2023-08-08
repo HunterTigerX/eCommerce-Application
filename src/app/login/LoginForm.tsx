@@ -48,7 +48,7 @@ const LoginInputForm: React.FC = () => {
         return false;
       }
       return true;
-    };
+    }
 
     // Usage example:
     if (validateEmail()) {
@@ -61,7 +61,6 @@ const LoginInputForm: React.FC = () => {
         const userDataLS = localStorage.getItem('userData');
         if (userDataLS) {
           localStorage.setItem('loggedIn', 'true');
-          console.log('here1');
           Navigate('/main');
         }
       } else {

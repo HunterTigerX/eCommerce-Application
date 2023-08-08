@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavButtons from '../login/navigation.tsx';
 
-// Добавить данных о пользователе
 export function ProfilePage() {
   const navigate = useNavigate();
   useEffect(() => {
