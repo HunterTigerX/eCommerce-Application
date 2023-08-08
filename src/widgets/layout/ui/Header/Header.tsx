@@ -1,6 +1,5 @@
-import styles from './Header.module.css';
-
 import { Navbar } from '@features/Navbar';
+import styles from './Header.module.css';
 
 export const Header = () => {
   return (

@@ -1,6 +1,6 @@
+import { NavLink } from 'react-router-dom';
 import reactLogo from '@assets/react.svg';
 import styles from './Navbar.module.css';
-import { NavLink } from 'react-router-dom';
 
 export const Navbar = () => {
   return (
