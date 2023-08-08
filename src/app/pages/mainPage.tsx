@@ -1,4 +1,3 @@
-import NavButtons from '../login/navigation.tsx';
 import { message } from 'antd';
 import { useEffect } from 'react';
 
@@ -25,7 +24,6 @@ export function MainPage() {
   return (
     <>
       {contextHolder}
-      <NavButtons />
       <>
         <br></br>This is main page
       </>

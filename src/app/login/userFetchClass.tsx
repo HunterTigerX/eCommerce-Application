@@ -12,10 +12,10 @@ class FetchExistingUser {
       redirect: 'follow',
     };
 
-      return fetch(`${api}/${projectKey}/customers/${id}`, requestOptions) 
-      .then(response => response.json())
-      .then(result => result)
-      .catch(error => console.log('error', error));
+    return fetch(`${api}/${projectKey}/customers/${id}`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => result)
+      .catch((error) => console.log('error', error));
   }
 }
 
