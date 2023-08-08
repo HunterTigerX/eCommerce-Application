@@ -1,39 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { getApiRoot } from '../lib'
+import { MainPage } from './pages/mainPage.tsx';
+import { LoginPage } from './pages/loginPage.tsx';
+import { ProfilePage } from './pages/profilePage.tsx';
+import { ErrorPage } from './pages/errorPage.tsx';
+import { Routes, Route, BrowserRouter } from 'react-router-dom';
 
-import './styles/App.css'
-const projectKey = process.env.CTP_PROJECT_KEY === undefined ? 'ecommerce-tools' : process.env.CTP_PROJECT_KEY;
-function App() {
-  const [projectDetails, setProjectDetails] = useState({})
+import './styles/App.css';
 
-  const getProject = async () => {
-    try {
-      const project = await getApiRoot()
-        .withProjectKey({ projectKey })
-        // .products()
-        // .get()
-        // .execute();
-
-        .customers()
-        .get()
-        .execute()
-
-      setProjectDetails(project.body);
-    } catch (e) {
-      console.log(e)
-    }
-  }
-
-  useEffect(() => {
-    getProject()
-  }, [])
-
+export function App() {
   return (
-    <>
-      <div>Project Details</div>
-      {JSON.stringify(projectDetails, undefined, 2)}
-    </>
-  )
+    <div className="App">
+      <BrowserRouter>
+        <Routes>
+          <Route>
+            <Route path="/main" element={<MainPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="*" element={<ErrorPage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </div>
+  );
 }
 
-export default App
+export default App;

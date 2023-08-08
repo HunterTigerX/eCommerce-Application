@@ -9,6 +9,7 @@ import {
   createApiBuilderFromCtpClient,
   ApiRoot,
 } from '@commercetools/platform-sdk'
+
 const scopes = ['manage_project:ecommerce-tools', 'manage_api_clients:ecommerce-tools', 'view_audit_log:ecommerce-tools'];
 
 process.env.CTP_AUTH = 'https://auth.europe-west1.gcp.commercetools.com';
@@ -27,6 +28,8 @@ const authMiddlewareOptions: AuthMiddlewareOptions = {
   scopes: scopes,
   fetch,
 }
+
+export const varauthMiddlewareOptions = authMiddlewareOptions;
 
 const httpMiddlewareOptions: HttpMiddlewareOptions = {
   host: 'https://api.europe-west1.gcp.commercetools.com',
