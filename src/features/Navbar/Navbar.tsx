@@ -9,8 +9,10 @@ export const Navbar = () => {
         <img src={reactLogo} alt="Логотип" />
       </NavLink>
       <div className={styles['block-btns']}>
-        <NavLink to="/login">login</NavLink>
-        <NavLink to="/registration">registration</NavLink>
+        <NavLink to="catalog">Catalog</NavLink>
+        <NavLink to="cart">Сart</NavLink>
+        <NavLink to="login">login</NavLink>
+        <NavLink to="registration">registration</NavLink>
       </div>
     </nav>
   );
