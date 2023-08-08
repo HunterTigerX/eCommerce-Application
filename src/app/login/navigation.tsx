@@ -17,7 +17,9 @@ const NavButtons: React.FC = () => {
   };
 
   const text = custumerId ? 'Logout' : 'Log In';
-  console.log(custumerId);
+  
+  const customerId = localStorage.getItem('customerId');
+  const userName = userDataParser().firstName;
 
   const logInOutPage = () => {
     // Если пользователь хранится в LocalStorage, кнопка логаут, если нет, логин
@@ -36,16 +38,14 @@ const NavButtons: React.FC = () => {
 
       messageApi.open({
         type: 'success',
-        content: 'Goodbye, username',
+        content: `Goodbye, ${userName}`,
       });
     } else {
       Navigate('/login');
     }
   };
 
-  const customerId = localStorage.getItem('customerId');
-  const userName = userDataParser().firstName;
-  console.log(userName)
+
   const AvatarLogo = userName === '' ? ReturnAvatarLogo() : ReturnAvatarLogo(userName);
   const avatarLogo: JSX.Element | null = customerId ? <AvatarLogo /> : null;
 

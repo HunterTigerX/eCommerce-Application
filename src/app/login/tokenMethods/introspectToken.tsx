@@ -13,7 +13,6 @@ interface TokenIntrospection {
 // токен просрочен. Если токен был от анонимного пользователя и он просрочен,
 // на основе refresh токена генерируется новый токен доступа для анонимного пользователя
 export function checkToken(token: string) {
-  console.log('activeToken', token);
   const credentials = btoa(clientId + ':' + clientSecret);
   const myHeaders = new Headers();
   myHeaders.append('Content-Type', 'application/x-www-form-urlencoded');
@@ -34,7 +33,6 @@ export function checkToken(token: string) {
       return response.json();
     })
     .then((result: TokenIntrospection) => {
-      console.log(result);
       if (!result.active) {
         const anonId = localStorage.getItem('anon_id');
         console.log('anonId', anonId);

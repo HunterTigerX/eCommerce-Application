@@ -13,14 +13,14 @@ export function ReturnAvatarLogo(uName?: string) {
   if (uName && uName.length <= 8) {
     const AvatarLogo: React.FC = () => (
       <Space size={16} wrap>
-        <Avatar size={40}>{uName}</Avatar>
+        <Avatar onClick={goToProfile} size={40}>{uName}</Avatar>
       </Space>
     );
     return AvatarLogo;
   } else {
     const AvatarLogo: React.FC = () => (
       <Space size={16} wrap>
-        <Avatar  onClick={goToProfile} style={{ backgroundColor: '#87d068' }} icon={<UserOutlined />} />
+        <Avatar onClick={goToProfile} style={{ backgroundColor: '#87d068' }} icon={<UserOutlined />} />
       </Space>
     );
     return AvatarLogo;

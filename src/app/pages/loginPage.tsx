@@ -7,6 +7,7 @@ export function LoginPage() {
   const navigate = useNavigate();
   useEffect(() => {
     const custumerId = localStorage.getItem('customerId');
+    console.log(custumerId, 'custumerId')
     if (custumerId) {
       navigate('/main');
     }

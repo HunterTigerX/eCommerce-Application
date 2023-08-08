@@ -15,6 +15,7 @@ export function ProfilePage() {
   return (
     <>
       <NavButtons />
+      <><br></br>This is profile page</>
     </>
   );
 }

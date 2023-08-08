@@ -4,16 +4,12 @@ import { ValidateErrorEntity } from 'rc-field-form/es/interface';
 import { validate } from './LoginValidation.tsx';
 import { useNavigate } from 'react-router-dom';
 
-
 type FieldType = {
   email?: string;
   password?: string;
   remember?: string;
 };
 
-type UserData = {
-  firstName: string
-}
 const LoginInputForm: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const Navigate = useNavigate();
@@ -25,17 +21,14 @@ const LoginInputForm: React.FC = () => {
       await validate(email, password, remember);
 
       const userID = localStorage.getItem('customerId');
-      const errorMessage =  localStorage.getItem('errorMessage');
+      const errorMessage = localStorage.getItem('errorMessage');
 
       if (userID !== 'undefined' && userID !== null) {
         const userDataLS = localStorage.getItem('userData');
         if (userDataLS) {
-          const userData: UserData = JSON.parse(userDataLS);
-          messageApi.open({
-            type: 'success',
-            content: `Hello, ${userData.firstName}`,
-          });
-          Navigate('/profile')
+          localStorage.setItem('loggedIn', 'true');
+          console.log('here1')
+          Navigate('/main');
         }
       } else {
         messageApi.open({
