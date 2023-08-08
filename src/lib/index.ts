@@ -1,1 +1,1 @@
-export { getApiRoot } from './ClientBuilder.tsx'
+export { getApiRoot } from './ClientBuilder.tsx';

@@ -4,7 +4,7 @@ import { createApiBuilderFromCtpClient, ApiRoot } from '@commercetools/platform-
 
 const { VITE_PROJECT_KEY: projectKey } = import.meta.env;
 
-export async function validate(name: string, password: string, remember: string) {
+export async function validate(name: string, password: string, remember?: string) {
   const client = withPasswordFlow(name, password);
 
   const getApiRoot: () => ApiRoot = () => {
@@ -28,7 +28,7 @@ export async function validate(name: string, password: string, remember: string)
         })
         .execute()
         .then(({ body }) => {
-          localStorage.setItem('userData', JSON.stringify(body.customer))
+          localStorage.setItem('userData', JSON.stringify(body.customer));
           localStorage.setItem('customerId', body.customer.id);
           wasUserAdded = true;
         })

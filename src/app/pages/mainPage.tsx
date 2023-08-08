@@ -10,18 +10,18 @@ export function MainPage() {
   const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
-  if (localStorage.getItem('loggedIn')) {
-    const userDataLS = localStorage.getItem('userData');
-    if (userDataLS) {
-      const userData: UserData = JSON.parse(userDataLS);
-      messageApi.open({
-        type: 'success',
-        content: `Hello, ${userData.firstName}`,
-      });
-      localStorage.removeItem('loggedIn')
+    if (localStorage.getItem('loggedIn')) {
+      const userDataLS = localStorage.getItem('userData');
+      if (userDataLS) {
+        const userData: UserData = JSON.parse(userDataLS);
+        messageApi.open({
+          type: 'success',
+          content: `Hello, ${userData.firstName}`,
+        });
+        localStorage.removeItem('loggedIn');
+      }
     }
-  }
-}, [messageApi]);
+  }, [messageApi]);
   return (
     <>
       {contextHolder}

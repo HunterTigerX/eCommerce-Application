@@ -17,7 +17,7 @@ const NavButtons: React.FC = () => {
   };
 
   const text = custumerId ? 'Logout' : 'Log In';
-  
+
   const customerId = localStorage.getItem('customerId');
   const userName = userDataParser().firstName;
 
@@ -44,7 +44,6 @@ const NavButtons: React.FC = () => {
       Navigate('/login');
     }
   };
-
 
   const AvatarLogo = userName === '' ? ReturnAvatarLogo() : ReturnAvatarLogo(userName);
   const avatarLogo: JSX.Element | null = customerId ? <AvatarLogo /> : null;

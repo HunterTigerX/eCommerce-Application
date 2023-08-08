@@ -1,16 +1,12 @@
 // import fetch from 'node-fetch'
-import {
-  ClientBuilder,
-  Client,
-  AuthMiddlewareOptions,
-  HttpMiddlewareOptions,
-} from '@commercetools/sdk-client-v2'
-import {
-  createApiBuilderFromCtpClient,
-  ApiRoot,
-} from '@commercetools/platform-sdk'
+import { ClientBuilder, Client, AuthMiddlewareOptions, HttpMiddlewareOptions } from '@commercetools/sdk-client-v2';
+import { createApiBuilderFromCtpClient, ApiRoot } from '@commercetools/platform-sdk';
 
-const scopes = ['manage_project:ecommerce-tools', 'manage_api_clients:ecommerce-tools', 'view_audit_log:ecommerce-tools'];
+const scopes = [
+  'manage_project:ecommerce-tools',
+  'manage_api_clients:ecommerce-tools',
+  'view_audit_log:ecommerce-tools',
+];
 
 process.env.CTP_AUTH = 'https://auth.europe-west1.gcp.commercetools.com';
 process.env.CTP_API = 'https://api.europe-west1.gcp.commercetools.com';
@@ -27,22 +23,22 @@ const authMiddlewareOptions: AuthMiddlewareOptions = {
   },
   scopes: scopes,
   fetch,
-}
+};
 
 export const varauthMiddlewareOptions = authMiddlewareOptions;
 
 const httpMiddlewareOptions: HttpMiddlewareOptions = {
   host: 'https://api.europe-west1.gcp.commercetools.com',
   fetch,
-}
+};
 
 const client: Client = new ClientBuilder()
   .withProjectKey(process.env.CTP_PROJECT_KEY)
   .withClientCredentialsFlow(authMiddlewareOptions)
   .withHttpMiddleware(httpMiddlewareOptions)
   .withLoggerMiddleware()
-  .build()
+  .build();
 
 export const getApiRoot: () => ApiRoot = () => {
-  return createApiBuilderFromCtpClient(client)
-}
+  return createApiBuilderFromCtpClient(client);
+};

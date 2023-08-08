@@ -1,8 +1,8 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
-import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
-import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
-import rollupNodePolyFill from 'rollup-plugin-node-polyfills'
+import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
+import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
+import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
@@ -20,7 +20,7 @@ export default defineConfig(({ command, mode }) => {
         'process.env.CTP_PROJECT_KEY': JSON.stringify(env.CTP_PROJECT_KEY),
         'process.env.CTP_AUTH': JSON.stringify(env.CTP_AUTH),
         'process.env.CTP_API': JSON.stringify(env.CTP_API),
-    },
+      },
       mode: 'dev',
       plugins: [react()],
       resolve: {

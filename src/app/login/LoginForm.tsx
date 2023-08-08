@@ -5,8 +5,8 @@ import { validate } from './LoginValidation.tsx';
 import { useNavigate } from 'react-router-dom';
 
 type FieldType = {
-  email?: string;
-  password?: string;
+  email: string;
+  password: string;
   remember?: string;
 };
 
@@ -17,7 +17,41 @@ const LoginInputForm: React.FC = () => {
     const email = values.email;
     const password = values.password;
     const remember = values.remember;
-    if (email && password && remember) {
+
+    function validateEmail(): boolean {
+      const emailRegex = /^\S+@\S+\.\S+$/;
+
+      if (!emailRegex.test(email)) {
+        if (!email.includes('@')) {
+          messageApi.open({
+            type: 'error',
+            content: "Email address must contain an '@' symbol.",
+          });
+          return false;
+        } else if (email.split('@')[1].trim() === '') {
+          messageApi.open({
+            type: 'error',
+            content: 'Email address must contain a domain name.',
+          });
+          return false;
+        } else if (email.trim() === '') {
+          messageApi.open({
+            type: 'error',
+            content: 'Email address must not contain leading or trailing whitespace.',
+          });
+          return false;
+        }
+        messageApi.open({
+          type: 'error',
+          content: 'Email address must be properly formatted',
+        });
+        return false;
+      }
+      return true;
+    };
+
+    // Usage example:
+    if (validateEmail()) {
       await validate(email, password, remember);
 
       const userID = localStorage.getItem('customerId');
@@ -27,7 +61,7 @@ const LoginInputForm: React.FC = () => {
         const userDataLS = localStorage.getItem('userData');
         if (userDataLS) {
           localStorage.setItem('loggedIn', 'true');
-          console.log('here1')
+          console.log('here1');
           Navigate('/main');
         }
       } else {

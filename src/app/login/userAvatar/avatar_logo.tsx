@@ -9,11 +9,13 @@ export function ReturnAvatarLogo(uName?: string) {
   const Navigate = useNavigate();
   const goToProfile = () => {
     Navigate('/profile');
-  }
+  };
   if (uName && uName.length <= 8) {
     const AvatarLogo: React.FC = () => (
       <Space size={16} wrap>
-        <Avatar onClick={goToProfile} size={40}>{uName}</Avatar>
+        <Avatar onClick={goToProfile} size={40}>
+          {uName}
+        </Avatar>
       </Space>
     );
     return AvatarLogo;

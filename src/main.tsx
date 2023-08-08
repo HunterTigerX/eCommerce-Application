@@ -7,9 +7,8 @@ import { createRoot } from 'react-dom/client';
 // То что ниже пока временно, то что выше вроде постоянно
 // import { getApiRoot } from './lib/ClientBuilder.ts';
 
-//  
+//
 import { checkToken } from './app/login/tokenMethods/introspectToken.tsx';
-
 
 async function checkAnonToken() {
   const tokenToCheck = localStorage.getItem('access_token');
@@ -25,8 +24,7 @@ async function tokenFlow() {
 }
 tokenFlow();
 
-
-// 
+//
 
 const rootElement = document.getElementById('root');
 if (rootElement) {

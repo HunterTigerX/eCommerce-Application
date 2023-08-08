@@ -1,4 +1,3 @@
-
 // const projectKey = process.env.CTP_PROJECT_KEY === undefined ? 'ecommerce-tools' : process.env.CTP_PROJECT_KEY;
 
 // function App() {

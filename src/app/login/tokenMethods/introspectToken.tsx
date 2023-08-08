@@ -1,4 +1,4 @@
-import { refreshAnonToken } from "../refreshAnonToken.tsx";
+import { refreshAnonToken } from '../refreshAnonToken.tsx';
 
 const { VITE_CLIENT_ID: clientId, VITE_CLIENT_SECRET: clientSecret, VITE_AUTH: host } = import.meta.env;
 
