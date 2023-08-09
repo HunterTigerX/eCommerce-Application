@@ -1,5 +1,4 @@
-import React from 'react';
-import { Button, message } from 'antd';
+import { message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import reactLogo from '@assets/react.svg';
@@ -14,10 +13,6 @@ export const Navbar = () => {
   const Navigate = useNavigate();
   const userName = userDataParser().firstName;
   const customerId = localStorage.getItem('customerId');
-
-  const mainPage = () => {
-    Navigate('/login');
-  };
 
   const logOutOfPage = () => {
     if (customerId) {
@@ -67,9 +62,6 @@ export const Navbar = () => {
           <img src={reactLogo} alt="Логотип" />
         </NavLink>
         <div className={styles['block-btns']}>
-          <Button type="primary" onClick={mainPage}>
-            Login test button
-          </Button>
           <NavLink to="main">Home</NavLink>
           <NavLink to="catalog">Catalog</NavLink>
           <NavLink to="cart">Сart</NavLink>

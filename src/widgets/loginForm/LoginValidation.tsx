@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { withPasswordFlow } from '../../app/login/tokenMethods/getClient/clientPasswordFlow.tsx';
+import { NewClient } from '@app/login/tokenMethods/getClient/clientClass'; 
 import { createApiBuilderFromCtpClient, ApiRoot } from '@commercetools/platform-sdk';
 
 const { VITE_PROJECT_KEY: projectKey } = import.meta.env;
 
-export async function validate(name: string, password: string, remember?: string) {
-  const client = withPasswordFlow(name, password);
+export async function validate(name: string, password: string) {
+  const client = NewClient.withPasswordFlow(name, password);
 
   const getApiRoot: () => ApiRoot = () => {
     return createApiBuilderFromCtpClient(client);
@@ -24,6 +24,9 @@ export async function validate(name: string, password: string, remember?: string
           body: {
             email: name,
             password: password,
+            updateProductData: true,
+            activeCartSignInMode: 'MergeWithExistingCustomerCart',
+            // AnonymousCartSignInMode = 'MergeWithExistingCustomerCart' | 'UseAsNewActiveCustomerCart' ;
           },
         })
         .execute()
@@ -34,7 +37,7 @@ export async function validate(name: string, password: string, remember?: string
         })
         .catch(console.error);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
   await validateUser();

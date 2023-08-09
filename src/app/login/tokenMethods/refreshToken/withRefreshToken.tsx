@@ -1,4 +1,4 @@
-import { LOClass } from '../LoginOptions.tsx';
+import { LOClass } from '../LoginOptionsClass.tsx';
 import { ClientBuilder, Client } from '@commercetools/sdk-client-v2';
 
 const { VITE_PROJECT_KEY: projectKey } = import.meta.env;

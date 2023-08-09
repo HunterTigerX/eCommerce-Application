@@ -13,7 +13,7 @@ export async function refreshAnonToken() {
       try {
         return await apiRoot.get().execute();
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     };
     await getProject();

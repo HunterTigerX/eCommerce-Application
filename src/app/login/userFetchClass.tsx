@@ -15,7 +15,7 @@ class FetchExistingUser {
     return fetch(`${api}/${projectKey}/customers/${id}`, requestOptions)
       .then((response) => response.json())
       .then((result) => result)
-      .catch((error) => console.log('error', error));
+      .catch((error) => console.error('error', error));
   }
 }
 

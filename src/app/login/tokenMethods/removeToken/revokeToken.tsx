@@ -17,9 +17,6 @@ export function revokeToken(token: string) {
   };
 
   fetch(`${host}/oauth/token/revoke`, requestOptions)
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => console.log('error', error));
+    .catch((error) => console.error('error', error));
   localStorage.removeItem('access_token');
 }

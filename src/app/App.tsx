@@ -1,9 +1,9 @@
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import { MainPage } from '../pages/home/Home.tsx';
 import { LoginPage } from '../pages/login/Login.tsx';
-import { ProfilePage } from './pages/profilePage.tsx';
-import { ErrorPage } from './pages/errorPage.tsx';
-import { RootPage } from './pages/rootPage.tsx';
+import { ProfilePage } from '../pages/profile/profilePage.tsx';
+import { ErrorPage } from '../pages/error/error.tsx';
+import { RootPage } from '../pages/root/rootPage.tsx';
 
 import { Layout } from '@widgets/layout';
 import { Registration } from '@pages/registration';

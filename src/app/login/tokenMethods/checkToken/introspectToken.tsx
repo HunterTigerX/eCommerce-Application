@@ -37,12 +37,10 @@ export function checkToken(token: string) {
     .then((result: TokenIntrospection) => {
       if (!result.active) {
         const anonId = localStorage.getItem('anon_id');
-        console.log('anonId', anonId);
         if (anonId) {
           refreshAnonToken();
         }
-        console.log('token prosrochen');
       }
     })
-    .catch((error) => console.log('error', error));
+    .catch((error) => console.error('error', error));
 }

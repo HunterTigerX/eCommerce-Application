@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button, Checkbox, Form, Input, message } from 'antd';
-import { ValidateErrorEntity } from 'rc-field-form/es/interface';
 import { validate } from './LoginValidation.tsx';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,7 +15,6 @@ const LoginInputForm: React.FC = () => {
   const onFinish = async (values: FieldType) => {
     const email = values.email;
     const password = values.password;
-    const remember = values.remember;
 
     function validateEmail(): boolean {
       const emailRegex = /^\S+@\S+\.\S+$/;
@@ -52,7 +50,7 @@ const LoginInputForm: React.FC = () => {
 
     // Usage example:
     if (validateEmail()) {
-      await validate(email, password, remember);
+      await validate(email, password);
 
       const userID = localStorage.getItem('customerId');
       const errorMessage = localStorage.getItem('errorMessage');
@@ -72,10 +70,6 @@ const LoginInputForm: React.FC = () => {
     }
   };
 
-  const onFinishFailed = (errorInfo: ValidateErrorEntity) => {
-    console.log('Failed:', errorInfo);
-  };
-
   return (
     <>
       {contextHolder}
@@ -86,7 +80,6 @@ const LoginInputForm: React.FC = () => {
         style={{ maxWidth: 600 }}
         initialValues={{ remember: true }}
         onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
         <Form.Item<FieldType>

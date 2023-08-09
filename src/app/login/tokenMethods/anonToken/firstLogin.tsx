@@ -1,4 +1,4 @@
-import { withAnonymousSession } from '../getClient/clientAnonymousFlow.tsx';
+import { NewClient } from '../getClient/clientClass.tsx';
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
 const { VITE_PROJECT_KEY: projectKey } = import.meta.env;
 
@@ -21,14 +21,14 @@ export async function giveAnonToken() {
   if (!isTokenExixt) {
     const userAnonId = generateUniqId();
     localStorage.setItem('anon_id', userAnonId);
-    const client = withAnonymousSession(userAnonId);
-    const apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({ projectKey });
+    const newClient = NewClient.withAnonymousSession(userAnonId);
+    const apiRoot = createApiBuilderFromCtpClient(newClient).withProjectKey({ projectKey });
 
     const getProject = async () => {
       try {
         return await apiRoot.get().execute();
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     };
     await getProject();

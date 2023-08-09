@@ -7,6 +7,5 @@ export const fetcher = async (input: RequestInfo | URL, init?: RequestInit) => {
     localStorage.setItem('errorMessage', json.message);
     localStorage.removeItem('userData');
   }
-  console.log('fetcherJson', json);
   return response;
 };
