@@ -9,7 +9,6 @@ import {
   RefreshAuthMiddlewareOptions,
 } from '@commercetools/sdk-client-v2';
 import { fetcher } from '../fetcher.tsx';
-
 const {
   VITE_CLIENT_ID: clientId,
   VITE_CLIENT_SECRET: clientSecret,
@@ -18,6 +17,7 @@ const {
   VITE_AUTH: host,
   VITE_API: api,
 } = import.meta.env;
+
 
 interface ExistingTokenMiddlewareOptionsToken {
   authorization: string;

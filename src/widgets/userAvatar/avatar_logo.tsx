@@ -1,7 +1,7 @@
-import { UserOutlined } from '@ant-design/icons';
 import React from 'react';
 import { Avatar, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { UserOutlined } from '@ant-design/icons';
 import './avatar_logo.css';
 
 // Подумать над добавлением crossOrigin для анонима / пользователя, чтобы лого было всегда

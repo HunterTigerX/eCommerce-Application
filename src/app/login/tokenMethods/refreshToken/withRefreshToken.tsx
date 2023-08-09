@@ -1,6 +1,5 @@
-import { LOClass } from '../LoginOptionsClass.tsx';
 import { ClientBuilder, Client } from '@commercetools/sdk-client-v2';
-
+import { LOClass } from '../LoginOptionsClass.tsx';
 const { VITE_PROJECT_KEY: projectKey } = import.meta.env;
 
 // anonymousId генерируется автоматически или устанавливается вручную

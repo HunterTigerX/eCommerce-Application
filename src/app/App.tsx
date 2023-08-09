@@ -1,14 +1,13 @@
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import { Layout } from '@widgets/layout';
+import { Registration } from '@pages/registration';
+import { Catalog } from '@pages/catalogue';
+import { Cart } from '@pages/cart';
 import { MainPage } from '../pages/home/Home.tsx';
 import { LoginPage } from '../pages/login/Login.tsx';
 import { ProfilePage } from '../pages/profile/profilePage.tsx';
 import { ErrorPage } from '../pages/error/error.tsx';
 import { RootPage } from '../pages/root/rootPage.tsx';
-
-import { Layout } from '@widgets/layout';
-import { Registration } from '@pages/registration';
-import { Catalog } from '@pages/catalogue';
-import { Cart } from '@pages/cart';
 
 import './styles/App.css';
 

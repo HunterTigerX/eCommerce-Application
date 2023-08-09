@@ -16,7 +16,6 @@ export function revokeToken(token: string) {
     redirect: 'follow',
   };
 
-  fetch(`${host}/oauth/token/revoke`, requestOptions)
-    .catch((error) => console.error('error', error));
+  fetch(`${host}/oauth/token/revoke`, requestOptions).catch((error) => console.error('error', error));
   localStorage.removeItem('access_token');
 }

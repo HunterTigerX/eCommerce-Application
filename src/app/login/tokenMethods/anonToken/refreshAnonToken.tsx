@@ -1,5 +1,5 @@
-import { withRefreshToken } from '../refreshToken/withRefreshToken.tsx';
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
+import { withRefreshToken } from '../refreshToken/withRefreshToken.tsx';
 const { VITE_PROJECT_KEY: projectKey } = import.meta.env;
 
 // Если у нас просрочен анонимный токен, то на основе рефреш токена мы получаем новый access token для посетителя сайта

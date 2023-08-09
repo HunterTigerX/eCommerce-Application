@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Checkbox, Form, Input, message } from 'antd';
-import { validate } from './LoginValidation.tsx';
 import { useNavigate } from 'react-router-dom';
+import { validate } from './LoginValidation.tsx';
 
 type FieldType = {
   email: string;

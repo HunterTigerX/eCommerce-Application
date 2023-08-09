@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { NewClient } from '@app/login/tokenMethods/getClient/clientClass'; 
+import { NewClient } from '@app/login/tokenMethods/getClient/clientClass';
 import { createApiBuilderFromCtpClient, ApiRoot } from '@commercetools/platform-sdk';
 
 const { VITE_PROJECT_KEY: projectKey } = import.meta.env;

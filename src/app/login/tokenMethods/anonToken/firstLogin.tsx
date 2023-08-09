@@ -1,5 +1,5 @@
-import { NewClient } from '../getClient/clientClass.tsx';
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
+import { NewClient } from '../getClient/clientClass.tsx';
 const { VITE_PROJECT_KEY: projectKey } = import.meta.env;
 
 function generateUniqId(): string {

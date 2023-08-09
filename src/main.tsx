@@ -1,13 +1,8 @@
 import React from 'react';
+import { createRoot } from 'react-dom/client';
 import App from './app/App.tsx';
 import './app/styles/global.css';
 import { giveAnonToken } from './app/login/tokenMethods/anonToken/firstLogin.tsx';
-import { createRoot } from 'react-dom/client';
-
-// То что ниже пока временно, то что выше вроде постоянно
-// import { getApiRoot } from './lib/ClientBuilder.ts';
-
-//
 import { checkToken } from './app/login/tokenMethods/checkToken/introspectToken.tsx';
 
 async function checkAnonToken() {
@@ -24,8 +19,6 @@ async function tokenFlow() {
 }
 tokenFlow();
 
-//
-
 const rootElement = document.getElementById('root');
 if (rootElement) {
   const root = createRoot(rootElement);
@@ -36,7 +29,3 @@ if (rootElement) {
     </React.StrictMode>
   );
 }
-
-// function successLogOut(): void {}
-
-// function successLogIn(): void {}
