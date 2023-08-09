@@ -1,14 +1,14 @@
 import React from 'react';
 import App from './app/App.tsx';
 import './app/styles/global.css';
-import { giveAnonToken } from './app/login/firstLogin.tsx';
+import { giveAnonToken } from './app/login/tokenMethods/anonToken/firstLogin.tsx';
 import { createRoot } from 'react-dom/client';
 
 // То что ниже пока временно, то что выше вроде постоянно
 // import { getApiRoot } from './lib/ClientBuilder.ts';
 
 //
-import { checkToken } from './app/login/tokenMethods/introspectToken.tsx';
+import { checkToken } from './app/login/tokenMethods/checkToken/introspectToken.tsx';
 
 async function checkAnonToken() {
   const tokenToCheck = localStorage.getItem('access_token');

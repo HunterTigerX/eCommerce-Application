@@ -1,4 +1,4 @@
-import { withAnonymousSession } from './tokenMethods/clientAnonymousFlow.tsx';
+import { withAnonymousSession } from '../getClient/clientAnonymousFlow.tsx';
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
 const { VITE_PROJECT_KEY: projectKey } = import.meta.env;
 

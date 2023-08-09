@@ -3,10 +3,10 @@ import { Button, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import reactLogo from '@assets/react.svg';
-import { giveAnonToken } from '../../app/login/firstLogin.tsx';
-import { userDataParser } from '../../app/login/getCustomer.tsx';
-import { ReturnAvatarLogo } from '../../app/login/userAvatar/avatar_logo.tsx';
-import { revokeToken } from '../../app/login/tokenMethods/revokeToken.tsx';
+import { giveAnonToken } from '../../app/login/tokenMethods/anonToken/firstLogin.tsx';
+import { userDataParser } from '../../app/login/getCustomerFromLocalS.tsx';
+import { ReturnAvatarLogo } from '../../widgets/userAvatar/avatar_logo.tsx';
+import { revokeToken } from '../../app/login/tokenMethods/removeToken/revokeToken.tsx';
 import styles from './Navbar.module.css';
 
 export const Navbar = () => {
@@ -67,7 +67,9 @@ export const Navbar = () => {
           <img src={reactLogo} alt="Логотип" />
         </NavLink>
         <div className={styles['block-btns']}>
-          <Button type="primary" onClick={mainPage}>Login test button</Button>
+          <Button type="primary" onClick={mainPage}>
+            Login test button
+          </Button>
           <NavLink to="main">Home</NavLink>
           <NavLink to="catalog">Catalog</NavLink>
           <NavLink to="cart">Сart</NavLink>

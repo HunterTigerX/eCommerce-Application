@@ -1,4 +1,4 @@
-import { LOClass } from '../LoginClasses.tsx';
+import { LOClass } from '../LoginOptions.tsx';
 import { ClientBuilder } from '@commercetools/sdk-client-v2';
 import { Client } from '@commercetools/sdk-client-v2';
 

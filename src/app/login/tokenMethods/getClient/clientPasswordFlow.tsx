@@ -1,4 +1,4 @@
-import { LOClass } from '../LoginClasses.tsx';
+import { LOClass } from '../LoginOptions.tsx';
 import { ClientBuilder, Client } from '@commercetools/sdk-client-v2';
 
 export function withPasswordFlow(username: string, password: string): Client {

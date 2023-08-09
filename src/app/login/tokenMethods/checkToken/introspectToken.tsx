@@ -1,4 +1,4 @@
-import { refreshAnonToken } from '../refreshAnonToken.tsx';
+import { refreshAnonToken } from '../anonToken/refreshAnonToken.tsx';
 
 const { VITE_CLIENT_ID: clientId, VITE_CLIENT_SECRET: clientSecret, VITE_AUTH: host } = import.meta.env;
 
@@ -9,9 +9,11 @@ interface TokenIntrospection {
   scope: string;
 }
 
-// Проверяет статус токена, активен ли он ещё или уже просрочен. В случае, если
-// токен просрочен. Если токен был от анонимного пользователя и он просрочен,
-// на основе refresh токена генерируется новый токен доступа для анонимного пользователя
+/* Проверяет статус токена, активен ли он ещё или уже просрочен. В случае, если
+токен просрочен. Если токен был от анонимного пользователя и он просрочен,
+на основе refresh токена генерируется новый токен доступа для анонимного пользователя.
+Для работы требуется токен.
+*/
 export function checkToken(token: string) {
   const credentials = btoa(clientId + ':' + clientSecret);
   const myHeaders = new Headers();

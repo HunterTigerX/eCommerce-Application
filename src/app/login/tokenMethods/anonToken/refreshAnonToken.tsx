@@ -1,4 +1,4 @@
-import { withRefreshToken } from './tokenMethods/withRefreshToken.tsx';
+import { withRefreshToken } from '../refreshToken/withRefreshToken.tsx';
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
 const { VITE_PROJECT_KEY: projectKey } = import.meta.env;
 
@@ -19,3 +19,4 @@ export async function refreshAnonToken() {
     await getProject();
   }
 }
+//dGVzdEB0ZXN0LmNvbTp0ZXN0

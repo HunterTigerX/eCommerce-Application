@@ -8,7 +8,7 @@ import {
   ExistingTokenMiddlewareOptions,
   RefreshAuthMiddlewareOptions,
 } from '@commercetools/sdk-client-v2';
-import { fetcher } from './fetcher.tsx';
+import { fetcher } from '../fetcher.tsx';
 
 const {
   VITE_CLIENT_ID: clientId,
@@ -25,6 +25,11 @@ interface ExistingTokenMiddlewareOptionsToken {
 }
 
 export class LoginOptions {
+  /*
+  Возможно можно поступить так. Пользователь входит в систему, мы это фиксируем, 
+  задаём у себя где в зависимости от скоупа клиент айди и клиент секрет с
+  определёнными скоупами, и на основе этого пользователь будет получать токены при входе на сайт
+  */
   withClientCredentialsFlow = (): AuthMiddlewareOptions => {
     const credentials: Credentials = { clientId, clientSecret };
     const scopes = adminScope.split(',');
@@ -32,6 +37,7 @@ export class LoginOptions {
     return options;
   };
 
+  // Простое получение токена доступа и рефреш токена по логину и паролю
   withPasswordFlow(username: string, password: string): PasswordAuthMiddlewareOptions {
     const user: UserAuthOptions = { username, password };
     const credentials = { clientId, clientSecret, user };
@@ -40,6 +46,7 @@ export class LoginOptions {
     return options;
   }
 
+  // Простое получение токена доступа и рефреш токена по анон айди, который генерируется при входе на сайт
   withAnonymousSessionFlow(anonymousId?: string): AnonymousAuthMiddlewareOptions {
     const credentials = { clientId, clientSecret, anonymousId };
     const scopes = adminScope.split(',');
@@ -48,6 +55,8 @@ export class LoginOptions {
     return options;
   }
 
+  // Вход по рефреш токену, который хранится 200 дней + по клиент айди и секрета
+  // рефреш токен продлевается при использовании и в таком случае может храниться бесконечно
   withRefreshTokenFlow(refreshToken: string): RefreshAuthMiddlewareOptions {
     const credentials = { clientId, clientSecret };
     const options: RefreshAuthMiddlewareOptions = { host, projectKey, credentials, refreshToken, fetch: fetcher };

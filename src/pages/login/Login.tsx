@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import LoginInputForm from '../../app/login/LoginForm.tsx';
+import LoginInputForm from '../../widgets/loginForm/LoginForm.tsx';
 
 export function LoginPage() {
   const navigate = useNavigate();
