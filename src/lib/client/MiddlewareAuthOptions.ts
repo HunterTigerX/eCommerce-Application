@@ -1,0 +1,72 @@
+import {
+  AnonymousAuthMiddlewareOptions,
+  AuthMiddlewareOptions,
+  HttpMiddlewareOptions,
+  PasswordAuthMiddlewareOptions,
+} from '@commercetools/sdk-client-v2';
+
+const {
+  VITE_CTP_CLIENT_ID: clientId,
+  VITE_CTP_CLIENT_SECRET: clientSecret,
+  VITE_CTP_SCOPES: scopes,
+  VITE_CTP_AUTH_URL: authUrl,
+  VITE_CTP_API_URL: apiUrl,
+  VITE_CTP_PROJECT_KEY: projectKey,
+} = import.meta.env;
+
+export class MiddlewareAuthOptions {
+  private fetcher = async (input: RequestInfo | URL, init?: RequestInit) => {
+    const response = await fetch(input, init);
+    const json = await response.clone().json();
+    if (json.access_token) localStorage.setItem('access_token', json.access_token);
+    return response;
+  };
+
+  public getClientCredentialAuthOptions(): AuthMiddlewareOptions {
+    return {
+      host: authUrl,
+      projectKey,
+      credentials: {
+        clientId,
+        clientSecret,
+      },
+      scopes: scopes.split(' '),
+      fetch,
+    };
+  }
+
+  public getHttpAuthOptions(): HttpMiddlewareOptions {
+    return {
+      host: apiUrl,
+      fetch,
+    };
+  }
+
+  public getPasswordAuthOptions(user: { username: string; password: string }): PasswordAuthMiddlewareOptions {
+    return {
+      host: authUrl,
+      projectKey,
+      credentials: {
+        clientId,
+        clientSecret,
+        user,
+      },
+      scopes: [scopes],
+      fetch: this.fetcher,
+    };
+  }
+
+  public getAnonymousAuthOptions(anonymousId: string): AnonymousAuthMiddlewareOptions {
+    return {
+      host: authUrl,
+      projectKey,
+      credentials: {
+        clientId,
+        clientSecret,
+        anonymousId,
+      },
+      scopes: scopes.split(' '),
+      fetch,
+    };
+  }
+}

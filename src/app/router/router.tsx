@@ -11,12 +11,12 @@ const routes: RouteObject[] = [
         element: <Main />,
       },
       {
-        path: '/signIn',
+        path: '/signin',
         element: <SignIn />,
         caseSensitive: true,
       },
       {
-        path: '/signUp',
+        path: '/signup',
         element: <SignUp />,
         caseSensitive: true,
       },

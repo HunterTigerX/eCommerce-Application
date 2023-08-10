@@ -1,43 +1,41 @@
-import { createContext, useState, type ReactNode } from 'react';
+import { createContext, type ReactNode, useState } from 'react';
+import { Customer } from '@commercetools/platform-sdk';
+import { User } from '@entities/user';
 
-interface User {
-  username: string;
-  password: string;
-}
+const user = new User();
+await user.init();
 
 interface AuthProviderValue {
-  user: User | null;
-  signIn: () => void;
-  signUp: () => void;
+  user: Customer | null;
+  signIn: (credentials: { username: string; password: string }) => void;
+  signUp: (credentials: { firstName: string; lastName: string; email: string; password: string }) => void;
   signOut: () => void;
 }
 
-const defaultValue: AuthProviderValue = {
+export const AuthContext = createContext<AuthProviderValue>({
   user: null,
   signIn: () => {},
   signUp: () => {},
   signOut: () => {},
-};
-
-export const AuthContext = createContext<AuthProviderValue>(defaultValue);
+});
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [customer, setCustomer] = useState<Customer | null>(user.data);
 
-  const signIn = () => {
-    setUser({ username: 'test@gmail.com', password: 'test' });
+  const signIn = (credentials: { username: string; password: string }): void => {
+    user.signIn(credentials).then((data: Customer) => setCustomer(data));
   };
 
-  const signUp = () => {
-    setUser({ username: 'test@gmail.com', password: 'test' });
+  const signUp = (credentials: { firstName: string; lastName: string; email: string; password: string }): void => {
+    user.signUp(credentials).then((data: Customer) => setCustomer(data));
   };
 
-  const signOut = () => {
-    setUser(null);
+  const signOut = (): void => {
+    user.signOut().then(() => setCustomer(null));
   };
 
   const value = {
-    user,
+    user: customer,
     signIn,
     signUp,
     signOut,

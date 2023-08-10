@@ -1,35 +1,34 @@
-import { useEffect } from 'react';
-import { message } from 'antd';
-// import { useAuth } from '@shared/hooks';
-
-type UserData = {
-  firstName: string;
-};
+import { useAuth } from '@shared/hooks';
 
 export const Main = () => {
-  const [messageApi, contextHolder] = message.useMessage();
-  // const { user } = useAuth();
+  const { user, signIn, signOut, signUp } = useAuth();
 
-  useEffect(() => {
-    if (localStorage.getItem('loggedIn')) {
-      const userDataLS = localStorage.getItem('userData');
-      if (userDataLS) {
-        const userData: UserData = JSON.parse(userDataLS);
-        messageApi.open({
-          type: 'success',
-          content: `Hello, ${userData.firstName}`,
-        });
-        localStorage.removeItem('loggedIn');
-      }
-    }
-  }, [messageApi]);
+  const handleSignIn = () => {
+    signIn({ username: 'ooooooo2q35@gmail.com', password: 'test' });
+  };
+
+  const handleSignUp = () => {
+    signUp({ email: 'te144mp555в@mail.ru', password: 'test', lastName: 'Joj', firstName: 'Koj' });
+  };
+
+  const handleSignOut = () => {
+    signOut();
+  };
 
   return (
     <>
-      {contextHolder}
-      <>
-        <br></br>This is main page
-      </>
+      <h2>Main page</h2>
+      {}
+      {user ? (
+        <p style={{ color: 'black' }}>
+          Hi, {user.firstName} {user.lastName}.<button onClick={handleSignOut}>Sign Out</button>
+        </p>
+      ) : (
+        <>
+          <button onClick={handleSignIn}>Sign In</button>
+          <button onClick={handleSignUp}>Sign Up</button>
+        </>
+      )}
     </>
   );
 };

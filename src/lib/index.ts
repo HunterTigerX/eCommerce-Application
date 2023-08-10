@@ -1,1 +1,1 @@
-export { getApiRoot, projectKey } from './ClientBuilder';
+export { ApiClient } from './client/Client';
