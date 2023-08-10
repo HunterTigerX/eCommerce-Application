@@ -38,7 +38,7 @@
       "@assets/*": ["assets/*"],
       "@entities/*": ["entities/*"],
       "@features/*": ["features/*"],
-      "@pages/*": ["pages/*"],
+      "@pages": ["pages"],
       "@shared/*": ["shared/*"],
       "@widgets/*": ["widgets/*"]
     } /* Specify a set of entries that re-map imports to additional lookup locations. */,
@@ -119,7 +119,10 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
     "plugins": [
       {
-        "name": "typescript-plugin-css-modules"
+        "name": "typescript-plugin-css-modules",
+        "options": {
+          "classnameTransform": "camelCaseOnly"
+        }
       }
     ]
   },

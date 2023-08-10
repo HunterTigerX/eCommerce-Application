@@ -8,11 +8,11 @@ export const Navbar = () => {
       <NavLink to="/" className={styles.logo}>
         <img src={reactLogo} alt="Логотип" />
       </NavLink>
-      <div className={styles['block-btns']}>
-        <NavLink to="catalog">Catalog</NavLink>
-        <NavLink to="cart">Сart</NavLink>
-        <NavLink to="login">login</NavLink>
-        <NavLink to="registration">registration</NavLink>
+      <div className={styles.blockBtns}>
+        <NavLink to="/catalog">Catalog</NavLink>
+        <NavLink to="/cart">Сart</NavLink>
+        <NavLink to="/signin">login</NavLink>
+        <NavLink to="/signup">registration</NavLink>
       </div>
     </nav>
   );

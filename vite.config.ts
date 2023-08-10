@@ -16,6 +16,11 @@ export default defineConfig(({ command }) => {
     return {
       mode: 'dev',
       plugins: [react(), tsconfigPaths()],
+      css: {
+        modules: {
+          localsConvention: 'camelCaseOnly',
+        },
+      },
       resolve: {
         alias: {
           stream: 'rollup-plugin-node-polyfills/polyfills/stream',

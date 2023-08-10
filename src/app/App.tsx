@@ -1,9 +1,14 @@
 import { RouterProvider } from 'react-router-dom';
-import { router } from './routes.tsx';
+import { AuthProvider } from '@app/auth';
+import { router } from './router/';
 import './styles/App.css';
 
-function App() {
-  return <RouterProvider router={router} />;
-}
+const App = () => {
+  return (
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  );
+};
 
 export default App;
