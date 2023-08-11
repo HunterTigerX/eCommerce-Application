@@ -1,12 +1,12 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly VITE_AUTH: string;
-  readonly VITE_API: string;
-  readonly VITE_CLIENT_ID: string;
-  readonly VITE_CLIENT_SECRET: string;
-  readonly VITE_PROJECT_KEY: string;
-  readonly VITE_PROJECT_ADMIN_SCOPE: string;
+  readonly VITE_CTP_PROJECT_KEY: string;
+  readonly VITE_CTP_CLIENT_SECRET: string;
+  readonly VITE_CTP_CLIENT_ID: string;
+  readonly VITE_CTP_AUTH_URL: string;
+  readonly VITE_CTP_API_URL: string;
+  readonly VITE_CTP_SCOPES: string;
 }
 
 interface ImportMeta {
