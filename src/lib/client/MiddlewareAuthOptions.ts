@@ -4,6 +4,7 @@ import {
   HttpMiddlewareOptions,
   PasswordAuthMiddlewareOptions,
 } from '@commercetools/sdk-client-v2';
+import { UserSignInCredentials } from '@types';
 
 const {
   VITE_CTP_CLIENT_ID: clientId,
@@ -15,7 +16,7 @@ const {
 } = import.meta.env;
 
 export class MiddlewareAuthOptions {
-  private fetcher = async (input: RequestInfo | URL, init?: RequestInit) => {
+  private responseHandler = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
     const response = await fetch(input, init);
     const json = await response.clone().json();
     if (json.access_token) localStorage.setItem('access_token', json.access_token);
@@ -42,7 +43,7 @@ export class MiddlewareAuthOptions {
     };
   }
 
-  public getPasswordAuthOptions(user: { username: string; password: string }): PasswordAuthMiddlewareOptions {
+  public getPasswordAuthOptions(user: UserSignInCredentials): PasswordAuthMiddlewareOptions {
     return {
       host: authUrl,
       projectKey,
@@ -52,7 +53,7 @@ export class MiddlewareAuthOptions {
         user,
       },
       scopes: [scopes],
-      fetch: this.fetcher,
+      fetch: this.responseHandler,
     };
   }
 

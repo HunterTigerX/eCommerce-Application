@@ -4,15 +4,27 @@ export const Main = () => {
   const { user, signIn, signOut, signUp } = useAuth();
 
   const handleSignIn = () => {
-    signIn({ username: 'ooooooo2q35@gmail.com', password: 'test' });
+    const credentials = { username: 'te1454mp555в@mail.ru', password: 'test' };
+
+    signIn(credentials).then((result) => {
+      if (!result.success) {
+        console.log(result.message);
+      }
+    });
   };
 
   const handleSignUp = () => {
-    signUp({ email: 'te144mp555в@mail.ru', password: 'test', lastName: 'Joj', firstName: 'Koj' });
+    const credentials = { email: 'te1454mp555в@mail.ru', password: 'test', lastName: 'J123oj', firstName: 'Koj123' };
+
+    signUp(credentials).then((result) => {
+      if (!result.success) {
+        console.log(result.message);
+      }
+    });
   };
 
   const handleSignOut = () => {
-    signOut();
+    signOut().then();
   };
 
   return (

@@ -1,4 +1,5 @@
 import { Customer } from '@commercetools/platform-sdk';
+import { AuthResponse, UserSignInCredentials, UserSignUpCredentials } from '@types';
 import { ApiClient } from '@lib';
 
 export class User {
@@ -14,80 +15,80 @@ export class User {
     this.data = await this.apiClient.init();
   }
 
-  public async signIn(user: { username: string; password: string }): Promise<Customer> {
-    this.apiClient.switchToPasswordFlow(user);
+  public async signIn(credentials: UserSignInCredentials): Promise<AuthResponse> {
+    // return to default/anon on fail?
+    this.apiClient.switchToPasswordFlow(credentials);
 
-    return new Promise((resolve) => {
-      this.apiClient.requestBuilder
-        .me()
-        .get()
-        .execute()
-        .then((res) => {
-          this.data = res.body;
-          resolve(this.data);
-        });
-    });
+    try {
+      const response = await this.apiClient.requestBuilder.me().get().execute();
+      this.data = response.body;
+      return {
+        success: true,
+        data: this.data,
+      };
+    } catch (error: unknown) {
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to Sign In',
+      };
+    }
   }
 
-  public async signUp({
-    firstName,
-    lastName,
-    email,
-    password,
-  }: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-  }): Promise<Customer> {
-    return new Promise((resolve) => {
-      this.apiClient.requestBuilder
+  public async signUp(credentials: UserSignUpCredentials): Promise<AuthResponse> {
+    try {
+      await this.apiClient.requestBuilder
         .me()
         .signup()
         .post({
-          body: {
-            firstName,
-            lastName,
-            email,
-            password,
-          },
+          body: credentials,
         })
-        .execute()
-        .then(() => {
-          // нужно сделать какой-то запрос через этот флоу, чтобы получить токен, иначе будет 403
-          this.apiClient.switchToPasswordFlow({ username: email, password });
+        .execute();
 
-          this.apiClient.requestBuilder
-            .me()
-            .get()
-            .execute()
-            .then((res) => {
-              this.data = res.body;
-              resolve(this.data);
-            });
-        })
-        .catch(() => localStorage.removeItem('access_token'));
-    });
+      // need to make request through this flow to get a new access token, otherwise it will fail with 403 status code
+      this.apiClient.switchToPasswordFlow({ username: credentials.email, password: credentials.password });
+
+      const signInResponse = await this.apiClient.requestBuilder.me().get().execute();
+
+      this.data = signInResponse.body;
+
+      return {
+        success: true,
+        data: this.data,
+      };
+    } catch (error: unknown) {
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to Sign Up',
+      };
+    }
   }
 
   public async signOut(): Promise<void> {
     const token = localStorage.getItem('access_token');
 
     if (token) {
-      fetch(`${import.meta.env.VITE_CTP_AUTH_URL}/oauth/token/revoke`, {
-        method: 'POST',
-        body: `token=${token}&token_type_hint=access_token`,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `Basic ${btoa(
-            `${import.meta.env.VITE_CTP_CLIENT_ID}:${import.meta.env.VITE_CTP_CLIENT_SECRET}`
-          )}`,
-        },
-      }).finally(() => {
-        localStorage.clear();
-        this.data = null;
+      const {
+        VITE_CTP_AUTH_URL: authUrl,
+        VITE_CTP_CLIENT_SECRET: clientSecret,
+        VITE_CTP_CLIENT_ID: clientId,
+      } = import.meta.env;
+
+      try {
+        await fetch(`${authUrl}/oauth/token/revoke`, {
+          method: 'POST',
+          body: `token=${token}&token_type_hint=access_token`,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: `Basic ${btoa(`${clientId}:${clientSecret}`)}`,
+          },
+        });
+      } catch (error: unknown) {
+        if (error instanceof Error) console.log(error.message);
+      } finally {
         this.apiClient.switchToAnonymousFlow();
-      });
+        this.data = null;
+        localStorage.removeItem('access_token');
+      }
     }
   }
 }

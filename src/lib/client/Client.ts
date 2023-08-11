@@ -18,16 +18,12 @@ export class ApiClient {
       .build();
   }
 
-  private getAuthTokenFromStorage(): string | null {
-    return localStorage.getItem('access_token');
-  }
-
   public get requestBuilder() {
     return createApiBuilderFromCtpClient(this.client).withProjectKey({ projectKey });
   }
 
   public async init(): Promise<Customer | null> {
-    const token = this.getAuthTokenFromStorage();
+    const token = localStorage.getItem('access_token');
 
     if (token) {
       this.switchToExistingTokenFlow(token);
@@ -54,7 +50,7 @@ export class ApiClient {
       .build();
   }
 
-  public switchToPasswordFlow(user: { username: string; password: string }) {
+  public switchToPasswordFlow(user: { username: string; password: string }): void {
     this.client = new ClientBuilder()
       .withProjectKey(projectKey)
       .withPasswordFlow(this.options.getPasswordAuthOptions(user))
@@ -62,6 +58,7 @@ export class ApiClient {
       .build();
   }
 
+  // switch to client credentials?
   public switchToAnonymousFlow(): void {
     this.client = new ClientBuilder()
       .withProjectKey(projectKey)
