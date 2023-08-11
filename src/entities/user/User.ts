@@ -1,6 +1,6 @@
 import { Customer } from '@commercetools/platform-sdk';
 import { AuthResponse, UserSignInCredentials, UserSignUpCredentials } from '@types';
-import { ApiClient } from '@lib';
+import { ApiClient } from '@lib/client';
 
 export class User {
   private apiClient: ApiClient;
