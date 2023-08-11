@@ -1,10 +1,10 @@
 import { createContext, type ReactNode, useState } from 'react';
 import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
 import type { Customer, MyCustomerDraft } from '@commercetools/platform-sdk';
-import { UserService, type AuthResponse } from '@lib/userService';
+import { AuthService, type AuthResponse } from '@app/auth/service';
 
-const userService = new UserService();
-await userService.init();
+const authService = new AuthService();
+await authService.init();
 
 interface AuthProviderValue {
   user: Customer | null;
@@ -14,17 +14,17 @@ interface AuthProviderValue {
 }
 
 export const AuthContext = createContext<AuthProviderValue>({
-  user: userService.data,
+  user: authService.user,
   signIn: () => Promise.resolve({ success: false, message: '' }),
   signUp: () => Promise.resolve({ success: false, message: '' }),
   signOut: () => Promise.resolve(),
 });
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [customer, setCustomer] = useState<Customer | null>(userService.data);
+  const [customer, setCustomer] = useState<Customer | null>(authService.user);
 
   const signIn = async (credentials: UserAuthOptions): Promise<AuthResponse> => {
-    const result: AuthResponse = await userService.signIn(credentials);
+    const result: AuthResponse = await authService.signIn(credentials);
 
     if (result.success) setCustomer(result.data);
 
@@ -32,7 +32,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signUp = async (credentials: MyCustomerDraft): Promise<AuthResponse> => {
-    const result: AuthResponse = await userService.signUp(credentials);
+    const result: AuthResponse = await authService.signUp(credentials);
 
     if (result.success) setCustomer(result.data);
 
@@ -40,7 +40,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async (): Promise<void> => {
-    await userService.signOut();
+    await authService.signOut();
 
     setCustomer(null);
   };

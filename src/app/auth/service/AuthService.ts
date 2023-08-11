@@ -1,20 +1,20 @@
 import type { Customer, MyCustomerDraft } from '@commercetools/platform-sdk';
 import { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
-import { ApiClient } from '@lib/client';
+import { ApiClient } from '@app/auth/client';
 
 export type AuthResponse = { success: true; data: Customer } | { success: false; message: string };
 
-export class UserService {
+export class AuthService {
   private apiClient: ApiClient;
 
-  public data: Customer | null = null;
+  public user: Customer | null = null;
 
   constructor() {
     this.apiClient = new ApiClient();
   }
 
   public async init(): Promise<void> {
-    this.data = await this.apiClient.init();
+    this.user = await this.apiClient.init();
   }
 
   public async signIn(credentials: UserAuthOptions): Promise<AuthResponse> {
@@ -23,10 +23,10 @@ export class UserService {
 
     try {
       const response = await this.apiClient.requestBuilder.me().get().execute();
-      this.data = response.body;
+      this.user = response.body;
       return {
         success: true,
-        data: this.data,
+        data: this.user,
       };
     } catch (error: unknown) {
       return {
@@ -51,11 +51,11 @@ export class UserService {
 
       const signInResponse = await this.apiClient.requestBuilder.me().get().execute();
 
-      this.data = signInResponse.body;
+      this.user = signInResponse.body;
 
       return {
         success: true,
-        data: this.data,
+        data: this.user,
       };
     } catch (error: unknown) {
       return {
@@ -86,11 +86,12 @@ export class UserService {
         });
       } catch (error: unknown) {
         if (error instanceof Error) console.log(error.message);
-      } finally {
-        this.apiClient.switchToAnonymousFlow();
-        this.data = null;
-        localStorage.removeItem('access_token');
       }
+
+      localStorage.removeItem('access_token');
     }
+
+    this.apiClient.switchToAnonymousFlow();
+    this.user = null;
   }
 }

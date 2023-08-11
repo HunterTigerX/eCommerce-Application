@@ -15,7 +15,7 @@ const {
   VITE_CTP_PROJECT_KEY: projectKey,
 } = import.meta.env;
 
-export class MiddlewareAuthOptions {
+export class AuthOptions {
   private responseHandler = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
     const response = await fetch(input, init);
     const json = await response.clone().json();
@@ -23,7 +23,7 @@ export class MiddlewareAuthOptions {
     return response;
   };
 
-  public getClientCredentialAuthOptions(): AuthMiddlewareOptions {
+  public getClientCredentialOptions(): AuthMiddlewareOptions {
     return {
       host: authUrl,
       projectKey,
@@ -36,14 +36,14 @@ export class MiddlewareAuthOptions {
     };
   }
 
-  public getHttpAuthOptions(): HttpMiddlewareOptions {
+  public getHttpOptions(): HttpMiddlewareOptions {
     return {
       host: apiUrl,
       fetch,
     };
   }
 
-  public getPasswordAuthOptions(user: UserAuthOptions): PasswordAuthMiddlewareOptions {
+  public getPasswordOptions(user: UserAuthOptions): PasswordAuthMiddlewareOptions {
     return {
       host: authUrl,
       projectKey,
@@ -57,7 +57,7 @@ export class MiddlewareAuthOptions {
     };
   }
 
-  public getAnonymousAuthOptions(anonymousId: string): AnonymousAuthMiddlewareOptions {
+  public getAnonymousOptions(anonymousId: string): AnonymousAuthMiddlewareOptions {
     return {
       host: authUrl,
       projectKey,

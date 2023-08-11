@@ -1,21 +1,21 @@
 import { ClientBuilder, type Client } from '@commercetools/sdk-client-v2';
 import { createApiBuilderFromCtpClient, Customer } from '@commercetools/platform-sdk';
-import { MiddlewareAuthOptions } from './MiddlewareAuthOptions';
 import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
+import { AuthOptions } from './AuthOptions';
 
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
 
 export class ApiClient {
-  private readonly options: MiddlewareAuthOptions;
+  private readonly authOptions: AuthOptions;
 
   private client: Client;
 
   constructor() {
-    this.options = new MiddlewareAuthOptions();
+    this.authOptions = new AuthOptions();
     this.client = new ClientBuilder()
       .withProjectKey(projectKey)
-      .withClientCredentialsFlow(this.options.getClientCredentialAuthOptions())
-      .withHttpMiddleware(this.options.getHttpAuthOptions())
+      .withClientCredentialsFlow(this.authOptions.getClientCredentialOptions())
+      .withHttpMiddleware(this.authOptions.getHttpOptions())
       .build();
   }
 
@@ -47,15 +47,15 @@ export class ApiClient {
     this.client = new ClientBuilder()
       .withProjectKey(projectKey)
       .withExistingTokenFlow(`Bearer ${token}`, { force: true })
-      .withHttpMiddleware(this.options.getHttpAuthOptions())
+      .withHttpMiddleware(this.authOptions.getHttpOptions())
       .build();
   }
 
   public switchToPasswordFlow(user: UserAuthOptions): void {
     this.client = new ClientBuilder()
       .withProjectKey(projectKey)
-      .withPasswordFlow(this.options.getPasswordAuthOptions(user))
-      .withHttpMiddleware(this.options.getHttpAuthOptions())
+      .withPasswordFlow(this.authOptions.getPasswordOptions(user))
+      .withHttpMiddleware(this.authOptions.getHttpOptions())
       .build();
   }
 
@@ -63,8 +63,8 @@ export class ApiClient {
   public switchToAnonymousFlow(): void {
     this.client = new ClientBuilder()
       .withProjectKey(projectKey)
-      .withAnonymousSessionFlow(this.options.getAnonymousAuthOptions(`${Date.now()}`))
-      .withHttpMiddleware(this.options.getHttpAuthOptions())
+      .withAnonymousSessionFlow(this.authOptions.getAnonymousOptions(`${Date.now()}`))
+      .withHttpMiddleware(this.authOptions.getHttpOptions())
       .build();
   }
 }
