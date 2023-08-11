@@ -1,7 +1,7 @@
 import React from 'react';
 import { Avatar, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
-/* import { UserOutlined } from '@ant-design/icons'; */
+import { UserOutlined } from '@ant-design/icons';
 import './avatar_logo.css';
 
 // Подумать над добавлением crossOrigin для анонима / пользователя, чтобы лого было всегда
@@ -22,7 +22,7 @@ export function ReturnAvatarLogo(uName?: string) {
   } else {
     const AvatarLogo: React.FC = () => (
       <Space size={16} wrap>
-        <Avatar onClick={goToProfile} style={{ backgroundColor: '#87d068' }} /* icon={<UserOutlined />} */ />
+        <Avatar onClick={goToProfile} style={{ backgroundColor: '#87d068' }} icon={<UserOutlined />} />
       </Space>
     );
     return AvatarLogo;
