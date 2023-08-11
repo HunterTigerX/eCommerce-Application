@@ -1,38 +1,38 @@
 import { createContext, type ReactNode, useState } from 'react';
-import { Customer } from '@commercetools/platform-sdk';
-import { AuthResponse, UserSignInCredentials, UserSignUpCredentials } from '@types';
-import { User } from '@entities/user';
+import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
+import type { Customer, MyCustomerDraft } from '@commercetools/platform-sdk';
+import { UserService, type AuthResponse } from '@lib/userService';
 
-const user = new User();
-await user.init();
+const userService = new UserService();
+await userService.init();
 
 interface AuthProviderValue {
   user: Customer | null;
-  signIn: (credentials: UserSignInCredentials) => Promise<AuthResponse>;
-  signUp: (credentials: UserSignUpCredentials) => Promise<AuthResponse>;
+  signIn: (credentials: UserAuthOptions) => Promise<AuthResponse>;
+  signUp: (credentials: MyCustomerDraft) => Promise<AuthResponse>;
   signOut: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthProviderValue>({
-  user: user.data,
+  user: userService.data,
   signIn: () => Promise.resolve({ success: false, message: '' }),
   signUp: () => Promise.resolve({ success: false, message: '' }),
   signOut: () => Promise.resolve(),
 });
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [customer, setCustomer] = useState<Customer | null>(user.data);
+  const [customer, setCustomer] = useState<Customer | null>(userService.data);
 
-  const signIn = async (credentials: UserSignInCredentials): Promise<AuthResponse> => {
-    const result: AuthResponse = await user.signIn(credentials);
+  const signIn = async (credentials: UserAuthOptions): Promise<AuthResponse> => {
+    const result: AuthResponse = await userService.signIn(credentials);
 
     if (result.success) setCustomer(result.data);
 
     return result;
   };
 
-  const signUp = async (credentials: UserSignUpCredentials): Promise<AuthResponse> => {
-    const result: AuthResponse = await user.signUp(credentials);
+  const signUp = async (credentials: MyCustomerDraft): Promise<AuthResponse> => {
+    const result: AuthResponse = await userService.signUp(credentials);
 
     if (result.success) setCustomer(result.data);
 
@@ -40,7 +40,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async (): Promise<void> => {
-    await user.signOut();
+    await userService.signOut();
 
     setCustomer(null);
   };

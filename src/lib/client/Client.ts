@@ -1,6 +1,7 @@
 import { ClientBuilder, type Client } from '@commercetools/sdk-client-v2';
 import { createApiBuilderFromCtpClient, Customer } from '@commercetools/platform-sdk';
 import { MiddlewareAuthOptions } from './MiddlewareAuthOptions';
+import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
 
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
 
@@ -50,7 +51,7 @@ export class ApiClient {
       .build();
   }
 
-  public switchToPasswordFlow(user: { username: string; password: string }): void {
+  public switchToPasswordFlow(user: UserAuthOptions): void {
     this.client = new ClientBuilder()
       .withProjectKey(projectKey)
       .withPasswordFlow(this.options.getPasswordAuthOptions(user))

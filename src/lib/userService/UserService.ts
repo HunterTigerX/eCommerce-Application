@@ -1,8 +1,10 @@
-import { Customer } from '@commercetools/platform-sdk';
-import { AuthResponse, UserSignInCredentials, UserSignUpCredentials } from '@types';
+import type { Customer, MyCustomerDraft } from '@commercetools/platform-sdk';
+import { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
 import { ApiClient } from '@lib/client';
 
-export class User {
+export type AuthResponse = { success: true; data: Customer } | { success: false; message: string };
+
+export class UserService {
   private apiClient: ApiClient;
 
   public data: Customer | null = null;
@@ -15,7 +17,7 @@ export class User {
     this.data = await this.apiClient.init();
   }
 
-  public async signIn(credentials: UserSignInCredentials): Promise<AuthResponse> {
+  public async signIn(credentials: UserAuthOptions): Promise<AuthResponse> {
     // return to default/anon on fail?
     this.apiClient.switchToPasswordFlow(credentials);
 
@@ -34,7 +36,7 @@ export class User {
     }
   }
 
-  public async signUp(credentials: UserSignUpCredentials): Promise<AuthResponse> {
+  public async signUp(credentials: MyCustomerDraft): Promise<AuthResponse> {
     try {
       await this.apiClient.requestBuilder
         .me()

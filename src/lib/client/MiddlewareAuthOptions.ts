@@ -4,7 +4,7 @@ import {
   HttpMiddlewareOptions,
   PasswordAuthMiddlewareOptions,
 } from '@commercetools/sdk-client-v2';
-import { UserSignInCredentials } from '@types';
+import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
 
 const {
   VITE_CTP_CLIENT_ID: clientId,
@@ -43,7 +43,7 @@ export class MiddlewareAuthOptions {
     };
   }
 
-  public getPasswordAuthOptions(user: UserSignInCredentials): PasswordAuthMiddlewareOptions {
+  public getPasswordAuthOptions(user: UserAuthOptions): PasswordAuthMiddlewareOptions {
     return {
       host: authUrl,
       projectKey,
