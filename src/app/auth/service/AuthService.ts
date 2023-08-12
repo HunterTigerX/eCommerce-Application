@@ -85,7 +85,7 @@ export class AuthService {
           },
         });
       } catch (error: unknown) {
-        if (error instanceof Error) console.log(error.message);
+        if (error instanceof Error) console.error(error.message);
       }
 
       localStorage.removeItem('access_token');

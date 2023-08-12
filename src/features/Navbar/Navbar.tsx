@@ -22,7 +22,7 @@ export const Navbar = () => {
   const Navigate = useNavigate();
   const userName = userDataParser().firstName;
   const customerId = localStorage.getItem('customerId');
-  console.log('customerId', customerId);
+
   const logOutOfPage = () => {
     if (customerId) {
       const tokenToCheck = localStorage.getItem('access_token');
