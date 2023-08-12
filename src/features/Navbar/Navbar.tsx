@@ -19,8 +19,7 @@ export const Navbar = () => {
   const logOutOfPage = () => {
     if (accessToken) {
       signOut().then();
-      Navigate('/main');
-      localStorage.removeItem('access_token');
+      Navigate('/');
       messageApi.open({
         type: 'success',
         content: `Goodbye, ${userName}`,
