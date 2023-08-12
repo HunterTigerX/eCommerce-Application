@@ -1,6 +1,28 @@
 import { useAuth } from '@shared/hooks';
+import { message } from 'antd';
+import { useEffect } from 'react';
+
+type UserData = {
+  firstName: string;
+};
 
 export const Main = () => {
+  const [messageApi, contextHolder] = message.useMessage();
+
+  useEffect(() => {
+    if (localStorage.getItem('loggedIn')) {
+      const userDataLS = localStorage.getItem('userData');
+      if (userDataLS) {
+        const userData: UserData = JSON.parse(userDataLS);
+        messageApi.open({
+          type: 'success',
+          content: `Hello, ${userData.firstName}`,
+        });
+        localStorage.removeItem('loggedIn');
+      }
+    }
+  }, [messageApi]);
+
   const { user, signIn, signOut, signUp } = useAuth();
 
   const handleSignIn = () => {
@@ -30,7 +52,7 @@ export const Main = () => {
   return (
     <>
       <h2>Main page</h2>
-      {}
+      {contextHolder}
       {user ? (
         <p style={{ color: 'black' }}>
           Hi, {user.firstName} {user.lastName}.<button onClick={handleSignOut}>Sign Out</button>
