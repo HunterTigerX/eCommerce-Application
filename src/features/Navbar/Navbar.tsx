@@ -1,5 +1,4 @@
 import { message } from 'antd';
-import { useNavigate } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import reactLogo from '@assets/react.svg';
 import { useAuth } from '@shared/hooks';
@@ -9,7 +8,7 @@ import styles from './Navbar.module.css';
 export const Navbar = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const { user, signOut } = useAuth();
-  const Navigate = useNavigate();
+
   let userName = '';
   if (user && user.firstName) {
     userName = user.firstName;
@@ -17,16 +16,11 @@ export const Navbar = () => {
   const accessToken = localStorage.getItem('access_token');
 
   const logOutOfPage = () => {
-    if (accessToken) {
-      signOut().then();
-      Navigate('/');
-      messageApi.open({
-        type: 'success',
-        content: `Goodbye, ${userName}`,
-      });
-    } else {
-      Navigate('/signin');
-    }
+    signOut().then();
+    messageApi.open({
+      type: 'success',
+      content: `Goodbye, ${userName}`,
+    });
   };
 
   const AvatarLogo = userName === '' ? ReturnAvatarLogo() : ReturnAvatarLogo(userName);

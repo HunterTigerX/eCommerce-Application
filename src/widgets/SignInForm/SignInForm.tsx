@@ -1,20 +1,16 @@
 import React from 'react';
 import { Button, Form, Input, message } from 'antd';
-// import { useNavigate } from 'react-router-dom';
 import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
-// import { ApiClient } from '@app/auth/client';
 import { useAuth } from '@shared/hooks';
 
 type FieldType = {
   email: string;
   password: string;
-  remember?: string;
 };
 
 const SignInInputForm: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const { signIn } = useAuth();
-  // const Navigate = useNavigate();
   const onFinish = async (values: FieldType) => {
     const email = values.email;
     const password = values.password;
@@ -24,110 +20,71 @@ const SignInInputForm: React.FC = () => {
       password: password,
     };
 
-    function validateEmail(): boolean {
-      const emailRegex = /^\S+@\S+\.\S+$/;
-
-      if (!emailRegex.test(email)) {
-        if (!email.includes('@')) {
-          messageApi.open({
-            type: 'error',
-            content: "Email address must contain an '@' symbol.",
-          });
-          return false;
-        } else if (email.split('@')[1].trim() === '') {
-          messageApi.open({
-            type: 'error',
-            content: 'Email address must contain a domain name.',
-          });
-          return false;
-        } else if (email.trim() === '') {
-          messageApi.open({
-            type: 'error',
-            content: 'Email address must not contain leading or trailing whitespace.',
-          });
-          return false;
-        }
+    signIn(credentials).then((result) => {
+      if (!result.success) {
         messageApi.open({
           type: 'error',
-          content: 'Email address must be properly formatted',
+          content: result.message,
         });
-        return false;
+      } else {
+        // Чтобы один раз сказать юзеру привет при входе в систему, удаляется сразу после приветствия в Main.tsx
+        localStorage.setItem('userLoggedIn', 'true');
+        messageApi.open({
+          type: 'success',
+          content: result.data.firstName,
+        });
       }
-      return true;
-    }
-
-    // function validatePass(): boolean {
-    //   const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/;
-    //   if (password.length < 8) {
-    //     messageApi.open({
-    //       type: 'error',
-    //       content: 'Password is too shord',
-    //     });
-    //     return false;
-    //   }
-    //   if (!/[a-z]/.test(password)) {
-    //     messageApi.open({
-    //       type: 'error',
-    //       content: 'Password must contain at least one lowercase letter (A-Z).',
-    //     });
-    //     return false;
-    //   }
-    //   if (!/[A-Z]/.test(password)) {
-    //     messageApi.open({
-    //       type: 'error',
-    //       content: 'Password must contain at least one uppercase letter (A-Z).',
-    //     });
-    //     return false;
-    //   }
-    //   if (!/\d/.test(password)) {
-    //     messageApi.open({
-    //       type: 'error',
-    //       content: 'Password must contain at least one digit (0-9).',
-    //     });
-    //     return false;
-    //   }
-    //   if (!/[!@#$%^&*]/.test(password)) {
-    //     messageApi.open({
-    //       type: 'error',
-    //       content: 'Password must contain at least one special character (e.g., !@#$%^&*).',
-    //     });
-    //     return false;
-    //   }
-    //   if (/\s/.test(password)) {
-    //     messageApi.open({
-    //       type: 'error',
-    //       content: 'Password must not contain leading or trailing whitespace.',
-    //     });
-    //     return false;
-    //   }
-    //   return regex.test(password);
-    // }
-
-    if (
-      validateEmail()
-      // && validatePass()
-    ) {
-      signIn(credentials).then((result) => {
-        if (!result.success) {
-          messageApi.open({
-            type: 'error',
-            content: result.message,
-          });
-        } else {
-          // Чтобы один раз сказать юзеру привет при входе в систему, удаляется сразу после приветствия в Main.tsx
-          localStorage.setItem('userLoggedIn', 'true');
-          messageApi.open({
-            type: 'success',
-            content: result.data.firstName,
-          });
-        }
-      });
-    }
+    });
   };
+
+  let emailError = '';
+  // let passwordError = '';
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    if (email) {
+      if (!emailRegex.test(email)) {
+        if (!email.includes('@')) {
+          emailError = "Email address must contain an '@' symbol.";
+        } else if (email.split('@')[1].trim() === '') {
+          emailError = 'Email address must contain a domain name.';
+        } else if (email.trim() === '') {
+          emailError = 'Email address must not contain leading or trailing whitespace.';
+        } else {
+          emailError = 'Email address must be properly formatted';
+        }
+      } else {
+        emailError = '';
+      }
+    }
+    return emailError === '' ? true : false;
+  };
+
+  // const validatePassword = (password: string): boolean => {
+  //   const passRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/;
+  //   if (password) {
+  //     if (password.length < 8) {
+  //       passwordError = 'Password must be at least 8 characters long';
+  //     } else if (!/[a-z]/.test(password)) {
+  //       passwordError = 'Password must contain at least one lowercase letter (A-Z).';
+  //     } else if (!/[A-Z]/.test(password)) {
+  //       passwordError = 'Password must contain at least one uppercase letter (A-Z).';
+  //     } else if (!/\d/.test(password)) {
+  //       passwordError = 'Password must contain at least one digit (0-9).';
+  //     } else if (!/[!@#$%^&*]/.test(password)) {
+  //       passwordError = 'Password must contain at least one special character (e.g., !@#$%^&*).';
+  //     } else if (/\s/.test(password)) {
+  //       passwordError = 'Password must not contain leading or trailing whitespace.';
+  //     } else if (passRegex.test(password)) {
+  //       passwordError = '';
+  //     }
+  //   }
+  //   return passwordError === '' ? true : false;
+  // };
 
   return (
     <>
-      {contextHolder}
+      {/* {contextHolder} */}
       <Form
         name="login_form"
         labelCol={{ span: 8 }}
@@ -137,22 +94,33 @@ const SignInInputForm: React.FC = () => {
         onFinish={onFinish}
         autoComplete="off"
       >
+        {' '}
+        {contextHolder}
         <Form.Item<FieldType>
           label="Email"
           name="email"
-          rules={[{ required: true, message: 'Please input your Email!' }]}
+          rules={[
+            { required: true, message: 'Please input your Email!' },
+            {
+              validator: (_, username) => (validateEmail(username) ? Promise.resolve() : Promise.reject(emailError)),
+            },
+          ]}
         >
           <Input />
         </Form.Item>
-
         <Form.Item<FieldType>
           label="Password"
           name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
+          rules={[
+            { required: true, message: 'Please input your password!' },
+            // {
+            //   validator: (_, password) =>
+            //     validatePassword(password) ? Promise.resolve() : Promise.reject(passwordError),
+            // },
+          ]}
         >
           <Input.Password />
         </Form.Item>
-
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit">
             Submit
