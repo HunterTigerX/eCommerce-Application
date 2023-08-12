@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@shared/hooks';
-import { SignInInputForm  } from '@widgets/SignInForm';
+import { SignInInputForm } from '@widgets/SignInForm';
 
 export const SignIn = () => {
   const { user } = useAuth();

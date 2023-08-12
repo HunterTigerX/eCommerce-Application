@@ -1,7 +1,6 @@
 import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
 import { ApiClient } from '@app/auth/client';
 
-
 export async function SignInValidation(name: string, password: string) {
   const userObj: UserAuthOptions = {
     username: name,
