@@ -2,28 +2,23 @@ import { useAuth } from '@shared/hooks';
 import { message } from 'antd';
 import { useEffect } from 'react';
 
-type UserData = {
-  firstName: string;
-};
-
 export const Main = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
+  const { user, signIn, signOut, signUp } = useAuth();
+
   useEffect(() => {
-    if (localStorage.getItem('loggedIn')) {
-      const userDataLS = localStorage.getItem('userData');
+    const userDataLS = localStorage.getItem('userLoggedIn');
+    if (user && userDataLS) {
       if (userDataLS) {
-        const userData: UserData = JSON.parse(userDataLS);
         messageApi.open({
           type: 'success',
-          content: `Hello, ${userData.firstName}`,
+          content: `Hello, ${user.firstName}`,
         });
-        localStorage.removeItem('loggedIn');
+        localStorage.removeItem('userLoggedIn');
       }
     }
-  }, [messageApi]);
-
-  const { user, signIn, signOut, signUp } = useAuth();
+  }, [messageApi, user]);
 
   const handleSignIn = () => {
     const credentials = { username: 'te1454mp555в@mail.ru', password: 'test' };
