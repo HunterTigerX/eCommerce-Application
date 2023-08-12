@@ -33,7 +33,6 @@ export const Navbar = () => {
   const AvatarLogo = userName === '' ? ReturnAvatarLogo() : ReturnAvatarLogo(userName);
   const avatarLogo: JSX.Element | null = user?.id ? <AvatarLogo /> : null;
 
-  console.log('accessToken', accessToken);
   if (accessToken) {
     return (
       <nav className={styles.navbar}>

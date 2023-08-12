@@ -25,7 +25,7 @@ export const Main = () => {
 
     signIn(credentials).then((result) => {
       if (!result.success) {
-        console.log(result.message);
+        console.error(result.message);
       }
     });
   };
@@ -35,7 +35,7 @@ export const Main = () => {
 
     signUp(credentials).then((result) => {
       if (!result.success) {
-        console.log(result.message);
+        console.error(result.message);
       }
     });
   };

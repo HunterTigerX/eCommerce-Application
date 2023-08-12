@@ -4,6 +4,6 @@ import { SignInInputForm } from '@widgets/SignInForm';
 
 export const SignIn = () => {
   const { user } = useAuth();
-  console.log(user);
+
   return <>{user ? <Navigate to={'/'} replace={true} /> : <SignInInputForm />}</>;
 };
