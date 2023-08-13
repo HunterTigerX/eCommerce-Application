@@ -1,5 +1,5 @@
-import React from 'react';
 import { Button, Form, Input, message } from 'antd';
+import { useNavigate } from 'react-router';
 import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
 import { useAuth } from '@shared/hooks';
 
@@ -8,9 +8,10 @@ type FieldType = {
   password: string;
 };
 
-const SignInInputForm: React.FC = () => {
+const SignInInputForm = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const { signIn } = useAuth();
+  const navigate = useNavigate();
   const onFinish = async (values: FieldType) => {
     const email = values.email;
     const password = values.password;
@@ -27,18 +28,17 @@ const SignInInputForm: React.FC = () => {
           content: result.message,
         });
       } else {
-        // Чтобы один раз сказать юзеру привет при входе в систему, удаляется сразу после приветствия в Main.tsx
-        localStorage.setItem('userLoggedIn', 'true');
-        messageApi.open({
-          type: 'success',
-          content: result.data.firstName,
+        navigate('/', {
+          replace: true,
+          state: {
+            hi: result.data.firstName,
+          },
         });
       }
     });
   };
 
   let emailError = '';
-  // let passwordError = '';
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^\S+@\S+\.\S+$/;
@@ -60,31 +60,8 @@ const SignInInputForm: React.FC = () => {
     return emailError === '' ? true : false;
   };
 
-  // const validatePassword = (password: string): boolean => {
-  //   const passRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/;
-  //   if (password) {
-  //     if (password.length < 8) {
-  //       passwordError = 'Password must be at least 8 characters long';
-  //     } else if (!/[a-z]/.test(password)) {
-  //       passwordError = 'Password must contain at least one lowercase letter (A-Z).';
-  //     } else if (!/[A-Z]/.test(password)) {
-  //       passwordError = 'Password must contain at least one uppercase letter (A-Z).';
-  //     } else if (!/\d/.test(password)) {
-  //       passwordError = 'Password must contain at least one digit (0-9).';
-  //     } else if (!/[!@#$%^&*]/.test(password)) {
-  //       passwordError = 'Password must contain at least one special character (e.g., !@#$%^&*).';
-  //     } else if (/\s/.test(password)) {
-  //       passwordError = 'Password must not contain leading or trailing whitespace.';
-  //     } else if (passRegex.test(password)) {
-  //       passwordError = '';
-  //     }
-  //   }
-  //   return passwordError === '' ? true : false;
-  // };
-
   return (
     <>
-      {/* {contextHolder} */}
       <Form
         name="login_form"
         labelCol={{ span: 8 }}
@@ -94,7 +71,6 @@ const SignInInputForm: React.FC = () => {
         onFinish={onFinish}
         autoComplete="off"
       >
-        {' '}
         {contextHolder}
         <Form.Item<FieldType>
           label="Email"
@@ -111,13 +87,7 @@ const SignInInputForm: React.FC = () => {
         <Form.Item<FieldType>
           label="Password"
           name="password"
-          rules={[
-            { required: true, message: 'Please input your password!' },
-            // {
-            //   validator: (_, password) =>
-            //     validatePassword(password) ? Promise.resolve() : Promise.reject(passwordError),
-            // },
-          ]}
+          rules={[{ required: true, message: 'Please input your password!' }]}
         >
           <Input.Password />
         </Form.Item>

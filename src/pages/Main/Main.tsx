@@ -1,63 +1,44 @@
-import { useAuth } from '@shared/hooks';
-import { message } from 'antd';
 import { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { message } from 'antd';
+import { useAuth } from '@shared/hooks';
 
 export const Main = () => {
-  const [messageApi, contextHolder] = message.useMessage();
+  const { state } = useLocation();
+  const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
+  const { user } = useAuth();
 
-  const { user, signIn, signOut, signUp } = useAuth();
+  const hi = state?.hi;
+  const bye = state?.bye;
 
   useEffect(() => {
-    const userDataLS = localStorage.getItem('userLoggedIn');
-    if (user && userDataLS) {
-      if (userDataLS) {
-        messageApi.open({
-          type: 'success',
-          content: `Hello, ${user.firstName}`,
-        });
-        localStorage.removeItem('userLoggedIn');
-      }
+    if (hi) {
+      messageApi.open({
+        type: 'success',
+        content: `Hello, ${hi}`,
+      });
+
+      navigate('/', { replace: true });
     }
-  }, [messageApi, user]);
 
-  const handleSignIn = () => {
-    const credentials = { username: 'te1454mp555в@mail.ru', password: 'test' };
+    if (bye) {
+      messageApi.open({
+        type: 'success',
+        content: `Goodbye, ${bye}`,
+      });
 
-    signIn(credentials).then((result) => {
-      if (!result.success) {
-        console.error(result.message);
-      }
-    });
-  };
+      navigate('/', { replace: true });
+    }
+  }, [hi, bye, messageApi, navigate]);
 
-  const handleSignUp = () => {
-    const credentials = { email: 'te1454mp555в@mail.ru', password: 'test', lastName: 'J123oj', firstName: 'Koj123' };
-
-    signUp(credentials).then((result) => {
-      if (!result.success) {
-        console.error(result.message);
-      }
-    });
-  };
-
-  const handleSignOut = () => {
-    signOut().then();
-  };
+  // username: 'te145431323mp555da@mail.ru', password: 'test'
 
   return (
-    <>
+    <div style={{ color: '#000' }}>
       <h2>Main page</h2>
       {contextHolder}
-      {user ? (
-        <p style={{ color: 'black' }}>
-          Hi, {user.firstName} {user.lastName}.<button onClick={handleSignOut}>Sign Out</button>
-        </p>
-      ) : (
-        <>
-          <button onClick={handleSignIn}>Sign In</button>
-          <button onClick={handleSignUp}>Sign Up</button>
-        </>
-      )}
-    </>
+      {user && <pre>{JSON.stringify(user, null, 2)}</pre>}
+    </div>
   );
 };
