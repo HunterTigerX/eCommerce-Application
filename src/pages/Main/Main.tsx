@@ -1,46 +1,44 @@
+import { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { message } from 'antd';
 import { useAuth } from '@shared/hooks';
 
 export const Main = () => {
-  const { user, signIn, signOut, signUp } = useAuth();
+  const { state } = useLocation();
+  const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
+  const { user } = useAuth();
 
-  const handleSignIn = () => {
-    const credentials = { username: 'te1454mp555в@mail.ru', password: 'test' };
+  const hi = state?.hi;
+  const bye = state?.bye;
 
-    signIn(credentials).then((result) => {
-      if (!result.success) {
-        console.log(result.message);
-      }
-    });
-  };
+  useEffect(() => {
+    if (hi) {
+      messageApi.open({
+        type: 'success',
+        content: `Hello, ${hi}`,
+      });
 
-  const handleSignUp = () => {
-    const credentials = { email: 'te1454mp555в@mail.ru', password: 'test', lastName: 'J123oj', firstName: 'Koj123' };
+      navigate('/', { replace: true });
+    }
 
-    signUp(credentials).then((result) => {
-      if (!result.success) {
-        console.log(result.message);
-      }
-    });
-  };
+    if (bye) {
+      messageApi.open({
+        type: 'success',
+        content: `Goodbye, ${bye}`,
+      });
 
-  const handleSignOut = () => {
-    signOut().then();
-  };
+      navigate('/', { replace: true });
+    }
+  }, [hi, bye, messageApi, navigate]);
+
+  // username: 'te145431323mp555da@mail.ru', password: 'test'
 
   return (
-    <>
+    <div style={{ color: '#000' }}>
       <h2>Main page</h2>
-      {}
-      {user ? (
-        <p style={{ color: 'black' }}>
-          Hi, {user.firstName} {user.lastName}.<button onClick={handleSignOut}>Sign Out</button>
-        </p>
-      ) : (
-        <>
-          <button onClick={handleSignIn}>Sign In</button>
-          <button onClick={handleSignUp}>Sign Up</button>
-        </>
-      )}
-    </>
+      {contextHolder}
+      {user && <pre>{JSON.stringify(user, null, 2)}</pre>}
+    </div>
   );
 };

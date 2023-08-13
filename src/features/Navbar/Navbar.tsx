@@ -1,24 +1,44 @@
-import { message } from 'antd';
-import { useNavigate } from 'react-router-dom';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { Button } from 'antd';
+import { useAuth } from '@shared/hooks';
 import reactLogo from '@assets/react.svg';
-import { giveAnonToken } from '../../app/login/tokenMethods/anonToken/firstLogin.tsx';
-import { userDataParser } from '../../app/login/getCustomerFromLocalS.tsx';
-import { ReturnAvatarLogo } from '../../widgets/userAvatar/avatar_logo.tsx';
-import { revokeToken } from '../../app/login/tokenMethods/removeToken/revokeToken.tsx';
+import { UserAvatar } from '@widgets/userAvatar';
 import styles from './Navbar.module.css';
 
 export const Navbar = () => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const username = (user && user.firstName) || '';
+
+  const handleSignOut = () => {
+    signOut().then(() => {
+      navigate('/', {
+        state: { bye: username },
+      });
+    });
+  };
+
   return (
     <nav className={styles.navbar}>
       <NavLink to="/" className={styles.logo}>
         <img src={reactLogo} alt="Логотип" />
       </NavLink>
       <div className={styles.blockBtns}>
-        <NavLink to="/catalog">Catalog</NavLink>
-        <NavLink to="/cart">Сart</NavLink>
-        <NavLink to="/signin">login</NavLink>
-        <NavLink to="/signup">registration</NavLink>
+        <NavLink to="/">Home</NavLink>
+        <NavLink to="catalog">Catalog</NavLink>
+        <NavLink to="cart">Cart</NavLink>
+        {user ? (
+          <>
+            <Button onClick={handleSignOut}>Sign Out</Button>
+            <UserAvatar username={username} />
+          </>
+        ) : (
+          <>
+            <NavLink to="/signin">Sign In</NavLink>
+            <NavLink to="/signup">Sign Up</NavLink>
+          </>
+        )}
       </div>
     </nav>
   );
