@@ -52,7 +52,7 @@ export class AuthOptions {
         clientSecret,
         user,
       },
-      scopes: [scopes],
+      scopes: scopes.split(' '),
       fetch: this.responseHandler,
     };
   }
