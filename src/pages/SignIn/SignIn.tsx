@@ -5,5 +5,5 @@ import { SignInInputForm } from '@widgets/SignInForm';
 export const SignIn = () => {
   const { user } = useAuth();
 
-  return <>{user ? <Navigate to={'/'} replace={true} /> : <SignInInputForm />}</>;
+  return user ? <Navigate to={'/'} replace={true} /> : <SignInInputForm />;
 };
