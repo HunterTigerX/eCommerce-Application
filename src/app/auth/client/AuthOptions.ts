@@ -57,6 +57,7 @@ export class AuthOptions {
     };
   }
 
+  // currently unused
   public getAnonymousOptions(anonymousId: string): AnonymousAuthMiddlewareOptions {
     return {
       host: authUrl,
