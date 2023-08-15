@@ -1,1 +1,1 @@
-export { AuthContext, AuthProvider } from './provider/AuthProvider.tsx';
+export { AuthContext, AuthProvider } from './provider/';

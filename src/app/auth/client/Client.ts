@@ -6,65 +6,67 @@ import { AuthOptions } from './AuthOptions';
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
 
 export class ApiClient {
-  private readonly authOptions: AuthOptions;
+  private static instance: ApiClient;
 
-  private client: Client;
+  private readonly authOptions: AuthOptions = new AuthOptions();
+
+  private readonly defaultClient: Client = new ClientBuilder()
+    .withProjectKey(projectKey)
+    .withClientCredentialsFlow(this.authOptions.getClientCredentialOptions())
+    .withHttpMiddleware(this.authOptions.getHttpOptions())
+    .build();
+
+  private currentClient: Client = this.defaultClient;
 
   constructor() {
-    this.authOptions = new AuthOptions();
-    this.client = new ClientBuilder()
-      .withProjectKey(projectKey)
-      .withClientCredentialsFlow(this.authOptions.getClientCredentialOptions())
-      .withHttpMiddleware(this.authOptions.getHttpOptions())
-      .build();
+    if (ApiClient.instance) {
+      return ApiClient.instance;
+    }
+
+    ApiClient.instance = this;
   }
 
   public get requestBuilder() {
-    return createApiBuilderFromCtpClient(this.client).withProjectKey({ projectKey });
+    return createApiBuilderFromCtpClient(this.currentClient).withProjectKey({ projectKey });
   }
 
   public async init(): Promise<Customer | null> {
     const token = localStorage.getItem('access_token');
 
     if (token) {
-      this.switchToExistingTokenFlow(token);
+      try {
+        this.switchToAccessTokenClient(token);
 
-      return new Promise((resolve) => {
-        this.requestBuilder
-          .me()
-          .get()
-          .execute()
-          .then((res) => {
-            resolve(res.body);
-          });
-      });
+        const signInResult = await this.requestBuilder.me().get().execute();
+
+        return signInResult.body;
+      } catch {
+        this.switchToDefaultClient();
+
+        localStorage.removeItem('access_token');
+      }
     }
 
     return null;
   }
 
-  public switchToExistingTokenFlow(token: string): void {
-    this.client = new ClientBuilder()
+  public switchToAccessTokenClient(token: string): void {
+    this.currentClient = new ClientBuilder()
       .withProjectKey(projectKey)
       .withExistingTokenFlow(`Bearer ${token}`, { force: true })
       .withHttpMiddleware(this.authOptions.getHttpOptions())
       .build();
   }
 
-  public switchToPasswordFlow(user: UserAuthOptions): void {
-    this.client = new ClientBuilder()
+  public switchToPasswordClient(user: UserAuthOptions): void {
+    this.currentClient = new ClientBuilder()
       .withProjectKey(projectKey)
       .withPasswordFlow(this.authOptions.getPasswordOptions(user))
       .withHttpMiddleware(this.authOptions.getHttpOptions())
       .build();
   }
 
-  // switch to client credentials?
-  public switchToAnonymousFlow(): void {
-    this.client = new ClientBuilder()
-      .withProjectKey(projectKey)
-      .withAnonymousSessionFlow(this.authOptions.getAnonymousOptions(`${Date.now()}`))
-      .withHttpMiddleware(this.authOptions.getHttpOptions())
-      .build();
+  public switchToDefaultClient(): void {
+    this.currentClient = this.defaultClient;
   }
 }
