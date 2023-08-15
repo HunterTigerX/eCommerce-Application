@@ -92,6 +92,7 @@ const config: Config = {
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   moduleNameMapper: {
     '^@shared/hooks$': '<rootDir>/src/__mocks__/hooks.ts',
+    '^@features/Navbar$': '<rootDir>/src/__mocks__/navbar.tsx',
     '^@app/(.*)$': '<rootDir>/src/$1',
     '\\.module\\.css$': 'identity-obj-proxy',
   },
