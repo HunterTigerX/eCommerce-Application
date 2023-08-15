@@ -18,7 +18,7 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-describe('SignInInputForm', () => {
+describe('render header', () => {
   test('renders header component', () => {
     render(<Header />);
   });

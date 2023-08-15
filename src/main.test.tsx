@@ -1,6 +1,7 @@
-import { render, screen } from '@testing-library/react';
-import { Layout } from './Layout.tsx';
+import { render } from '@testing-library/react';
+import App from './app/App.tsx';
 import '@testing-library/jest-dom';
+import './main.tsx';
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -17,16 +18,8 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-describe('render page layout', () => {
-  beforeEach(() => {
-    render(<Layout />);
-  });
-
-  test('validates footer text', async () => {
-    expect(await screen.findByText('Footer')).toBeInTheDocument();
-  });
-
-  test('renders layout component', () => {
-    render(<Layout />);
+describe('render app', () => {
+  test('renders App component', () => {
+    render(<App />);
   });
 });

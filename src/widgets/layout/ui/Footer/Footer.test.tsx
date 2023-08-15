@@ -17,7 +17,7 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-describe('SignInInputForm', () => {
+describe('render footer', () => {
   beforeEach(() => {
     render(<Footer />);
   });
