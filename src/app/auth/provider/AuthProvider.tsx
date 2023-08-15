@@ -13,7 +13,7 @@ interface AuthProviderValue {
   signOut: () => Promise<void>;
 }
 
-export const AuthContext = createContext<AuthProviderValue>({
+const AuthContext = createContext<AuthProviderValue>({
   user: authService.user,
   signIn: () => Promise.resolve({ success: false, message: '' }),
   signUp: () => Promise.resolve({ success: false, message: '' }),
@@ -55,4 +55,4 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export { AuthProvider };
+export { AuthContext, AuthProvider };
