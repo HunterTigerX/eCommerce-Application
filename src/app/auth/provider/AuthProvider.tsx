@@ -1,7 +1,7 @@
 import { createContext, type ReactNode, useState } from 'react';
 import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
-import type { Customer, MyCustomerDraft } from '@commercetools/platform-sdk';
-import { AuthService, type AuthResponse } from '@app/auth/service';
+import type { Customer } from '@commercetools/platform-sdk';
+import { AuthService, type AuthResponse, type CustomerSignUpDraft } from '@app/auth/service';
 
 const authService = new AuthService();
 await authService.init();
@@ -9,7 +9,7 @@ await authService.init();
 interface AuthProviderValue {
   user: Customer | null;
   signIn: (credentials: UserAuthOptions) => Promise<AuthResponse>;
-  signUp: (credentials: MyCustomerDraft) => Promise<AuthResponse>;
+  signUp: (credentials: CustomerSignUpDraft) => Promise<AuthResponse>;
   signOut: () => Promise<void>;
 }
 
@@ -31,7 +31,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     return result;
   };
 
-  const signUp = async (credentials: MyCustomerDraft): Promise<AuthResponse> => {
+  const signUp = async (credentials: CustomerSignUpDraft): Promise<AuthResponse> => {
     const result: AuthResponse = await authService.signUp(credentials);
 
     if (result.success) setCustomer(result.data);
