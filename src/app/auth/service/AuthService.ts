@@ -5,30 +5,33 @@ import { ApiClient } from '@app/auth/client';
 export type AuthResponse = { success: true; data: Customer } | { success: false; message: string };
 
 export class AuthService {
-  private apiClient: ApiClient;
+  private client: ApiClient;
 
   public user: Customer | null = null;
 
   constructor() {
-    this.apiClient = new ApiClient();
+    this.client = new ApiClient();
   }
 
   public async init(): Promise<void> {
-    this.user = await this.apiClient.init();
+    this.user = await this.client.init();
   }
 
   public async signIn(credentials: UserAuthOptions): Promise<AuthResponse> {
-    // return to default/anon on fail?
-    this.apiClient.switchToPasswordFlow(credentials);
-
     try {
-      const response = await this.apiClient.requestBuilder.me().get().execute();
+      this.client.switchToPasswordClient(credentials);
+
+      const response = await this.client.requestBuilder.me().get().execute();
+
       this.user = response.body;
+
       return {
         success: true,
         data: this.user,
       };
     } catch (error: unknown) {
+      this.client.switchToDefaultClient();
+
       return {
         success: false,
         message: error instanceof Error ? error.message : 'Failed to Sign In',
@@ -38,7 +41,7 @@ export class AuthService {
 
   public async signUp(credentials: MyCustomerDraft): Promise<AuthResponse> {
     try {
-      await this.apiClient.requestBuilder
+      await this.client.requestBuilder
         .me()
         .signup()
         .post({
@@ -46,10 +49,9 @@ export class AuthService {
         })
         .execute();
 
-      // need to make request through this flow to get a new access token, otherwise it will fail with 403 status code
-      this.apiClient.switchToPasswordFlow({ username: credentials.email, password: credentials.password });
+      this.client.switchToPasswordClient({ username: credentials.email, password: credentials.password });
 
-      const signInResponse = await this.apiClient.requestBuilder.me().get().execute();
+      const signInResponse = await this.client.requestBuilder.me().get().execute();
 
       this.user = signInResponse.body;
 
@@ -58,6 +60,8 @@ export class AuthService {
         data: this.user,
       };
     } catch (error: unknown) {
+      this.client.switchToDefaultClient();
+
       return {
         success: false,
         message: error instanceof Error ? error.message : 'Failed to Sign Up',
@@ -91,7 +95,7 @@ export class AuthService {
       localStorage.removeItem('access_token');
     }
 
-    this.apiClient.switchToAnonymousFlow();
+    this.client.switchToDefaultClient();
     this.user = null;
   }
 }
