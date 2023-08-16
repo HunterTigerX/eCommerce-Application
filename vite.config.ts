@@ -5,12 +5,46 @@ import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfil
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
+
   if (command === 'build') {
     return {
       mode: 'production',
       plugins: [react(), tsconfigPaths()],
+      css: {
+        modules: {
+          localsConvention: 'camelCaseOnly',
+        },
+      },
+      base: "/dist",
+      optimizeDeps: {
+        esbuildOptions: {
+          define: {
+            global: 'globalThis',
+          },
+          plugins: [
+            NodeGlobalsPolyfillPlugin({
+              process: true,
+              buffer: true,
+            }),
+            NodeModulesPolyfillPlugin(),
+          ],
+        },
+      },
+      build: {
+        target: 'esnext',
+        rollupOptions: {
+          plugins: [rollupNodePolyFill()],
+        },
+      },
+      resolve: {
+        alias: {
+          process: "process/browser",
+          stream: "stream-browserify",
+          zlib: "browserify-zlib",
+          util: 'util'
+        }
+      },
     };
   } else {
     return {
@@ -29,7 +63,7 @@ export default defineConfig(({ command }) => {
       optimizeDeps: {
         esbuildOptions: {
           define: {
-            global: 'globalThis',
+            global: 'window',
           },
           plugins: [
             NodeGlobalsPolyfillPlugin({
