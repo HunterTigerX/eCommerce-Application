@@ -3,13 +3,12 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
-import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ command }) => {
   if (command === 'build') {
     return {
       mode: 'production',
-      plugins: [react(), tsconfigPaths()],
+      plugins: [tsconfigPaths()],
       css: {
         modules: {
           localsConvention: 'camelCaseOnly',
@@ -48,7 +47,7 @@ export default defineConfig(({ command }) => {
   } else {
     return {
       mode: 'dev',
-      plugins: [react(), tsconfigPaths()],
+      plugins: [tsconfigPaths()],
       css: {
         modules: {
           localsConvention: 'camelCaseOnly',
