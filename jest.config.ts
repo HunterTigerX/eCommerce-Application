@@ -92,6 +92,7 @@ const config: Config = {
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   moduleNameMapper: {
     '^@shared/hooks$': '<rootDir>/src/__mocks__/hooks.ts',
+    '^@widgets/SignInForm$': '<rootDir>/src/__mocks__/signInForm.ts',
     '^@widgets/layout$': '<rootDir>/src/__mocks__/layout.ts',
     '^@pages$': '<rootDir>/src/__mocks__/pages.ts',
     '^@app/auth$': '<rootDir>/src/__mocks__/auth.ts',

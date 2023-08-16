@@ -1,9 +1,10 @@
-import type { Customer, MyCustomerDraft } from '@commercetools/platform-sdk';
+import type { Customer, CustomerDraft, MyCustomerDraft } from '@commercetools/platform-sdk';
 import { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
 import { ApiClient } from '@app/auth/client';
 
 export type AuthResponse = { success: true; data: Customer } | { success: false; message: string };
 
+export type CustomerSignUpDraft = MyCustomerDraft & Pick<CustomerDraft, 'shippingAddresses' | 'billingAddresses'>;
 export class AuthService {
   private client: ApiClient;
 
@@ -39,7 +40,7 @@ export class AuthService {
     }
   }
 
-  public async signUp(credentials: MyCustomerDraft): Promise<AuthResponse> {
+  public async signUp(credentials: CustomerSignUpDraft): Promise<AuthResponse> {
     try {
       await this.client.requestBuilder
         .me()
