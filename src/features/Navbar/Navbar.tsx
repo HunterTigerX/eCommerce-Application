@@ -1,5 +1,4 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Button } from 'antd';
 import { useAuth } from '@shared/hooks';
 import reactLogo from '@assets/react.svg';
 import { UserAvatar } from '@widgets/userAvatar';
@@ -30,7 +29,9 @@ export const Navbar = () => {
         <NavLink to="cart">Cart</NavLink>
         {user ? (
           <>
-            <Button onClick={handleSignOut}>Sign Out</Button>
+            <NavLink onClick={handleSignOut} to="/">
+              Sign Out
+            </NavLink>
             <UserAvatar username={username} />
           </>
         ) : (
