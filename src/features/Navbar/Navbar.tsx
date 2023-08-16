@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Button } from 'antd';
 import { useAuth } from '@shared/hooks';
-import reactLogo from '@assets/react.svg';
+import logo from '@assets/logo.png';
 import { UserAvatar } from '@widgets/userAvatar';
 import styles from './Navbar.module.css';
 
@@ -22,7 +22,7 @@ export const Navbar = () => {
   return (
     <nav className={styles.navbar}>
       <NavLink to="/" className={styles.logo}>
-        <img src={reactLogo} alt="Логотип" />
+        <img className={styles.logoImg} src={logo} alt="Логотип" />
       </NavLink>
       <div className={styles.blockBtns}>
         <NavLink to="/">Home</NavLink>
