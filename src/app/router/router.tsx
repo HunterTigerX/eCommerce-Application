@@ -38,4 +38,4 @@ const routes: RouteObject[] = [
   },
 ];
 
-export const router = createBrowserRouter(routes, { basename: '/dist' });
+export const router = createBrowserRouter(routes, { basename: '/' });
