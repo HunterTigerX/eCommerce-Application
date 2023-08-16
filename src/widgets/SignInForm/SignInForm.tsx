@@ -9,7 +9,7 @@ type FieldType = {
 };
 
 const SignInInputForm = () => {
-  const [messageApi, contextHolder] = message.useMessage();
+  const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
   const { signIn } = useAuth();
   const navigate = useNavigate();
   const onFinish = async (values: FieldType) => {
@@ -26,6 +26,7 @@ const SignInInputForm = () => {
         messageApi.open({
           type: 'error',
           content: result.message,
+          duration: 0.75,
         });
       } else {
         navigate('/', {
