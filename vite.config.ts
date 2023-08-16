@@ -6,7 +6,6 @@ import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfil
 import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ command }) => {
-
   if (command === 'build') {
     return {
       mode: 'production',
@@ -16,7 +15,7 @@ export default defineConfig(({ command }) => {
           localsConvention: 'camelCaseOnly',
         },
       },
-      base: "/dist",
+      base: '/dist',
       optimizeDeps: {
         esbuildOptions: {
           define: {
@@ -39,11 +38,11 @@ export default defineConfig(({ command }) => {
       },
       resolve: {
         alias: {
-          process: "process/browser",
-          stream: "stream-browserify",
-          zlib: "browserify-zlib",
-          util: 'util'
-        }
+          process: 'process/browser',
+          stream: 'stream-browserify',
+          zlib: 'browserify-zlib',
+          util: 'util',
+        },
       },
     };
   } else {
