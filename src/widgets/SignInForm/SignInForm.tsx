@@ -1,5 +1,6 @@
 import { Button, Form, Input, message } from 'antd';
 import { useNavigate } from 'react-router';
+import { Link } from 'react-router-dom';
 import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
 import { useAuth } from '@shared/hooks';
 
@@ -9,7 +10,7 @@ type FieldType = {
 };
 
 const SignInInputForm = () => {
-  const [messageApi, contextHolder] = message.useMessage();
+  const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
   const { signIn } = useAuth();
   const navigate = useNavigate();
   const onFinish = async (values: FieldType) => {
@@ -26,6 +27,7 @@ const SignInInputForm = () => {
         messageApi.open({
           type: 'error',
           content: result.message,
+          duration: 0.75,
         });
       } else {
         navigate('/', {
@@ -39,6 +41,7 @@ const SignInInputForm = () => {
   };
 
   let emailError = '';
+  let passwordError = '';
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^\S+@\S+\.\S+$/;
@@ -58,6 +61,28 @@ const SignInInputForm = () => {
       }
     }
     return emailError === '' ? true : false;
+  };
+
+  const validatePassword = (password: string): boolean => {
+    const passRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/;
+    if (password) {
+      if (password.length < 8) {
+        passwordError = 'Password must be at least 8 characters long';
+      } else if (!/[a-z]/.test(password)) {
+        passwordError = 'Password must contain at least one lowercase letter (A-Z).';
+      } else if (!/[A-Z]/.test(password)) {
+        passwordError = 'Password must contain at least one uppercase letter (A-Z).';
+      } else if (!/\d/.test(password)) {
+        passwordError = 'Password must contain at least one digit (0-9).';
+      } else if (!/[!@#$%^&*]/.test(password)) {
+        passwordError = 'Password must contain at least one special character (e.g., !@#$%^&*).';
+      } else if (/\s/.test(password)) {
+        passwordError = 'Password must not contain leading or trailing whitespace.';
+      } else if (passRegex.test(password)) {
+        passwordError = '';
+      }
+    }
+    return passwordError === '' ? true : false;
   };
 
   return (
@@ -87,15 +112,24 @@ const SignInInputForm = () => {
         <Form.Item<FieldType>
           label="Password"
           name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
+          rules={[
+            { required: true, message: 'Please input your password!' },
+            {
+              validator: (_, password) =>
+                validatePassword(password) ? Promise.resolve() : Promise.reject(passwordError),
+            },
+          ]}
         >
           <Input.Password />
         </Form.Item>
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+        <Form.Item wrapperCol={{ offset: 4, span: 16 }}>
           <Button type="primary" htmlType="submit">
             Submit
           </Button>
         </Form.Item>
+        <div>
+          You don&apos;t have an account? <Link to="/signup">Sign Up</Link>
+        </div>
       </Form>
     </>
   );
