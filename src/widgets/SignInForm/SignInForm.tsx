@@ -1,5 +1,6 @@
 import { Button, Form, Input, message } from 'antd';
 import { useNavigate } from 'react-router';
+import { Link } from 'react-router-dom';
 import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
 import { useAuth } from '@shared/hooks';
 
@@ -121,11 +122,14 @@ const SignInInputForm = () => {
         >
           <Input.Password />
         </Form.Item>
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+        <Form.Item wrapperCol={{ offset: 4, span: 16 }}>
           <Button type="primary" htmlType="submit">
             Submit
           </Button>
         </Form.Item>
+        <div>
+          You don&apos;t have an account? <Link to="/signup">Sign Up</Link>
+        </div>
       </Form>
     </>
   );
