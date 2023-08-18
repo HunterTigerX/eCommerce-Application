@@ -41,3 +41,7 @@ h1 {
   color: var(--primary-color);
   pointer-events: none;
 }
+
+.overflow-hidden {
+  overflow: hidden;
+}
