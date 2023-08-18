@@ -27,7 +27,10 @@ const SignInInputForm = () => {
         messageApi.open({
           type: 'error',
           content: result.message,
-          duration: 0.75,
+          duration: 0.9,
+          style: {
+            color: 'red',
+          },
         });
       } else {
         navigate('/', {
@@ -64,7 +67,7 @@ const SignInInputForm = () => {
   };
 
   const validatePassword = (password: string): boolean => {
-    const passRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/;
+    const passRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[-!$%^&*()_+|~=`{}[\]:/;<>?,.@#]).{8,}$/;
     if (password) {
       if (password.length < 8) {
         passwordError = 'Password must be at least 8 characters long';
@@ -74,7 +77,7 @@ const SignInInputForm = () => {
         passwordError = 'Password must contain at least one uppercase letter (A-Z).';
       } else if (!/\d/.test(password)) {
         passwordError = 'Password must contain at least one digit (0-9).';
-      } else if (!/[!@#$%^&*]/.test(password)) {
+      } else if (!/[-!$%^&*()_+|~=`{}[\]:/;<>?,.@#]/.test(password)) {
         passwordError = 'Password must contain at least one special character (e.g., !@#$%^&*).';
       } else if (/\s/.test(password)) {
         passwordError = 'Password must not contain leading or trailing whitespace.';
