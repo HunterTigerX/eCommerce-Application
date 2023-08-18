@@ -1,45 +1,56 @@
-import { NavLink, useNavigate } from 'react-router-dom';
-import { Button } from 'antd';
-import { useAuth } from '@shared/hooks';
-import logo from '@assets/logo.png';
-import { UserAvatar } from '@widgets/userAvatar';
+import { useEffect, useState } from 'react';
+import { UserMenu } from './ui/UserMenu';
+import { NavList } from './ui/NavList';
+import { Logo } from './ui/Logo';
+import { BurgerMenu } from './ui/BurgerMenu';
 import styles from './Navbar.module.css';
 
 export const Navbar = () => {
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
+  const [isMenuClicked, setIsMenuClicked] = useState(false);
+  const [isOverflowHidden, setIsOverflowHidden] = useState(false);
 
-  const username = (user && user.firstName) || '';
-
-  const handleSignOut = () => {
-    signOut().then(() => {
-      navigate('/', {
-        state: { bye: username },
-      });
-    });
+  const handleMenuClick = () => {
+    setIsMenuClicked(!isMenuClicked);
+    setIsOverflowHidden(!isOverflowHidden);
   };
 
+  const handleMenuClose = () => {
+    setIsMenuClicked(false);
+  };
+
+  const navMenuClass = isMenuClicked ? `${styles.navMenu} ${styles.open}` : styles.navMenu;
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest(`.${styles.navbar}`)) {
+        setIsOverflowHidden(false);
+        setIsMenuClicked(false);
+      }
+    };
+
+    if (isOverflowHidden) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+    if (isMenuClicked) {
+      document.body.addEventListener('click', handleOutsideClick);
+    }
+
+    return () => {
+      document.body.removeEventListener('click', handleOutsideClick);
+    };
+  }, [isMenuClicked, isOverflowHidden]);
+
   return (
-    <nav className={styles.navbar}>
-      <NavLink to="/" className={styles.logo}>
-        <img className={styles.logoImg} src={logo} alt="Логотип" />
-      </NavLink>
-      <div className={styles.blockBtns}>
-        <NavLink to="/">Home</NavLink>
-        <NavLink to="catalog">Catalog</NavLink>
-        <NavLink to="cart">Cart</NavLink>
-        {user ? (
-          <>
-            <Button onClick={handleSignOut}>Sign Out</Button>
-            <UserAvatar username={username} />
-          </>
-        ) : (
-          <>
-            <NavLink to="/signin">Sign In</NavLink>
-            <NavLink to="/signup">Sign Up</NavLink>
-          </>
-        )}
+    <div className={styles.navbar}>
+      <Logo />
+      <div className={navMenuClass}>
+        <NavList onCloseMenu={handleMenuClose} />
+        <UserMenu onCloseMenu={handleMenuClose} />
       </div>
-    </nav>
+      <BurgerMenu isMenuClicked={isMenuClicked} onBurgerClick={handleMenuClick} />
+    </div>
   );
 };
