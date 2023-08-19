@@ -9,6 +9,7 @@ import { BaseAddress } from '@commercetools/platform-sdk';
 import { useAuth } from '@shared/hooks';
 import {
   validateData,
+  validateEmail,
   validateField,
   validatePassword,
   validatePostalCode,
@@ -162,6 +163,7 @@ export const SingUpForm = () => {
           rules={[
             { type: 'email', message: 'Enter the correct email address' },
             { required: true, message: 'Please fill in the field!' },
+            { validator: validateEmail },
           ]}
         >
           <Input placeholder="example@email.com" />

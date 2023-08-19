@@ -17,18 +17,24 @@ const validateWhitespace = (value: string) => {
   return Promise.resolve();
 };
 
-export const validatePassword = (_: Rule, value: string) => {
-  return validateWhitespace(value).then(() => {
-    const hasUppercase = /[A-Z]/.test(value);
-    const hasLowercase = /[a-z]/.test(value);
-    const hasNumber = /[0-9]/.test(value);
-
-    if (hasUppercase && hasLowercase && hasNumber && value.length >= 8) {
+export const validateEmail = (_: Rule, value: string) => {
+  const emailRegex = /^\S+@\S+\.\S+$/;
+  if (value) {
+    if (!emailRegex.test(value)) {
+      if (!value.includes('@')) {
+        return Promise.reject("Email address must contain an '@' symbol.");
+      } else if (value.split('@')[1].trim() === '') {
+        return Promise.reject('Email address must contain a domain name.');
+      } else if (value.trim() === '') {
+        return Promise.reject('Email address must not contain leading or trailing whitespace.');
+      } else {
+        return Promise.reject('Email address must be properly formatted');
+      }
+    } else {
       return Promise.resolve();
     }
-
-    return Promise.reject('Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, and 1 number');
-  });
+  }
+  return Promise.resolve();
 };
 
 export const validateField = (_: Rule, value: string) => {
@@ -69,4 +75,25 @@ export const validateStreet = (_: Rule, value: string) => {
     }
     return Promise.reject('Please fill in the field!');
   });
+};
+
+export const validatePassword = (_: Rule, value: string) => {
+  const passRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[-!$%^&*()_+|~=`{}[\]:/;<>?,.@#]).{8,}$/;
+  if (value) {
+    if (value.length < 8) {
+      return Promise.reject('Password must be at least 8 characters long');
+    } else if (!/[a-z]/.test(value)) {
+      return Promise.reject('Password must contain at least one lowercase letter (A-Z).');
+    } else if (!/[A-Z]/.test(value)) {
+      return Promise.reject('Password must contain at least one uppercase letter (A-Z).');
+    } else if (!/\d/.test(value)) {
+      return Promise.reject('Password must contain at least one digit (0-9).');
+    } else if (!/[-!$%^&*()_+|~=`{}[\]:/;<>?,.@#]/.test(value)) {
+      return Promise.reject('Password must contain at least one special character (e.g., !@#$%^&*).');
+    } else if (/\s/.test(value)) {
+      return Promise.reject('Password must not contain leading or trailing whitespace.');
+    } else if (passRegex.test(value)) {
+      return Promise.resolve();
+    }
+  }
 };
