@@ -37,6 +37,10 @@ h1 {
   line-height: 1.1;
 }
 
+h2 {
+  margin: var(--spacing-md) 0;
+}
+
 .active {
   color: var(--primary-color);
   pointer-events: none;
