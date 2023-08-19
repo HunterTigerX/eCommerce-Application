@@ -1,8 +1,10 @@
 import { useAuth } from '@shared/hooks';
+import { Navigate } from 'react-router';
 import { Descriptions, DescriptionsProps } from 'antd';
 
 export const Profile = () => {
   const { user } = useAuth();
+  console.log(user);
 
   const items: DescriptionsProps['items'] = [
     {
@@ -30,10 +32,16 @@ export const Profile = () => {
 
   return (
     <>
-      <h2>Profile</h2>
-      <div>
-        <Descriptions title={`Hello, ${user?.firstName}`} items={items} />
-      </div>
+      {user ? (
+        <>
+          <h2>Profile</h2>
+          <div>
+            <Descriptions title={`Hello, ${user?.firstName}`} items={items} />
+          </div>
+        </>
+      ) : (
+        <Navigate to={'/'} replace={true} />
+      )}
     </>
   );
 };
