@@ -97,6 +97,7 @@ const config: Config = {
     '^@pages$': '<rootDir>/src/__mocks__/pages.ts',
     '^@app/auth$': '<rootDir>/src/__mocks__/auth.ts',
     '^@features/Navbar$': '<rootDir>/src/__mocks__/navbar.tsx',
+    '^@features/Validation$': '<rootDir>/src/__mocks__/validationUtils.ts',
     '^@app/(.*)$': '<rootDir>/src/$1',
     '\\.module\\.css$': 'identity-obj-proxy',
     '\\.css$': 'identity-obj-proxy',

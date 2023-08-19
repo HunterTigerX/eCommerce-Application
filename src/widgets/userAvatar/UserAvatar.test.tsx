@@ -1,8 +1,6 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { render, screen } from '@testing-library/react';
 import { UserAvatar } from './UserAvatar.tsx';
 import '@testing-library/jest-dom/extend-expect';
-import * as router from 'react-router';
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -21,31 +19,23 @@ Object.defineProperty(window, 'matchMedia', {
 
 test('renders UserAvatar component', () => {
   const username = 'test';
-  render(
-    <BrowserRouter>
-      <UserAvatar username={username} />
-    </BrowserRouter>
-  );
+  const isopen = false;
+  render(<UserAvatar username={username} isopen={isopen} />);
+
   const userAvatarElement = screen.getByText(username);
   expect(userAvatarElement).toBeInTheDocument();
 });
 
-const navigate = jest.fn();
+test('renders UserAvatar component with correct size', () => {
+  const shortUsername = 'short';
+  const longUsername = 'verylongusername';
+  const isOpen = false;
 
-beforeEach(() => {
-  jest.spyOn(router, 'useNavigate').mockImplementation(() => navigate);
-});
+  render(<UserAvatar username={shortUsername} isopen={isOpen} />);
+  const shortAvatarElement = screen.getByText(shortUsername);
+  expect(shortAvatarElement).toHaveClass('large');
 
-test('handles click event', () => {
-  const username = 'test';
-
-  render(
-    <BrowserRouter>
-      <UserAvatar username={username} />
-    </BrowserRouter>
-  );
-
-  const avatarElement = screen.getByText(username);
-  fireEvent.click(avatarElement);
-  expect(navigate).toHaveBeenCalledWith('/profile');
+  render(<UserAvatar username={longUsername} isopen={isOpen} />);
+  const longAvatarElement = screen.getByText(longUsername);
+  expect(longAvatarElement).not.toHaveClass('large');
 });
