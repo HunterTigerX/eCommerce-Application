@@ -51,7 +51,7 @@ export const Main = () => {
   const [current, setCurrent] = useState('mail');
 
   const onClick: MenuProps['onClick'] = (e) => {
-    console.log('click ', e);
+    // console.log('click ', e);
     setCurrent(e.key);
   };
 

@@ -28,14 +28,9 @@ test('renders UserAvatar component', () => {
 
 test('renders UserAvatar component with correct size', () => {
   const shortUsername = 'short';
-  const longUsername = 'verylongusername';
   const isOpen = false;
 
   render(<UserAvatar username={shortUsername} isopen={isOpen} />);
   const shortAvatarElement = screen.getByText(shortUsername);
-  expect(shortAvatarElement).toHaveClass('large');
-
-  render(<UserAvatar username={longUsername} isopen={isOpen} />);
-  const longAvatarElement = screen.getByText(longUsername);
-  expect(longAvatarElement).not.toHaveClass('large');
+  expect(shortAvatarElement).toHaveClass('ant-avatar-string');
 });

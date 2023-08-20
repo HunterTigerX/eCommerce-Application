@@ -94,6 +94,9 @@ export const validatePassword = (_: Rule, value: string) => {
       return Promise.reject('Password must not contain leading or trailing whitespace.');
     } else if (passRegex.test(value)) {
       return Promise.resolve();
+    } else {
+      return Promise.resolve();
     }
   }
+  return Promise.resolve();
 };

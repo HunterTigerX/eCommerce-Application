@@ -4,7 +4,7 @@ import { Descriptions, DescriptionsProps } from 'antd';
 
 export const Profile = () => {
   const { user } = useAuth();
-  console.log(user);
+  // console.log(user);
 
   const items: DescriptionsProps['items'] = [
     {
