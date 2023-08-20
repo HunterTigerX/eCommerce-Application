@@ -4,35 +4,24 @@ import { message } from 'antd';
 import { useAuth } from '@shared/hooks';
 
 export const Main = () => {
-  const { state } = useLocation();
   const navigate = useNavigate();
-  const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
+  const { state } = useLocation();
   const { user } = useAuth();
-
-  const hi = state?.hi;
-  const bye = state?.bye;
+  const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
 
   useEffect(() => {
-    if (hi) {
+    const hi = state?.hi;
+    const bye = state?.bye;
+
+    if (hi || bye) {
       messageApi.open({
         type: 'success',
-        content: `Hello, ${hi}`,
+        content: hi ? `Hello, ${hi}` : `Goodbye, ${bye}`,
       });
 
       navigate('/', { replace: true });
     }
-
-    if (bye) {
-      messageApi.open({
-        type: 'success',
-        content: `Goodbye, ${bye}`,
-      });
-
-      navigate('/', { replace: true });
-    }
-  }, [hi, bye, messageApi, navigate]);
-
-  // username: 'te145431323mp555da@mail.ru', password: 'test'
+  }, [state, messageApi, navigate]);
 
   return (
     <div style={{ color: '#000' }}>

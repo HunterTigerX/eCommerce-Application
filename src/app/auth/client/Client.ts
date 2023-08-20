@@ -1,5 +1,5 @@
 import { ClientBuilder, type Client } from '@commercetools/sdk-client-v2';
-import { createApiBuilderFromCtpClient, Customer } from '@commercetools/platform-sdk';
+import { createApiBuilderFromCtpClient, type Customer } from '@commercetools/platform-sdk';
 import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
 import { AuthOptions } from './AuthOptions';
 
@@ -31,11 +31,11 @@ export class ApiClient {
   }
 
   public async init(): Promise<Customer | null> {
-    const token = localStorage.getItem('access_token');
+    const token = localStorage.getItem('auth');
 
     if (token) {
       try {
-        this.switchToAccessTokenClient(token);
+        this.switchToAccessTokenClient(window.atob(token));
 
         const signInResult = await this.requestBuilder.me().get().execute();
 
@@ -43,11 +43,32 @@ export class ApiClient {
       } catch {
         this.switchToDefaultClient();
 
-        localStorage.removeItem('access_token');
+        localStorage.removeItem('auth');
       }
     }
 
     return null;
+  }
+
+  public async revokeToken(token: string): Promise<void> {
+    const {
+      VITE_CTP_AUTH_URL: authUrl,
+      VITE_CTP_CLIENT_SECRET: clientSecret,
+      VITE_CTP_CLIENT_ID: clientId,
+    } = import.meta.env;
+
+    try {
+      await fetch(`${authUrl}/oauth/token/revoke`, {
+        method: 'POST',
+        body: `token=${token}&token_type_hint=access_token`,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Basic ${window.btoa(`${clientId}:${clientSecret}`)}`,
+        },
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) console.error(error.message);
+    }
   }
 
   public switchToAccessTokenClient(token: string): void {

@@ -1,1 +1,1 @@
-export { type AuthResponse, type CustomerSignUpDraft, AuthService } from './AuthService';
+export { type AuthResponse, AuthService } from './AuthService';
