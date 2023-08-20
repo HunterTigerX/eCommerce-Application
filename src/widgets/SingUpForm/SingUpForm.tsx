@@ -69,13 +69,13 @@ export const SingUpForm = () => {
   const [form] = Form.useForm();
   const { signUp } = useAuth();
   const [messageApi, contextHolder] = message.useMessage();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [allAddresses, setAllAddresses] = useState<boolean>(false);
-  const [addAddress, setAddAddress] = useState<boolean>(false);
-  const [defaultShippingAddress, setDefaultShippingAddress] = useState<boolean>(false);
-  const [defaultBillingAddress, setDefaultBillingAddress] = useState<boolean>(false);
-  const [shippingCountry, setShippingCountry] = useState<string>('');
-  const [billingCountry, setBillingCountry] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [allAddresses, setAllAddresses] = useState(false);
+  const [addAddress, setAddAddress] = useState(false);
+  const [defaultShippingAddress, setDefaultShippingAddress] = useState(false);
+  const [defaultBillingAddress, setDefaultBillingAddress] = useState(false);
+  const [shippingCountry, setShippingCountry] = useState('');
+  const [billingCountry, setBillingCountry] = useState('');
 
   const onFinish = async (values: FormValues) => {
     const { email, confirmPassword, firstName, lastName, dateOfBirth, address, address2 } = values;
