@@ -4,7 +4,7 @@
   align-items: center;
   padding-top: var(--spacing-sm);
   margin-bottom: var(--spacing-md);
-  position: relative;
+  /* position: relative; */
   column-gap: var(--spacing-md);
 }
 .nav-menu {
@@ -33,13 +33,20 @@
     top: 0;
     bottom: 0;
     right: -300px;
-    transition:
-      right 0.7s cubic-bezier(0.52, 0.01, 0.16, 1),
-      box-shadow 0.5s ease;
-    z-index: 2;
+    transition: right 0.7s cubic-bezier(0.52, 0.01, 0.16, 1);
+    z-index: 3;
   }
   .nav-menu.open {
     right: 0px;
-    box-shadow: 0 0 0 9999px rgba(41, 41, 41, 0.6);
+  }
+
+  .backgroundMenu {
+    background: #0000006a;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
   }
 }
