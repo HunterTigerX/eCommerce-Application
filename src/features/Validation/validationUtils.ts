@@ -1,4 +1,5 @@
 import { Rule } from 'antd/es/form';
+import { postcodeValidator } from 'postcode-validator';
 import dayjs, { Dayjs } from 'dayjs';
 
 const validateWhitespace = (value: string) => {
@@ -39,7 +40,8 @@ export const validateEmail = (_: Rule, value: string) => {
 
 export const validateField = (_: Rule, value: string) => {
   return validateWhitespace(value).then(() => {
-    const hasSpecialCharacters = /[!@#$%^&*(),.?":{}|<>0-9]/.test(value);
+    //const hasSpecialCharacters = /[!@#$%^&*(),.?":{}|<>0-9]/.test(value);
+    const hasSpecialCharacters = /[!@#$%'^&*(),.?":{}|<>0-9\\-]|[!$%^&*()_+|~=`{}[\]:/;<>?,.@#]/.test(value);
     if (value && !hasSpecialCharacters) {
       return Promise.resolve();
     }
@@ -59,12 +61,22 @@ export const validateData = (_: Rule, value: Dayjs) => {
 };
 
 export const validatePostalCode = (country: string, value: string) => {
-  const postalCodeRegex = country === 'RU' ? /^\d{6}$/ : /^\d{5}$/;
-  const error = country === 'RU' ? 'code (6 digits): XXXXXX' : 'code (5 digits): XXXXX';
-
-  if (postalCodeRegex.test(value)) {
+  // const postalCodeRegex = country === 'RU' ? /^\d{6}$/ : /^\d{5}$/;
+  let error = '';
+  if (country === 'US') {
+    error = 'code should be (5 digits): XXXXX or (5-4 digits): XXXXX-XXXX';
+  } else if (country === 'RU') {
+    error = 'code should be (6 digits): XXXXXX or (5-4 digits): XXXXX-XXXX';
+  } else if (country === 'FR' || country === 'DE') {
+    error = 'code should be (5 digits): XXXXX';
+  }
+  // const error = country === 'RU' ? 'code (6 digits): XXXXXX' : 'code (5 digits): XXXXX';
+  if (postcodeValidator(value, country)) {
     return Promise.resolve();
   }
+  // if (postalCodeRegex.test(value)) {
+  //   return Promise.resolve();
+  // }
   return Promise.reject(error);
 };
 
@@ -90,7 +102,7 @@ export const validatePassword = (_: Rule, value: string) => {
       return Promise.reject('Password must contain at least one digit (0-9).');
     } else if (!/[-!$%^&*()_+|~=`{}[\]:/;<>?,.@#]/.test(value)) {
       return Promise.reject('Password must contain at least one special character (e.g., !@#$%^&*).');
-    } else if (/\s/.test(value)) {
+    } else if (!/^\S(?:.*\S)?$/g.test(value)) {
       return Promise.reject('Password must not contain leading or trailing whitespace.');
     } else if (passRegex.test(value)) {
       return Promise.resolve();

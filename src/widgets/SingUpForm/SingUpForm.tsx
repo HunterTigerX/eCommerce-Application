@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { Button, Checkbox, DatePicker, Form, Input, Select, Space, message } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
 import { Rule } from 'antd/es/form';
 import { RangePickerProps } from 'antd/es/date-picker';
 import dayjs, { Dayjs } from 'dayjs';
+import { PlusOutlined } from '@ant-design/icons';
 import { BaseAddress } from '@commercetools/platform-sdk';
 import { useAuth } from '@shared/hooks';
 import {
@@ -76,6 +77,7 @@ export const SingUpForm = () => {
   const [defaultBillingAddress, setDefaultBillingAddress] = useState(false);
   const [shippingCountry, setShippingCountry] = useState('');
   const [billingCountry, setBillingCountry] = useState('');
+  const navigate = useNavigate();
 
   const onFinish = async (values: FormValues) => {
     const { email, confirmPassword, firstName, lastName, dateOfBirth, address, address2 } = values;
@@ -129,6 +131,13 @@ export const SingUpForm = () => {
           messageApi.open({
             type: 'error',
             content: result.message,
+          });
+        } else {
+          navigate('/', {
+            replace: true,
+            state: {
+              hi: result.data.firstName,
+            },
           });
         }
       })
