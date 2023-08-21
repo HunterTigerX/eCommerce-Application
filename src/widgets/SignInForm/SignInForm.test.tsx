@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { act } from 'react-dom/test-utils';
 import { SignInInputForm } from '.';
+
 import '@testing-library/jest-dom';
 
 Object.defineProperty(window, 'matchMedia', {
@@ -35,7 +36,6 @@ describe('SignInInputForm', () => {
       fireEvent.change(emailInput, { target: { value: 'sad@sda' } });
       fireEvent.click(submitButton);
     });
-
     expect(await screen.findByText('Submit')).toBeInTheDocument();
   });
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BurgerMenu, Logo, NavList, UserMenu } from './ui';
+
 import styles from './Navbar.module.css';
 
 export const Navbar = () => {

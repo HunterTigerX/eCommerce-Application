@@ -5,6 +5,7 @@ import '@testing-library/jest-dom/extend-expect';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { NotFound } from './NotFound.tsx';
 
+
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: jest.fn().mockImplementation((query) => ({
@@ -37,7 +38,6 @@ describe('NotFound', () => {
     act(() => {
       fireEvent.click(button);
     });
-
     expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
   });
 });
