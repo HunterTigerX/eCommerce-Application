@@ -1,3 +1,9 @@
-.ant-avatar:hover {
-  cursor: pointer;
+.avatar {
+  transition: all 0.5s;
+  background-color: var(--secondary-color);
+}
+
+.avatar-activ {
+  transition: all 0.5s;
+  background-color: var(--primary-color);
 }

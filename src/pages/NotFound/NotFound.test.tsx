@@ -1,8 +1,10 @@
+import { BrowserRouter } from 'react-router-dom';
+import { act } from 'react-dom/test-utils';
+import * as router from 'react-router';
+import '@testing-library/jest-dom/extend-expect';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { NotFound } from './NotFound.tsx';
-import { BrowserRouter } from 'react-router-dom';
-import '@testing-library/jest-dom/extend-expect';
-import * as router from 'react-router';
+
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -33,8 +35,9 @@ describe('NotFound', () => {
       </BrowserRouter>
     );
     const button = screen.getByText('Back Home');
-    fireEvent.click(button);
-
+    act(() => {
+      fireEvent.click(button);
+    });
     expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
   });
 });

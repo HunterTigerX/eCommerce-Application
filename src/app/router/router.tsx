@@ -1,6 +1,6 @@
 import { createBrowserRouter, type RouteObject } from 'react-router-dom';
 import { Layout } from '@widgets/layout';
-import { Main, SignUp, Cart, Catalog, SignIn, NotFound } from '@pages';
+import { Main, SignUp, Cart, Catalog, SignIn, NotFound, About, Profile } from '@pages';
 
 const routes: RouteObject[] = [
   {
@@ -26,8 +26,18 @@ const routes: RouteObject[] = [
         caseSensitive: true,
       },
       {
+        path: '/about',
+        element: <About />,
+        caseSensitive: true,
+      },
+      {
         path: '/cart',
         element: <Cart />,
+        caseSensitive: true,
+      },
+      {
+        path: '/profile',
+        element: <Profile />,
         caseSensitive: true,
       },
       {

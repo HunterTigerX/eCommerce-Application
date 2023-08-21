@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { Button, Checkbox, DatePicker, Form, Input, Select, Space, message } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
 import { Rule } from 'antd/es/form';
 import { RangePickerProps } from 'antd/es/date-picker';
 import dayjs, { Dayjs } from 'dayjs';
+import { PlusOutlined } from '@ant-design/icons';
 import { BaseAddress } from '@commercetools/platform-sdk';
 import { useAuth } from '@shared/hooks';
 import {
   validateData,
+  validateEmail,
   validateField,
   validatePassword,
   validatePostalCode,
@@ -68,13 +70,14 @@ export const SingUpForm = () => {
   const [form] = Form.useForm();
   const { signUp } = useAuth();
   const [messageApi, contextHolder] = message.useMessage();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [allAddresses, setAllAddresses] = useState<boolean>(false);
-  const [addAddress, setAddAddress] = useState<boolean>(false);
-  const [defaultShippingAddress, setDefaultShippingAddress] = useState<boolean>(false);
-  const [defaultBillingAddress, setDefaultBillingAddress] = useState<boolean>(false);
-  const [shippingCountry, setShippingCountry] = useState<string>('');
-  const [billingCountry, setBillingCountry] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [allAddresses, setAllAddresses] = useState(false);
+  const [addAddress, setAddAddress] = useState(false);
+  const [defaultShippingAddress, setDefaultShippingAddress] = useState(false);
+  const [defaultBillingAddress, setDefaultBillingAddress] = useState(false);
+  const [shippingCountry, setShippingCountry] = useState('');
+  const [billingCountry, setBillingCountry] = useState('');
+  const navigate = useNavigate();
 
   const onFinish = async (values: FormValues) => {
     const { email, confirmPassword, firstName, lastName, dateOfBirth, address, address2 } = values;
@@ -129,6 +132,13 @@ export const SingUpForm = () => {
             type: 'error',
             content: result.message,
           });
+        } else {
+          navigate('/', {
+            replace: true,
+            state: {
+              hi: result.data.firstName,
+            },
+          });
         }
       })
       .finally(() => {
@@ -162,6 +172,7 @@ export const SingUpForm = () => {
           rules={[
             { type: 'email', message: 'Enter the correct email address' },
             { required: true, message: 'Please fill in the field!' },
+            { validator: validateEmail },
           ]}
         >
           <Input placeholder="example@email.com" />

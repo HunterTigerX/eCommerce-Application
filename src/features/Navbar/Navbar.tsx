@@ -1,46 +1,40 @@
-import { NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '@shared/hooks';
-import reactLogo from '@assets/react.svg';
-import { UserAvatar } from '@widgets/userAvatar';
+import { useEffect, useState } from 'react';
+import { BurgerMenu, Logo, NavList, UserMenu } from './ui';
+
 import styles from './Navbar.module.css';
 
 export const Navbar = () => {
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
+  const [isMenuClicked, setIsMenuClicked] = useState(false);
+  const [isOverflowHidden, setIsOverflowHidden] = useState(false);
 
-  const username = (user && user.firstName) || '';
-
-  const handleSignOut = () => {
-    signOut().then(() => {
-      navigate('/', {
-        state: { bye: username },
-      });
-    });
+  const handleMenuClick = () => {
+    setIsMenuClicked(!isMenuClicked);
+    setIsOverflowHidden(!isOverflowHidden);
   };
 
+  const handleMenuClose = () => {
+    setIsMenuClicked(false);
+  };
+
+  const navMenuClass = isMenuClicked ? `${styles.navMenu} ${styles.open}` : styles.navMenu;
+
+  useEffect(() => {
+    if (isOverflowHidden) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+  }, [isOverflowHidden]);
+
   return (
-    <nav className={styles.navbar}>
-      <NavLink to="/" className={styles.logo}>
-        <img src={reactLogo} alt="Логотип" />
-      </NavLink>
-      <div className={styles.blockBtns}>
-        <NavLink to="/">Home</NavLink>
-        <NavLink to="catalog">Catalog</NavLink>
-        <NavLink to="cart">Cart</NavLink>
-        {user ? (
-          <>
-            <NavLink onClick={handleSignOut} to="/">
-              Sign Out
-            </NavLink>
-            <UserAvatar username={username} />
-          </>
-        ) : (
-          <>
-            <NavLink to="/signin">Sign In</NavLink>
-            <NavLink to="/signup">Sign Up</NavLink>
-          </>
-        )}
+    <div className={styles.navbar}>
+      <Logo />
+      <div className={navMenuClass}>
+        <NavList onCloseMenu={handleMenuClose} />
+        <UserMenu onCloseMenu={handleMenuClose} />
       </div>
-    </nav>
+      {isMenuClicked && <div className={styles.backgroundMenu} onClick={handleMenuClose}></div>}
+      <BurgerMenu isMenuClicked={isMenuClicked} onBurgerClick={handleMenuClick} />
+    </div>
   );
 };
