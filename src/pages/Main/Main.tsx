@@ -1,13 +1,57 @@
-import { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { message } from 'antd';
-import { useAuth } from '@shared/hooks';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, MenuProps, message } from 'antd';
+import {
+  HomeOutlined,
+  ProfileOutlined,
+  ReadOutlined,
+  ShoppingOutlined,
+  UserAddOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
+
+const items: MenuProps['items'] = [
+  {
+    label: <Link to="/">Home</Link>,
+    key: 'mail',
+    icon: <HomeOutlined />,
+  },
+  {
+    label: <Link to="/catalog">Catalog</Link>,
+    key: 'Catalog',
+    icon: <ShoppingOutlined />,
+  },
+  {
+    label: <Link to="/about">About</Link>,
+    key: 'about',
+    icon: <ReadOutlined />,
+  },
+  {
+    label: <Link to="/signin">Sign In</Link>,
+    key: 'signin',
+    icon: <UserOutlined />,
+  },
+  {
+    label: <Link to="/signup">Sign Up</Link>,
+    key: 'signup',
+    icon: <UserAddOutlined />,
+  },
+  {
+    label: <Link to="/profile">Profile</Link>,
+    key: 'Profile',
+    icon: <ProfileOutlined />,
+  },
+];
 
 export const Main = () => {
-  const navigate = useNavigate();
   const { state } = useLocation();
-  const { user } = useAuth();
+  const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
+  const [current, setCurrent] = useState('mail');
+
+  const onClick: MenuProps['onClick'] = (e) => {
+    setCurrent(e.key);
+  };
 
   useEffect(() => {
     const hi = state?.hi;
@@ -24,10 +68,10 @@ export const Main = () => {
   }, [state, messageApi, navigate]);
 
   return (
-    <div style={{ color: '#000' }}>
+    <div style={{ color: '#000', width: '300px' }}>
       <h2>Main page</h2>
       {contextHolder}
-      {user && <pre>{JSON.stringify(user, null, 2)}</pre>}
+      <Menu onClick={onClick} selectedKeys={[current]} mode="vertical" items={items} />
     </div>
   );
 };

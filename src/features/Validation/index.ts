@@ -1,1 +1,8 @@
-export { validatePassword, validateField, validateData, validatePostalCode, validateStreet } from './validationUtils';
+export {
+  validatePassword,
+  validateField,
+  validateData,
+  validatePostalCode,
+  validateStreet,
+  validateEmail,
+} from './validationUtils';
