@@ -5,8 +5,8 @@ import { Button, Checkbox, DatePicker, Form, Input, Select, Space, message } fro
 import { Rule } from 'antd/es/form';
 import { RangePickerProps } from 'antd/es/date-picker';
 import dayjs, { Dayjs } from 'dayjs';
+import type { BaseAddress, CustomerDraft } from '@commercetools/platform-sdk';
 import { PlusOutlined } from '@ant-design/icons';
-import { BaseAddress } from '@commercetools/platform-sdk';
 import { useAuth } from '@shared/hooks';
 import {
   validateData,
@@ -16,7 +16,6 @@ import {
   validatePostalCode,
   validateStreet,
 } from '@features/Validation';
-import { CustomerSignUpDraft } from '@app/auth/service';
 import styles from './SingUpForm.module.css';
 
 interface FormValues {
@@ -87,7 +86,7 @@ export const SingUpForm = () => {
       addresses.push(address2);
     }
 
-    let newCustomer: CustomerSignUpDraft = {
+    let newCustomer: CustomerDraft = {
       email: email,
       password: confirmPassword,
       firstName: firstName,

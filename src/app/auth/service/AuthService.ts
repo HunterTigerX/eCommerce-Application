@@ -1,10 +1,9 @@
-import type { Customer, CustomerDraft, MyCustomerDraft } from '@commercetools/platform-sdk';
-import { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
+import type { Customer, CustomerDraft } from '@commercetools/platform-sdk';
+import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
 import { ApiClient } from '@app/auth/client';
 
 export type AuthResponse = { success: true; data: Customer } | { success: false; message: string };
 
-export type CustomerSignUpDraft = MyCustomerDraft & Pick<CustomerDraft, 'shippingAddresses' | 'billingAddresses'>;
 export class AuthService {
   private client: ApiClient;
 
@@ -22,13 +21,22 @@ export class AuthService {
     try {
       this.client.switchToPasswordClient(credentials);
 
-      const response = await this.client.requestBuilder.me().get().execute();
+      const response = await this.client.requestBuilder
+        .me()
+        .login()
+        .post({
+          body: {
+            ...credentials,
+            email: credentials.username,
+          },
+        })
+        .execute();
 
-      this.user = response.body;
+      this.user = response.body.customer;
 
       return {
         success: true,
-        data: this.user,
+        data: response.body.customer,
       };
     } catch (error: unknown) {
       this.client.switchToDefaultClient();
@@ -40,26 +48,19 @@ export class AuthService {
     }
   }
 
-  public async signUp(credentials: CustomerSignUpDraft): Promise<AuthResponse> {
+  public async signUp(credentials: CustomerDraft): Promise<AuthResponse> {
     try {
       await this.client.requestBuilder
-        .me()
-        .signup()
+        .customers()
         .post({
           body: credentials,
         })
         .execute();
 
-      this.client.switchToPasswordClient({ username: credentials.email, password: credentials.password });
-
-      const signInResponse = await this.client.requestBuilder.me().get().execute();
-
-      this.user = signInResponse.body;
-
-      return {
-        success: true,
-        data: this.user,
-      };
+      return await this.signIn({
+        username: credentials.email,
+        password: credentials.password || '',
+      });
     } catch (error: unknown) {
       this.client.switchToDefaultClient();
 
@@ -71,29 +72,11 @@ export class AuthService {
   }
 
   public async signOut(): Promise<void> {
-    const token = localStorage.getItem('access_token');
+    const token = localStorage.getItem('auth');
 
     if (token) {
-      const {
-        VITE_CTP_AUTH_URL: authUrl,
-        VITE_CTP_CLIENT_SECRET: clientSecret,
-        VITE_CTP_CLIENT_ID: clientId,
-      } = import.meta.env;
-
-      try {
-        await fetch(`${authUrl}/oauth/token/revoke`, {
-          method: 'POST',
-          body: `token=${token}&token_type_hint=access_token`,
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization: `Basic ${btoa(`${clientId}:${clientSecret}`)}`,
-          },
-        });
-      } catch (error: unknown) {
-        if (error instanceof Error) console.error(error.message);
-      }
-
-      localStorage.removeItem('access_token');
+      await this.client.revokeToken(window.atob(token));
+      localStorage.removeItem('auth');
     }
 
     this.client.switchToDefaultClient();

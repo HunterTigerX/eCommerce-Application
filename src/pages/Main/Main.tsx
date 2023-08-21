@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, MenuProps, message } from 'antd';
-// import { useAuth } from '@shared/hooks';
 import {
   HomeOutlined,
   ProfileOutlined,
@@ -18,12 +17,12 @@ const items: MenuProps['items'] = [
     icon: <HomeOutlined />,
   },
   {
-    label: <Link to="catalog">Catalog</Link>,
+    label: <Link to="/catalog">Catalog</Link>,
     key: 'Catalog',
     icon: <ShoppingOutlined />,
   },
   {
-    label: <Link to="about">About</Link>,
+    label: <Link to="/about">About</Link>,
     key: 'about',
     icon: <ReadOutlined />,
   },
@@ -51,41 +50,28 @@ export const Main = () => {
   const [current, setCurrent] = useState('mail');
 
   const onClick: MenuProps['onClick'] = (e) => {
-    // console.log('click ', e);
     setCurrent(e.key);
   };
 
-  const hi = state?.hi;
-  const bye = state?.bye;
-
   useEffect(() => {
-    if (hi) {
+    const hi = state?.hi;
+    const bye = state?.bye;
+
+    if (hi || bye) {
       messageApi.open({
         type: 'success',
-        content: `Hello, ${hi}`,
+        content: hi ? `Hello, ${hi}` : `Goodbye, ${bye}`,
       });
 
       navigate('/', { replace: true });
     }
-
-    if (bye) {
-      messageApi.open({
-        type: 'success',
-        content: `Goodbye, ${bye}`,
-      });
-
-      navigate('/', { replace: true });
-    }
-  }, [hi, bye, messageApi, navigate]);
-
-  // username: 'te145431323mp555da@mail.ru', password: 'test'
+  }, [state, messageApi, navigate]);
 
   return (
     <div style={{ color: '#000', width: '300px' }}>
       <h2>Main page</h2>
       {contextHolder}
       <Menu onClick={onClick} selectedKeys={[current]} mode="vertical" items={items} />
-      {/* {user && <pre>{JSON.stringify(user, null, 2)}</pre>} */}
     </div>
   );
 };

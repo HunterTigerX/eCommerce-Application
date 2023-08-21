@@ -1,5 +1,4 @@
-import {
-  AnonymousAuthMiddlewareOptions,
+import type {
   AuthMiddlewareOptions,
   HttpMiddlewareOptions,
   PasswordAuthMiddlewareOptions,
@@ -18,8 +17,11 @@ const {
 export class AuthOptions {
   private responseHandler = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
     const response = await fetch(input, init);
+
     const json = await response.clone().json();
-    if (json.access_token) localStorage.setItem('access_token', json.access_token);
+
+    if (json.access_token) localStorage.setItem('auth', window.btoa(json.access_token));
+
     return response;
   };
 
@@ -52,23 +54,8 @@ export class AuthOptions {
         clientSecret,
         user,
       },
-      scopes: scopes.split(' '),
+      scopes: scopes.split(' ').filter((scope) => scope !== `manage_customers:${projectKey}`),
       fetch: this.responseHandler,
-    };
-  }
-
-  // currently unused
-  public getAnonymousOptions(anonymousId: string): AnonymousAuthMiddlewareOptions {
-    return {
-      host: authUrl,
-      projectKey,
-      credentials: {
-        clientId,
-        clientSecret,
-        anonymousId,
-      },
-      scopes: scopes.split(' '),
-      fetch,
     };
   }
 }
