@@ -66,7 +66,7 @@ export const validatePostalCode = (country: string, value: string) => {
   if (country === 'US') {
     error = 'code should be (5 digits): XXXXX or (5-4 digits): XXXXX-XXXX';
   } else if (country === 'RU') {
-    error = 'code should be (6 digits): XXXXXX or (5-4 digits): XXXXX-XXXX';
+    error = 'code should be (6 digits): XXXXXX';
   } else if (country === 'FR' || country === 'DE') {
     error = 'code should be (5 digits): XXXXX';
   }

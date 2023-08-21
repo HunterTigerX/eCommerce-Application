@@ -14,6 +14,7 @@ export const Navbar = () => {
 
   const handleMenuClose = () => {
     setIsMenuClicked(false);
+    setIsOverflowHidden(false);
   };
 
   const navMenuClass = isMenuClicked ? `${styles.navMenu} ${styles.open}` : styles.navMenu;
