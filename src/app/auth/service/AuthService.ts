@@ -10,7 +10,7 @@ export class AuthService {
   public user: Customer | null = null;
 
   constructor() {
-    this.client = new ApiClient();
+    this.client = ApiClient.getInstance();
   }
 
   public async init(): Promise<void> {
