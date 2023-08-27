@@ -1,3 +1,75 @@
 .ant-descriptions-view .emptyPrev {
 text-align: center;
 }
+
+.profile-change-buttons {
+    display: flex;
+    margin: 10px auto;
+    justify-content: space-around;
+}
+
+.profile-change-buttons button {
+    min-width: 110px;
+}
+
+.personal-info-form label {
+    display: flex;
+    flex-direction: row;
+}
+
+.personal-info-form input { 
+    color: black;
+}
+
+.personal-info-form label > div:last-child {
+    width: 200px;
+}
+.personal-info-form label > input:last-child {
+    width: 200px;
+}
+.personal-info-form div {
+min-width: 13%;
+}
+
+.personal-info-form input {
+    background-color: rgba(255, 255, 255, 0.582);
+    border-radius: 5px;
+
+    padding: 3px;
+}
+
+.personal-info-form input[type="text"] {
+    text-indent: 7px;
+}
+
+.modal-controls {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.modal-controls button {
+    min-width: 80px;
+    min-height: 25px;
+}
+
+.personal-info-date div {
+    margin: 0;
+    display: flex;
+    align-items: flex-start;
+}
+
+.dateOfBirth {
+    padding-top: 4px;
+}
+
+.personal-info-date .ant-form-item .ant-row {
+    width: 100%;
+}
+.personal-info-date .ant-form-item .ant-row .ant-form-item-control-input {
+    width: 100%;
+    
+}
+.ant-picker {
+    border-color: black;
+}

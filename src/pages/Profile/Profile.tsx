@@ -1,12 +1,29 @@
+import { useState } from 'react';
+import Modal from 'react-modal';
 import { Navigate } from 'react-router';
-import { Descriptions, DescriptionsProps } from 'antd';
+import { Button, Descriptions, DescriptionsProps, DatePicker, Form, message } from 'antd';
+import { RangePickerProps } from 'antd/es/date-picker';
 import { getName } from 'country-list';
+import dayjs from 'dayjs'; //, { Dayjs }
 import { useAuth } from '@shared/hooks';
+import { ApiClient } from '@app/auth/client';
+import {
+  validateData,
+  // validateEmail,
+  // validateField,
+  // validatePassword,
+  // validatePostalCode,
+  // validateStreet,
+} from '@features/Validation';
 import './Profile.css';
 
+const apiClient = new ApiClient();
+
 export const Profile = () => {
+  const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
   const { user } = useAuth();
-  console.log(user);
+  const dateFormat = 'YYYY-MM-DD';
+  // console.log(user);
 
   const items: DescriptionsProps['items'] = [];
 
@@ -124,7 +141,6 @@ export const Profile = () => {
   // Делаем ширину заголовков типа адреса в 2 ячейки
   function changeColspans() {
     const listOfElements: NodeListOf<HTMLElement> = document.querySelectorAll('.emptyPrev');
-    console.log(document.querySelectorAll('.emptyPrev'));
     listOfElements.forEach((element, index) => {
       if (index % 2 !== 0) {
         element.style.display = 'none';
@@ -140,6 +156,91 @@ export const Profile = () => {
   }
   fillPage();
 
+  const [isOpen, setIsOpen] = useState(false);
+  const [name, setName] = useState(user?.firstName);
+  const [lastName, setLastName] = useState(user?.lastName);
+
+  const openModal = () => {
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
+  const changeUserData = () => {
+    const newName = name ? name : '';
+    const newLastName = lastName ? lastName : '';
+    const hasSpecialCharacters = /[!@#$%'^&*(),.?":{}|<>0-9\\-]|[!$%^&*()_+|~=`{}[\]:/;<>?,.@#]/;
+    const newDateInput = document.getElementById('dateOfBirth') as HTMLInputElement;
+
+    if (hasSpecialCharacters.test(newName) || newName.length === 0) {
+      messageApi.open({
+        type: 'error',
+        content: 'First name Must contain at least one character and no special characters or numbers',
+        duration: 2,
+        style: {
+          color: 'red',
+        },
+      });
+    } else if (hasSpecialCharacters.test(newLastName) || newLastName.length === 0) {
+      messageApi.open({
+        type: 'error',
+        content: 'Last name Must contain at least one character and no special characters or numbers',
+        duration: 2,
+        style: {
+          color: 'red',
+        },
+      });
+    } else if (newDateInput.value !== '') {
+      const dateFromInput = new Date(newDateInput.value);
+      const currentDate = new Date();
+      const targetDate = new Date(currentDate.getFullYear() - 13, currentDate.getMonth(), currentDate.getDate());
+      if (
+        targetDate.getMonth() > currentDate.getMonth() ||
+        (targetDate.getMonth() === currentDate.getMonth() && targetDate.getDate() > currentDate.getDate())
+      ) {
+        targetDate.setFullYear(targetDate.getFullYear() - 1);
+      }
+      // Если введённая дата валидна (более 13 лет назад, выше проверка на високосный год)
+      if (dateFromInput < targetDate) {
+        if (user) {
+          apiClient.requestBuilder
+            .me()
+            .post({
+              body: {
+                version: user.version,
+                actions: [
+                  {
+                    action: 'setFirstName',
+                    firstName: newName,
+                  },
+                  {
+                    action: 'setLastName',
+                    lastName: newLastName,
+                  },
+                  {
+                    action: 'setDateOfBirth',
+                    dateOfBirth: newDateInput.value,
+                  },
+                ],
+              },
+            })
+            .execute()
+            .then(() => {
+              window.location.reload(); // Подумать над тем, как можно сделать без перезагрузки страницы
+            });
+        }
+      }
+    }
+  };
+
+  const disabledDate: RangePickerProps['disabledDate'] = (current) => {
+    const currentDate = dayjs();
+    const selectedDate = dayjs(current);
+    return selectedDate.isAfter(currentDate);
+  };
+
   return (
     <>
       {user ? (
@@ -152,6 +253,46 @@ export const Profile = () => {
               items={items}
               column={1}
             />
+            <div className="profile-change-buttons">
+              <Button type="primary" onClick={openModal}>
+                Edit user
+              </Button>
+              <Button type="primary" onClick={openModal}>
+                Edit address
+              </Button>
+            </div>
+          </div>
+          <div>
+            <Modal isOpen={isOpen} ariaHideApp={false} onRequestClose={closeModal}>
+              {contextHolder}
+              <h2>Personal info</h2>
+              <Form
+                className="personal-info-form"
+                initialValues={{ dateOfBirth: dayjs(user?.dateOfBirth, dateFormat) }}
+              >
+                <label>
+                  <div>Name:</div>
+                  <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+                </label>
+                <br />
+                <label>
+                  <div>Last Name:</div>
+                  <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                </label>
+                <br />
+                <label className="personal-info-date">
+                  <div className="dateOfBirth">Date of Birth:</div>
+                  <Form.Item name="dateOfBirth" required={true} rules={[{ validator: validateData }]}>
+                    <DatePicker disabledDate={disabledDate} style={{ width: '100%' }} />
+                  </Form.Item>
+                </label>
+                <br />
+                <div className="modal-controls">
+                  <button onClick={changeUserData}>Submit</button>
+                  <button onClick={closeModal}>Close</button>
+                </div>
+              </Form>
+            </Modal>
           </div>
         </>
       ) : (
