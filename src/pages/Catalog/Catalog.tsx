@@ -1,50 +1,34 @@
 import { AutoComplete, List, Avatar } from 'antd';
-import { useProductProjections, ProductProjectionsQueryArgsActionTypes } from '@shared/api/products';
-import { useState } from 'react';
-import { useSuggestions, type SuggestionsQueryArgs } from '@shared/api/products/useSuggestions';
-
-// https://docs.commercetools.com/api/projects/products-search#full-text-search
-// https://docs.commercetools.com/api/projects/products-suggestions
-
-const suggestionsArgsInitialValue: SuggestionsQueryArgs = {
-  limit: 10,
-};
+import {
+  useProductProjections,
+  ProductProjectionsQueryArgsActionTypes,
+  useProductSuggestions,
+  ProductSuggestionsQueryArgsActionTypes,
+} from '@shared/api/products';
 
 export const Catalog = () => {
   const {
-    state: { products, loading },
-    dispatch,
+    state: { products, loading: productsLoading },
+    dispatch: setProducts,
   } = useProductProjections();
 
-  const [suggestionsArgs, setSuggestionArgs] = useState<SuggestionsQueryArgs>(suggestionsArgsInitialValue);
-
-  const { suggestions } = useSuggestions(suggestionsArgs);
+  const {
+    state: { suggestions },
+    dispatch: setSuggestions,
+  } = useProductSuggestions();
 
   const handleSearch = (text: string) => {
     if (text) {
-      setSuggestionArgs((prev) => ({
-        ...prev,
-        fuzzy: true,
-        'searchKeywords.en': text,
-      }));
+      setProducts({ type: ProductProjectionsQueryArgsActionTypes.SET_SEARCH, payload: text });
+      setSuggestions({ type: ProductSuggestionsQueryArgsActionTypes.SET_SUGGESTION, payload: text });
     } else {
-      setSuggestionArgs((prev) => {
-        delete prev.fuzzy;
-        delete prev['searchKeywords.en'];
-
-        return prev;
-      });
-    }
-    // ok
-    if (text) {
-      dispatch({ type: ProductProjectionsQueryArgsActionTypes.SET_SEARCH, payload: text });
-    } else {
-      dispatch({ type: ProductProjectionsQueryArgsActionTypes.CLEAR_SEARCH });
+      setProducts({ type: ProductProjectionsQueryArgsActionTypes.CLEAR_SEARCH });
+      setSuggestions({ type: ProductSuggestionsQueryArgsActionTypes.CLEAR_SUGGESTION });
     }
   };
 
   const handleSelect = (text: string) => {
-    dispatch({ type: ProductProjectionsQueryArgsActionTypes.SET_SEARCH, payload: text });
+    setProducts({ type: ProductProjectionsQueryArgsActionTypes.SET_SEARCH, payload: text });
   };
 
   return (
@@ -61,7 +45,7 @@ export const Catalog = () => {
         <List
           itemLayout="horizontal"
           dataSource={products}
-          loading={loading}
+          loading={productsLoading}
           renderItem={(item) => (
             <List.Item>
               <List.Item.Meta

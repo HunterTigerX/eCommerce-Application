@@ -1,7 +1,3 @@
-export {
-  useProductProjections,
-  type ProductProjectionsQueryArgs,
-  ProductProjectionsQueryArgsActionTypes,
-} from './useProductProjections';
+export { useProductProjections, ProductProjectionsQueryArgsActionTypes } from './hooks/useProductProjections';
 
-export { useSuggestions, type SuggestionsQueryArgs } from './useSuggestions';
+export { useProductSuggestions, ProductSuggestionsQueryArgsActionTypes } from './hooks/useProductSuggestions';

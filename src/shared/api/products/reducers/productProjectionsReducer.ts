@@ -1,8 +1,4 @@
-import { useMemo, useReducer } from 'react';
 import type { QueryParam } from '@commercetools/sdk-client-v2';
-import { ApiClient } from '@app/auth/client';
-import { useApiRequest } from '@shared/api/core';
-import type { ProductProjection } from '@commercetools/platform-sdk';
 
 type ProductProjectionsQueryArgs = {
   fuzzy?: boolean;
@@ -70,44 +66,4 @@ const productProjectionsQueryArgsReducer = (
   }
 };
 
-const mapResults = (results: ProductProjection[] | null) => {
-  return results
-    ? results.map((result) => {
-        return {
-          title: result.name.en,
-          description: result.masterVariant.price ? '¢' + result.masterVariant.price.value.centAmount : null,
-          avatar: result.masterVariant.images ? result.masterVariant.images[0].url : null,
-        };
-      })
-    : [];
-};
-
-const productProjectionsQueryArgsInitialValue = {
-  limit: 20,
-  priceCurrency: 'EUR',
-};
-
-const useProductProjections = (initialValue: ProductProjectionsQueryArgs = productProjectionsQueryArgsInitialValue) => {
-  const [queryArgs, dispatch] = useReducer(productProjectionsQueryArgsReducer, initialValue);
-
-  const request = useMemo(
-    () =>
-      ApiClient.getInstance().requestBuilder.productProjections().search().get({
-        queryArgs,
-      }),
-    [queryArgs]
-  );
-
-  const { data, error, loading } = useApiRequest(request);
-
-  return {
-    state: {
-      products: mapResults(data?.results || null),
-      error,
-      loading,
-    },
-    dispatch,
-  };
-};
-
-export { useProductProjections, type ProductProjectionsQueryArgs, ProductProjectionsQueryArgsActionTypes };
+export { productProjectionsQueryArgsReducer, ProductProjectionsQueryArgsActionTypes, type ProductProjectionsQueryArgs };
