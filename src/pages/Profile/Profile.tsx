@@ -1,26 +1,28 @@
 import { useState } from 'react';
 import Modal from 'react-modal';
 import { Navigate } from 'react-router';
-import { Button, Checkbox, DatePicker, Descriptions, DescriptionsProps, Form, Select, message } from 'antd';
+import { Button, Checkbox, DatePicker, Descriptions, DescriptionsProps, Form, Input, Select, message } from 'antd';
 import { RangePickerProps } from 'antd/es/date-picker';
 import { getName } from 'country-list';
 import dayjs from 'dayjs'; //, { Dayjs }
 import { useAuth } from '@shared/hooks';
 import { ApiClient } from '@app/auth/client';
-import {
-  validateData,
-  // validateEmail,
-  // validateField,
-  // validatePassword,
-  // validatePostalCode,
-  // validateStreet,
-} from '@features/Validation';
+import { validateData, validatePassword } from '@features/Validation';
 import './Profile.css';
 import { fillDesriptionProps } from './userInfo.tsx';
-import { MyCustomerUpdateAction, _BaseAddress } from '@commercetools/platform-sdk';
+import { MyCustomerChangePassword, MyCustomerUpdateAction, _BaseAddress } from '@commercetools/platform-sdk';
 import { postcodeValidator } from 'postcode-validator';
 
 const apiClient = new ApiClient();
+
+type FieldType = {
+  passwordOld: string;
+  passwordNew: string;
+};
+
+/*
+удалить выше
+*/
 
 export const Profile = () => {
   const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
@@ -29,10 +31,11 @@ export const Profile = () => {
   const hasSpecialCharacters = /[!@#$%'^&*(),.?":{}|<>0-9\\-]|[!$%^&*()_+|~=`{}[\]:/;<>?,.@#]/;
   const emailRegex = /^\S+@\S+\.\S+$/;
 
-  console.log(user);
+  // console.log(user);
 
   const [isUserInfoModalOpened, userInfoModalIsOpen] = useState(false);
   const [isAddressInfoModalOpened, userAddressModalIsOpen] = useState(false);
+  const [isPasswordInfoModalOpened, userPasswordModalIsOpen] = useState(false);
   const [name, setName] = useState(user?.firstName);
   const [lastName, setLastName] = useState(user?.lastName);
   const [email, setEmail] = useState(user?.email);
@@ -43,6 +46,10 @@ export const Profile = () => {
 
   const closeUserInfoModal = () => {
     userInfoModalIsOpen(false);
+  };
+
+  const closePasswordInfoModal = () => {
+    userAddressModalIsOpen(false);
   };
 
   const changeUserData = () => {
@@ -148,6 +155,11 @@ export const Profile = () => {
             })
             .execute()
             .then(() => {
+              messageApi.open({
+                type: 'success',
+                content: `Information successfully updated`,
+                duration: 2,
+              });
               window.location.reload(); // Подумать над тем, как можно сделать без перезагрузки страницы
             });
         }
@@ -194,24 +206,25 @@ export const Profile = () => {
     // Валидируем почту
     let postalCodeError = '';
 
-    if (postalCode !== '') {
-      if (shippingCountry === 'US') {
-        postalCodeError = 'code should be (5 digits): XXXXX or (5-4 digits): XXXXX-XXXX';
-      } else if (shippingCountry === 'RU') {
-        postalCodeError = 'code should be (6 digits): XXXXXX';
-      } else if (shippingCountry === 'FR' || shippingCountry === 'DE') {
-        postalCodeError = 'code should be (5 digits): XXXXX';
-      }
-      if (!postcodeValidator(postalCode, shippingCountry)) {
-        messageApi.open({
-          type: 'error',
-          content: postalCodeError,
-          duration: 2.5,
-          style: {
-            color: 'red',
-          },
-        });
-      }
+    if (shippingCountry === 'US') {
+      postalCodeError = 'code should be (5 digits): XXXXX or (5-4 digits): XXXXX-XXXX';
+    } else if (shippingCountry === 'RU') {
+      postalCodeError = 'code should be (6 digits): XXXXXX';
+    } else if (shippingCountry === 'FR' || shippingCountry === 'DE') {
+      postalCodeError = 'code should be (5 digits): XXXXX';
+    }
+
+    if (!postcodeValidator(postalCode, shippingCountry)) {
+      messageApi.open({
+        type: 'error',
+        content: postalCodeError,
+        duration: 2.5,
+        style: {
+          color: 'red',
+        },
+      });
+    } else {
+      postalCodeError = '';
     }
 
     // Валидируем город
@@ -367,8 +380,12 @@ export const Profile = () => {
             },
           })
           .execute()
-          .then((x) => {
-            console.log(x);
+          .then(() => {
+            messageApi.open({
+              type: 'success',
+              content: `Information successfully updated`,
+              duration: 2,
+            });
             // window.location.reload(); // Подумать над тем, как можно сделать без перезагрузки страницы
           });
       }
@@ -514,9 +531,46 @@ export const Profile = () => {
     userAddressModalIsOpen(true);
   };
 
+  const openPasswordModal = () => {
+    userPasswordModalIsOpen(true);
+  };
+
   const closeAddressInfoModal = () => {
     userAddressModalIsOpen(false);
   };
+
+  async function changePasswordData(values: FieldType) {
+    if (user) {
+      const body: MyCustomerChangePassword = {
+        version: user.version,
+        currentPassword: values.passwordOld,
+        newPassword: values.passwordNew,
+      };
+
+      apiClient.requestBuilder
+        .me()
+        .password()
+        .post({
+          body,
+        })
+        .execute()
+        .then(() => {
+          messageApi.open({
+            type: 'success',
+            content: `Information successfully updated`,
+            duration: 2,
+          });
+        })
+        .catch((error) => {
+          messageApi.open({
+            type: 'error',
+            content: error.message,
+            duration: 2,
+          });
+        });
+      // window.location.reload(); // Подумать над тем, как можно сделать без перезагрузки страницы
+    }
+  }
 
   const userAddressesArray = [];
 
@@ -626,11 +680,17 @@ export const Profile = () => {
           <h2>Profile</h2>
           <div>
             {fillDesriptionProps(user)}
-            <Button type="primary" onClick={openUserModal}>
-              Edit user
-            </Button>
+            <div className="user-data-controls">
+              <Button type="primary" onClick={openUserModal}>
+                Edit user
+              </Button>
+              <Button type="primary" onClick={openPasswordModal}>
+                Edit password
+              </Button>
+            </div>
             {userAddressesArray}
           </div>
+
           <div>
             <Modal isOpen={isUserInfoModalOpened} ariaHideApp={false} onRequestClose={closeUserInfoModal}>
               {contextHolder}
@@ -786,6 +846,38 @@ export const Profile = () => {
                 <div className="modal-controls">
                   <button onClick={changeAddressData}>Submit</button>
                   <button onClick={closeAddressInfoModal}>Close</button>
+                </div>
+              </Form>
+            </Modal>
+
+            <Modal isOpen={isPasswordInfoModalOpened} ariaHideApp={false} onRequestClose={closePasswordInfoModal}>
+              {contextHolder}
+              <h2>Change your password</h2>
+              <Form
+                name="login_form"
+                className="personal-info-form"
+                initialValues={{ remember: true }}
+                onFinish={changePasswordData}
+              >
+                <Form.Item<FieldType>
+                  label="Old password:"
+                  name="passwordOld"
+                  rules={[{ required: true, message: 'Please input your password!' }, { validator: validatePassword }]}
+                >
+                  <Input.Password />
+                </Form.Item>
+                <Form.Item<FieldType>
+                  label="New password:"
+                  name="passwordNew"
+                  rules={[{ required: true, message: 'Please input your password!' }, { validator: validatePassword }]}
+                >
+                  <Input.Password />
+                </Form.Item>
+                <div className="modal-controls">
+                  <Button type="primary" htmlType="submit">
+                    Submit
+                  </Button>
+                  <button onClick={closePasswordInfoModal}>Close</button>
                 </div>
               </Form>
             </Modal>

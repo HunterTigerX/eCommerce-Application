@@ -2,7 +2,11 @@
     text-align: center;
 }
 
-
+.user-data-controls {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
 
 .personal-info-form label {
     display: flex;
