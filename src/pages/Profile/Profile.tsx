@@ -4,7 +4,7 @@ import { Navigate } from 'react-router';
 import { Button, Checkbox, DatePicker, Descriptions, DescriptionsProps, Form, Input, Select, message } from 'antd';
 import { RangePickerProps } from 'antd/es/date-picker';
 import { getName } from 'country-list';
-import dayjs from 'dayjs'; //, { Dayjs }
+import dayjs from 'dayjs';
 import { useAuth } from '@shared/hooks';
 import { ApiClient } from '@app/auth/client';
 import { validateData, validatePassword } from '@features/Validation';
@@ -20,13 +20,10 @@ type FieldType = {
   passwordNew: string;
 };
 
-/*
-удалить выше
-*/
-
 export const Profile = () => {
   const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
   const { user } = useAuth();
+  const { refreshUser } = useAuth();
   const dateFormat = 'YYYY-MM-DD';
   const hasSpecialCharacters = /[!@#$%'^&*(),.?":{}|<>0-9\\-]|[!$%^&*()_+|~=`{}[\]:/;<>?,.@#]/;
   const emailRegex = /^\S+@\S+\.\S+$/;
@@ -49,7 +46,7 @@ export const Profile = () => {
   };
 
   const closePasswordInfoModal = () => {
-    userAddressModalIsOpen(false);
+    userPasswordModalIsOpen(false);
   };
 
   const changeUserData = () => {
@@ -154,13 +151,14 @@ export const Profile = () => {
               },
             })
             .execute()
-            .then(() => {
+            .then(async () => {
               messageApi.open({
                 type: 'success',
                 content: `Information successfully updated`,
                 duration: 2,
               });
-              window.location.reload(); // Подумать над тем, как можно сделать без перезагрузки страницы
+              await refreshUser();
+              closeUserInfoModal();
             });
         }
       }
@@ -194,6 +192,10 @@ export const Profile = () => {
   const [billingAddressCheckBox, setBillingAddressCheckBox] = useState(false);
 
   const [shippingCountry, setShippingCountry] = useState('');
+
+  const closeAddressInfoModal = () => {
+    userAddressModalIsOpen(false);
+  };
 
   const countryOptions = [
     { label: 'United States', value: 'US' },
@@ -244,8 +246,7 @@ export const Profile = () => {
 
     // Валидируем улицу
     let streetError = '';
-
-    if (streetName.length === 0) {
+    if (streetName.length === 0 || streetName.trim() === '') {
       streetError = 'Street name Must contain at least one character';
       messageApi.open({
         type: 'error',
@@ -380,13 +381,14 @@ export const Profile = () => {
             },
           })
           .execute()
-          .then(() => {
+          .then(async () => {
             messageApi.open({
               type: 'success',
               content: `Information successfully updated`,
               duration: 2,
             });
-            // window.location.reload(); // Подумать над тем, как можно сделать без перезагрузки страницы
+            await refreshUser();
+            closeAddressInfoModal();
           });
       }
     }
@@ -483,7 +485,7 @@ export const Profile = () => {
       }
 
       if (userStreetName) {
-        setStreetName(userStreetName);
+        setStreetName(userStreetName.trimStart().trimEnd());
       } else {
         setStreetName('');
       }
@@ -535,10 +537,6 @@ export const Profile = () => {
     userPasswordModalIsOpen(true);
   };
 
-  const closeAddressInfoModal = () => {
-    userAddressModalIsOpen(false);
-  };
-
   async function changePasswordData(values: FieldType) {
     if (user) {
       const body: MyCustomerChangePassword = {
@@ -554,12 +552,14 @@ export const Profile = () => {
           body,
         })
         .execute()
-        .then(() => {
+        .then(async () => {
           messageApi.open({
             type: 'success',
             content: `Information successfully updated`,
             duration: 2,
           });
+          await refreshUser();
+          closePasswordInfoModal();
         })
         .catch((error) => {
           messageApi.open({
@@ -568,11 +568,34 @@ export const Profile = () => {
             duration: 2,
           });
         });
-      // window.location.reload(); // Подумать над тем, как можно сделать без перезагрузки страницы
     }
   }
 
   const userAddressesArray = [];
+
+  function removeAddress(addressId: number): void {
+    const deleteAddressId = user?.addresses[addressId].id as string;
+    if (user) {
+      apiClient.requestBuilder
+        .me()
+        .post({
+          body: {
+            version: user.version,
+            actions: [{ action: 'removeAddress', addressId: deleteAddressId }],
+          },
+        })
+        .execute()
+        .then(async () => {
+          messageApi.open({
+            type: 'success',
+            content: `Address successfully deleted`,
+            duration: 2,
+          });
+          await refreshUser();
+          closeAddressInfoModal();
+        });
+    }
+  }
 
   // Заполняем адреса, проходя по каждому
   if (user) {
@@ -664,12 +687,17 @@ export const Profile = () => {
         <Descriptions title={address.join(', ')} bordered items={items} column={1} key={`descriptions${i}`} />
       );
 
-      const addressButton = (
-        <Button type="primary" key={`button${i}`} onClick={() => openAddressModal(i)}>
-          Edit address
-        </Button>
+      const addressButtons = (
+        <div className="address-controls" key={`buttonDiv${i}`}>
+          <Button type="primary" key={`buttonA${i}`} onClick={() => openAddressModal(i)}>
+            Edit address
+          </Button>
+          <Button type="primary" key={`buttonR${i}`} onClick={() => removeAddress(i)}>
+            Remove address
+          </Button>
+        </div>
       );
-      userAddressesArray.push(userAddress, addressButton);
+      userAddressesArray.push(userAddress, addressButtons);
     }
   }
 
@@ -679,6 +707,7 @@ export const Profile = () => {
         <>
           <h2>Profile</h2>
           <div>
+            {contextHolder}
             {fillDesriptionProps(user)}
             <div className="user-data-controls">
               <Button type="primary" onClick={openUserModal}>
@@ -723,7 +752,9 @@ export const Profile = () => {
                 <br />
                 <div className="modal-controls">
                   <button onClick={changeUserData}>Submit</button>
-                  <button onClick={closeUserInfoModal}>Close</button>
+                  <button type="button" onClick={closeUserInfoModal}>
+                    Close
+                  </button>
                 </div>
               </Form>
             </Modal>
@@ -845,7 +876,9 @@ export const Profile = () => {
 
                 <div className="modal-controls">
                   <button onClick={changeAddressData}>Submit</button>
-                  <button onClick={closeAddressInfoModal}>Close</button>
+                  <button type="button" onClick={closeAddressInfoModal}>
+                    Close
+                  </button>
                 </div>
               </Form>
             </Modal>
@@ -877,7 +910,9 @@ export const Profile = () => {
                   <Button type="primary" htmlType="submit">
                     Submit
                   </Button>
-                  <button onClick={closePasswordInfoModal}>Close</button>
+                  <button type="button" onClick={closePasswordInfoModal}>
+                    Close
+                  </button>
                 </div>
               </Form>
             </Modal>

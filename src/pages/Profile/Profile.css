@@ -2,10 +2,13 @@
     text-align: center;
 }
 
-.user-data-controls {
+.user-data-controls,
+.address-controls {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+    margin-top: 7.5px;
+    margin-bottom: 15px;
 }
 
 .personal-info-form label {
@@ -25,14 +28,9 @@
     width: 200px;
 }
 
-.personal-info-form div {
-    min-width: 13%;
-}
-
 .personal-info-form input {
     background-color: rgba(255, 255, 255, 0.582);
     border-radius: 5px;
-
     padding: 3px;
 }
 
@@ -61,19 +59,15 @@
     padding-top: 4px;
 }
 
-.personal-info-date .ant-form-item .ant-row {
-    width: 100%;
-}
-
+.personal-info-date .ant-form-item .ant-row,
 .personal-info-date .ant-form-item .ant-row .ant-form-item-control-input {
     width: 100%;
-
 }
 
 .ant-picker {
     border-color: black;
 }
 
-.address-info-form div {
-    min-width: 15%;
+.ant-descriptions-item-label {
+    width: 130px !important;
 }
