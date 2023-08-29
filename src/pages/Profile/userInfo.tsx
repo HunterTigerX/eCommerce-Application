@@ -18,6 +18,9 @@ export function fillDesriptionProps(user: Customer) {
     if (`${user?.dateOfBirth}` !== 'undefined') {
       userData.push(['Date of birth', `${user?.dateOfBirth}`]);
     }
+    if (`${user?.email}` !== 'undefined') {
+      userData.push(['Email', `${user?.email}`]);
+    }
     for (let i = 0; i < userData.length; i += 1) {
       newKey += 1;
       items?.push({

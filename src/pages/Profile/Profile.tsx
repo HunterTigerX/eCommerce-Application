@@ -18,6 +18,7 @@ import {
 import './Profile.css';
 import { fillDesriptionProps } from './userInfo.tsx';
 import { MyCustomerUpdateAction, _BaseAddress } from '@commercetools/platform-sdk';
+import { postcodeValidator } from 'postcode-validator';
 
 const apiClient = new ApiClient();
 
@@ -25,12 +26,16 @@ export const Profile = () => {
   const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
   const { user } = useAuth();
   const dateFormat = 'YYYY-MM-DD';
+  const hasSpecialCharacters = /[!@#$%'^&*(),.?":{}|<>0-9\\-]|[!$%^&*()_+|~=`{}[\]:/;<>?,.@#]/;
+  const emailRegex = /^\S+@\S+\.\S+$/;
+
   console.log(user);
 
   const [isUserInfoModalOpened, userInfoModalIsOpen] = useState(false);
   const [isAddressInfoModalOpened, userAddressModalIsOpen] = useState(false);
   const [name, setName] = useState(user?.firstName);
   const [lastName, setLastName] = useState(user?.lastName);
+  const [email, setEmail] = useState(user?.email);
 
   const openUserModal = () => {
     userInfoModalIsOpen(true);
@@ -43,10 +48,49 @@ export const Profile = () => {
   const changeUserData = () => {
     const newName = name ? name : '';
     const newLastName = lastName ? lastName : '';
-    const hasSpecialCharacters = /[!@#$%'^&*(),.?":{}|<>0-9\\-]|[!$%^&*()_+|~=`{}[\]:/;<>?,.@#]/;
+    const newEmail = email ? email : '';
+
     const newDateInput = document.getElementById('dateOfBirth') as HTMLInputElement;
 
-    if (hasSpecialCharacters.test(newName) || newName.length === 0) {
+    if (!emailRegex.test(newEmail)) {
+      if (!newEmail.includes('@')) {
+        messageApi.open({
+          type: 'error',
+          content: `Email address must contain an '@' symbol.`,
+          duration: 2,
+          style: {
+            color: 'red',
+          },
+        });
+      } else if (newEmail.split('@')[1].trim() === '') {
+        messageApi.open({
+          type: 'error',
+          content: 'Email address must contain a domain name.',
+          duration: 2,
+          style: {
+            color: 'red',
+          },
+        });
+      } else if (newEmail.trim() === '') {
+        messageApi.open({
+          type: 'error',
+          content: 'Email address must not contain leading or trailing whitespace.',
+          duration: 2,
+          style: {
+            color: 'red',
+          },
+        });
+      } else {
+        messageApi.open({
+          type: 'error',
+          content: 'Email address must be properly formatted',
+          duration: 2,
+          style: {
+            color: 'red',
+          },
+        });
+      }
+    } else if (hasSpecialCharacters.test(newName) || newName.length === 0) {
       messageApi.open({
         type: 'error',
         content: 'First name Must contain at least one character and no special characters or numbers',
@@ -94,6 +138,10 @@ export const Profile = () => {
                   {
                     action: 'setDateOfBirth',
                     dateOfBirth: newDateInput.value,
+                  },
+                  {
+                    action: 'changeEmail',
+                    email: newEmail,
                   },
                 ],
               },
@@ -143,136 +191,187 @@ export const Profile = () => {
   ];
 
   function changeAddressData() {
-    const arrayOfKeys = [
-      'streetName',
-      'streetNumber',
-      'additionalStreetInfo',
-      'additionalStreetInfo',
-      'postalCode',
-      'city',
-      'region',
-      'state',
-      'building',
-      'apartment',
-      'pOBox',
-      'additionalAddressInfo',
-    ];
-    const arrayOfValues = [
-      streetName,
-      streetNumber,
-      additionalStreetInfo,
-      additionalStreetInfo,
-      postalCode,
-      city,
-      region,
-      state,
-      building,
-      apartment,
-      pOBox,
-      additionalAddressInfo,
-    ];
+    // Валидируем почту
+    let postalCodeError = '';
 
-    const addressArray = [
-      ['id', clickedAddressId],
-      ['country', shippingCountry],
-    ];
-
-    const defaultBillingAddressId = user?.defaultBillingAddressId;
-    const defaultShippingAddressId = user?.defaultShippingAddressId;
-    let shippingAddressList: string[] = [];
-    let billingAddressList: string[] = [];
-    if (user?.shippingAddressIds) {
-      shippingAddressList = user?.shippingAddressIds;
-    }
-    if (user?.billingAddressIds) {
-      billingAddressList = user?.billingAddressIds;
-    }
-
-    for (let i = 0; i < arrayOfValues.length; i += 1) {
-      if (arrayOfValues[i] !== '') {
-        addressArray.push([arrayOfKeys[i], arrayOfValues[i]]);
+    if (postalCode !== '') {
+      if (shippingCountry === 'US') {
+        postalCodeError = 'code should be (5 digits): XXXXX or (5-4 digits): XXXXX-XXXX';
+      } else if (shippingCountry === 'RU') {
+        postalCodeError = 'code should be (6 digits): XXXXXX';
+      } else if (shippingCountry === 'FR' || shippingCountry === 'DE') {
+        postalCodeError = 'code should be (5 digits): XXXXX';
+      }
+      if (!postcodeValidator(postalCode, shippingCountry)) {
+        messageApi.open({
+          type: 'error',
+          content: postalCodeError,
+          duration: 2.5,
+          style: {
+            color: 'red',
+          },
+        });
       }
     }
 
-    const baseAddressObj: _BaseAddress = Object.fromEntries(addressArray);
+    // Валидируем город
+    let cityError = '';
 
-    const actionsArray: MyCustomerUpdateAction[] = [
-      {
-        action: 'changeAddress',
-        addressId: clickedAddressId,
-        address: baseAddressObj,
-      },
-    ];
-
-    // Проверяем биллинг и шиппинг адреса, если их включили и они не были таковыми,
-    // добавляем им новые параметры, но если параметры были и мы выключили чекбоксы,
-    // то проверяя наличие параметров, убираем их.
-    if (shippingAddressCheckBox && !shippingAddressList.includes(clickedAddressId)) {
-      actionsArray.push({
-        action: 'addShippingAddressId',
-        addressId: clickedAddressId,
-      });
-    } else if (!shippingAddressCheckBox && shippingAddressList.includes(clickedAddressId)) {
-      actionsArray.push({
-        action: 'removeShippingAddressId',
-        addressId: clickedAddressId,
+    if (hasSpecialCharacters.test(city) || city.length === 0) {
+      cityError = 'City name Must contain at least one character and no special characters or numbers';
+      messageApi.open({
+        type: 'error',
+        content: 'City name Must contain at least one character and no special characters or numbers',
+        duration: 2,
+        style: {
+          color: 'red',
+        },
       });
     }
 
-    if (billingAddressCheckBox && !billingAddressList.includes(clickedAddressId)) {
-      actionsArray.push({
-        action: 'addBillingAddressId',
-        addressId: clickedAddressId,
-      });
-    } else if (!billingAddressCheckBox && billingAddressList.includes(clickedAddressId)) {
-      actionsArray.push({
-        action: 'removeBillingAddressId',
-        addressId: clickedAddressId,
+    // Валидируем улицу
+    let streetError = '';
+
+    if (streetName.length === 0) {
+      streetError = 'Street name Must contain at least one character';
+      messageApi.open({
+        type: 'error',
+        content: 'Street name Must contain at least one character',
+        duration: 2,
+        style: {
+          color: 'red',
+        },
       });
     }
 
-    // Если адрес стоит по умолчанию, делаем его таковым, если не стоит, проверяем,
-    // был ли он до этого адресом по умолчанию, и если да, то сбрасываем адрем по умолчанию
-    if (defaultBillingAddressCheckBox) {
-      actionsArray.push({
-        action: 'setDefaultBillingAddress',
-        addressId: clickedAddressId,
-      });
-    } else if (clickedAddressId === defaultBillingAddressId) {
-      actionsArray.push({
-        action: 'setDefaultBillingAddress',
-      });
-    }
+    if (postalCodeError === '' && cityError === '' && streetError === '') {
+      const arrayOfKeys = [
+        'streetName',
+        'streetNumber',
+        'additionalStreetInfo',
+        'additionalStreetInfo',
+        'postalCode',
+        'city',
+        'region',
+        'state',
+        'building',
+        'apartment',
+        'pOBox',
+        'additionalAddressInfo',
+      ];
+      const arrayOfValues = [
+        streetName,
+        streetNumber,
+        additionalStreetInfo,
+        additionalStreetInfo,
+        postalCode,
+        city,
+        region,
+        state,
+        building,
+        apartment,
+        pOBox,
+        additionalAddressInfo,
+      ];
 
-    if (defaultShippingAddressCheckBox) {
-      actionsArray.push({
-        action: 'setDefaultShippingAddress',
-        addressId: clickedAddressId,
-      });
-    } else if (clickedAddressId === defaultShippingAddressId) {
-      actionsArray.push({
-        action: 'setDefaultShippingAddress',
-      });
-    }
+      const addressArray = [
+        ['id', clickedAddressId],
+        ['country', shippingCountry],
+      ];
 
-    console.log(baseAddressObj);
-    console.log('actionsArray', actionsArray);
+      const defaultBillingAddressId = user?.defaultBillingAddressId;
+      const defaultShippingAddressId = user?.defaultShippingAddressId;
+      let shippingAddressList: string[] = [];
+      let billingAddressList: string[] = [];
+      if (user?.shippingAddressIds) {
+        shippingAddressList = user?.shippingAddressIds;
+      }
+      if (user?.billingAddressIds) {
+        billingAddressList = user?.billingAddressIds;
+      }
 
-    // ЧЕКБОСЫ СЧИТАТЬ
-    if (user) {
-      apiClient.requestBuilder
-        .me()
-        .post({
-          body: {
-            version: user.version,
-            actions: actionsArray,
-          },
-        })
-        .execute()
-        .then((x) => {
-          console.log(x);
-          window.location.reload(); // Подумать над тем, как можно сделать без перезагрузки страницы
+      for (let i = 0; i < arrayOfValues.length; i += 1) {
+        if (arrayOfValues[i] !== '') {
+          addressArray.push([arrayOfKeys[i], arrayOfValues[i]]);
+        }
+      }
+
+      const baseAddressObj: _BaseAddress = Object.fromEntries(addressArray);
+
+      const actionsArray: MyCustomerUpdateAction[] = [
+        {
+          action: 'changeAddress',
+          addressId: clickedAddressId,
+          address: baseAddressObj,
+        },
+      ];
+
+      // Проверяем биллинг и шиппинг адреса, если их включили и они не были таковыми,
+      // добавляем им новые параметры, но если параметры были и мы выключили чекбоксы,
+      // то проверяя наличие параметров, убираем их.
+      if (shippingAddressCheckBox && !shippingAddressList.includes(clickedAddressId)) {
+        actionsArray.push({
+          action: 'addShippingAddressId',
+          addressId: clickedAddressId,
         });
+      } else if (!shippingAddressCheckBox && shippingAddressList.includes(clickedAddressId)) {
+        actionsArray.push({
+          action: 'removeShippingAddressId',
+          addressId: clickedAddressId,
+        });
+      }
+
+      if (billingAddressCheckBox && !billingAddressList.includes(clickedAddressId)) {
+        actionsArray.push({
+          action: 'addBillingAddressId',
+          addressId: clickedAddressId,
+        });
+      } else if (!billingAddressCheckBox && billingAddressList.includes(clickedAddressId)) {
+        actionsArray.push({
+          action: 'removeBillingAddressId',
+          addressId: clickedAddressId,
+        });
+      }
+
+      // Если адрес стоит по умолчанию, делаем его таковым, если не стоит, проверяем,
+      // был ли он до этого адресом по умолчанию, и если да, то сбрасываем адрем по умолчанию
+      if (defaultBillingAddressCheckBox) {
+        actionsArray.push({
+          action: 'setDefaultBillingAddress',
+          addressId: clickedAddressId,
+        });
+      } else if (clickedAddressId === defaultBillingAddressId) {
+        actionsArray.push({
+          action: 'setDefaultBillingAddress',
+        });
+      }
+
+      if (defaultShippingAddressCheckBox) {
+        actionsArray.push({
+          action: 'setDefaultShippingAddress',
+          addressId: clickedAddressId,
+        });
+      } else if (clickedAddressId === defaultShippingAddressId) {
+        actionsArray.push({
+          action: 'setDefaultShippingAddress',
+        });
+      }
+
+      if (user) {
+        apiClient.requestBuilder
+          .me()
+          .post({
+            body: {
+              version: user.version,
+              actions: actionsArray,
+            },
+          })
+          .execute()
+          .then((x) => {
+            console.log(x);
+            // window.location.reload(); // Подумать над тем, как можно сделать без перезагрузки страницы
+          });
+      }
     }
   }
 
@@ -548,6 +647,11 @@ export const Profile = () => {
                 <label>
                   <div>Last Name:</div>
                   <input type="text" value={lastName} onChange={(event) => setLastName(event.target.value)} />
+                </label>
+                <br />
+                <label>
+                  <div>Email:</div>
+                  <input type="text" value={email} onChange={(event) => setEmail(event.target.value)} />
                 </label>
                 <br />
                 <label className="personal-info-date">
