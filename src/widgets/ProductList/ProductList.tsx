@@ -10,7 +10,7 @@ export const ProductList = () => {
 
   return (
     <>
-      {productsLoading && <Spin tip="Loading" size="large" />}
+      {productsLoading && <Spin size="large" />}
       {products && (
         <>
           <div className={styles.produckListContainer}>
