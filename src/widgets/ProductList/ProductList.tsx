@@ -1,16 +1,16 @@
 import { Spin } from 'antd';
-import { ProductCard } from './ui';
-import { useProductProjections } from '@shared/api/products';
+import { ProductCard, type ProductCardMap } from './ui';
 import styles from './ProductList.module.css';
 
-export const ProductList = () => {
-  const {
-    state: { products, loading: productsLoading },
-  } = useProductProjections();
+interface ProductListProps {
+  products: ProductCardMap[];
+  loading: boolean;
+}
 
+export const ProductList = ({ products, loading }: ProductListProps) => {
   return (
     <>
-      {productsLoading && <Spin size="large" />}
+      {loading && <Spin size="large" />}
       {products && (
         <>
           <div className={styles.produckListContainer}>

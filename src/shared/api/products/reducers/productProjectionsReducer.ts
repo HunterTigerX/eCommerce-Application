@@ -23,18 +23,18 @@ type ProductProjectionsQueryArgs = {
   [key: string]: QueryParam;
 };
 
-const enum ProductProjectionsQueryArgsActionTypes {
+const enum ProductProjectionsActionTypes {
   SET_SEARCH = 'SET_SEARCH',
   CLEAR_SEARCH = 'CLEAR_SEARCH',
 }
 
 type SetSearchAction = {
-  type: ProductProjectionsQueryArgsActionTypes.SET_SEARCH;
+  type: ProductProjectionsActionTypes.SET_SEARCH;
   payload: string;
 };
 
 type ClearSearchAction = {
-  type: ProductProjectionsQueryArgsActionTypes.CLEAR_SEARCH;
+  type: ProductProjectionsActionTypes.CLEAR_SEARCH;
   payload?: undefined;
 };
 
@@ -45,14 +45,14 @@ const productProjectionsQueryArgsReducer = (
   { type, payload }: ProductProjectionsQueryArgsActions
 ) => {
   switch (type) {
-    case ProductProjectionsQueryArgsActionTypes.SET_SEARCH: {
+    case ProductProjectionsActionTypes.SET_SEARCH: {
       return {
         ...state,
         fuzzy: true,
         'text.en': payload,
       };
     }
-    case ProductProjectionsQueryArgsActionTypes.CLEAR_SEARCH: {
+    case ProductProjectionsActionTypes.CLEAR_SEARCH: {
       delete state.fuzzy;
       delete state['text.en'];
 
@@ -66,4 +66,4 @@ const productProjectionsQueryArgsReducer = (
   }
 };
 
-export { productProjectionsQueryArgsReducer, ProductProjectionsQueryArgsActionTypes, type ProductProjectionsQueryArgs };
+export { productProjectionsQueryArgsReducer, ProductProjectionsActionTypes, type ProductProjectionsQueryArgs };

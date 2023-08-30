@@ -5,7 +5,7 @@ import { useApiRequest } from '@shared/api/core';
 import {
   type ProductProjectionsQueryArgs,
   productProjectionsQueryArgsReducer,
-  ProductProjectionsQueryArgsActionTypes,
+  ProductProjectionsActionTypes,
 } from '@shared/api/products/reducers';
 
 const mapResults = (results: ProductProjection[] | null) => {
@@ -37,9 +37,10 @@ const mapResults = (results: ProductProjection[] | null) => {
     : [];
 };
 
-const productProjectionsQueryArgsInitialValue = {
+const productProjectionsQueryArgsInitialValue: ProductProjectionsQueryArgs = {
   limit: 20,
   priceCurrency: import.meta.env.VITE_CTP_DEFAULT_CURRENCY,
+  // 'filter.query': 'categories.id:subtree("e663dd66-bed3-4692-bffb-8af2b0dc929a")',
 };
 
 const useProductProjections = (initialValue: ProductProjectionsQueryArgs = productProjectionsQueryArgsInitialValue) => {
@@ -58,6 +59,7 @@ const useProductProjections = (initialValue: ProductProjectionsQueryArgs = produ
   return {
     state: {
       products: mapResults(data?.results || null),
+      total: data?.total || 0,
       error,
       loading,
     },
@@ -65,4 +67,4 @@ const useProductProjections = (initialValue: ProductProjectionsQueryArgs = produ
   };
 };
 
-export { useProductProjections, ProductProjectionsQueryArgsActionTypes };
+export { useProductProjections, ProductProjectionsActionTypes };

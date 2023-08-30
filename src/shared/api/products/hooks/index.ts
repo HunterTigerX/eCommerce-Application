@@ -1,2 +1,2 @@
-export { useProductProjections, ProductProjectionsQueryArgsActionTypes } from './useProductProjections';
-export { type ProductSuggestionsQueryArgs, useProductSuggestions } from './useProductSuggestions';
+export { useProductProjections, ProductProjectionsActionTypes } from './useProductProjections';
+export { ProductSuggestionsActionTypes, useProductSuggestions } from './useProductSuggestions';

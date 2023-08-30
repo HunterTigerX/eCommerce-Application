@@ -1,12 +1,12 @@
 export {
   productProjectionsQueryArgsReducer,
-  ProductProjectionsQueryArgsActionTypes,
+  ProductProjectionsActionTypes,
   type ProductProjectionsQueryArgs,
 } from './productProjectionsReducer';
 
 export {
   type ProductSuggestionsQueryArgs,
-  ProductSuggestionsQueryArgsActionTypes,
+  ProductSuggestionsActionTypes,
   productSuggestionsQueryArgsReducer,
-  SEARCH_KEYWORDS_LANGUAGE,
+  SEARCH_KEYWORDS_ARG,
 } from './productSuggestionsReducer';

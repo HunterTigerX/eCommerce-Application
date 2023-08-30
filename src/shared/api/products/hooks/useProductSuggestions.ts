@@ -4,9 +4,9 @@ import { useApiRequest } from '@shared/api/core';
 import type { Suggestion } from '@commercetools/platform-sdk';
 import {
   type ProductSuggestionsQueryArgs,
-  ProductSuggestionsQueryArgsActionTypes,
+  ProductSuggestionsActionTypes,
   productSuggestionsQueryArgsReducer,
-  SEARCH_KEYWORDS_LANGUAGE,
+  SEARCH_KEYWORDS_ARG,
 } from '@shared/api/products/reducers';
 
 const mapSuggestions = (suggestions: Suggestion[] | null) => {
@@ -22,7 +22,7 @@ const useProductSuggestions = (initialValue: ProductSuggestionsQueryArgs = produ
 
   const request = useMemo(
     () =>
-      queryArgs[SEARCH_KEYWORDS_LANGUAGE]
+      queryArgs[SEARCH_KEYWORDS_ARG]
         ? ApiClient.getInstance()
             .requestBuilder.productProjections()
             .suggest()
@@ -39,7 +39,7 @@ const useProductSuggestions = (initialValue: ProductSuggestionsQueryArgs = produ
 
   return {
     state: {
-      suggestions: mapSuggestions(queryArgs[SEARCH_KEYWORDS_LANGUAGE] ? data && data[SEARCH_KEYWORDS_LANGUAGE] : null),
+      suggestions: mapSuggestions(queryArgs[SEARCH_KEYWORDS_ARG] ? data && data[SEARCH_KEYWORDS_ARG] : null),
       error,
       loading,
     },
@@ -47,4 +47,4 @@ const useProductSuggestions = (initialValue: ProductSuggestionsQueryArgs = produ
   };
 };
 
-export { useProductSuggestions, ProductSuggestionsQueryArgsActionTypes };
+export { useProductSuggestions, ProductSuggestionsActionTypes };
