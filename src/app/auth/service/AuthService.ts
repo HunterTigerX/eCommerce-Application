@@ -84,7 +84,7 @@ export class AuthService {
   }
 
   public async refreshUser(): Promise<void> {
-    const response = await this.client.requestBuilder.me().get().execute();
-    this.user = response.body;
+    const updatedUser = await this.client.requestBuilder.me().get().execute();
+    this.user = updatedUser.body;
   }
 }
