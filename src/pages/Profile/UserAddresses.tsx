@@ -192,7 +192,6 @@ export function ReturnAddresses(user: Customer): JSX.Element {
 
   // Функция для смены данных адреса, срабатывает при сабмите на смену адреса
   function changeAddressData() {
-    console.log(shippingCountry);
     // Валидируем почту
     let postalCodeError = '';
 
