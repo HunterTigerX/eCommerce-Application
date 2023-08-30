@@ -28,9 +28,14 @@
     width: 200px;
 }
 
+.personal-info-form div {
+    min-width: 13%;
+}
+
 .personal-info-form input {
     background-color: rgba(255, 255, 255, 0.582);
     border-radius: 5px;
+
     padding: 3px;
 }
 
@@ -59,13 +64,18 @@
     padding-top: 4px;
 }
 
-.personal-info-date .ant-form-item .ant-row,
-.personal-info-date .ant-form-item .ant-row .ant-form-item-control-input {
+.personal-info-date .ant-form-item .ant-row .ant-form-item-control-input,
+.personal-info-date .ant-form-item .ant-row {
     width: 100%;
+
 }
 
 .ant-picker {
     border-color: black;
+}
+
+.address-info-form div {
+    min-width: 15%;
 }
 
 .ant-descriptions-item-label {

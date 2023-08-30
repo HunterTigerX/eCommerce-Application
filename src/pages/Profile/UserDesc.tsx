@@ -1,7 +1,8 @@
 import { Customer } from '@commercetools/platform-sdk';
-import { Descriptions, DescriptionsProps } from 'antd';
+import { DescriptionsProps, Descriptions } from 'antd';
 
-export function fillDesriptionProps(user: Customer) {
+// Окно информации о пользователе (Имя, Фамилия, Почта) на странице
+export function FillDesriptionProps(user: Customer) {
   const items: DescriptionsProps['items'] = [];
 
   let newKey = 1;
