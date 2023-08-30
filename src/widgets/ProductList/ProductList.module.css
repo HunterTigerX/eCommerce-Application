@@ -1,0 +1,26 @@
+.produck-list-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-column-gap: 30px;
+  column-gap: 30px;
+  grid-row-gap: 32px;
+  row-gap: 32px;
+}
+@media only screen and (max-width: 1024px) {
+  .produck-list-container {
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    grid-column-gap: 25px;
+    column-gap: 25px;
+    grid-row-gap: 28px;
+    row-gap: 28px;
+  }
+}
+@media only screen and (max-width: 500px) {
+  .produck-list-container {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-column-gap: 8px;
+    column-gap: 8px;
+    grid-row-gap: 24px;
+    row-gap: 24px;
+  }
+}
