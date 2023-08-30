@@ -11,7 +11,7 @@ interface AuthProviderValue {
   signIn: (credentials: UserAuthOptions) => Promise<AuthResponse>;
   signUp: (credentials: CustomerDraft) => Promise<AuthResponse>;
   signOut: () => Promise<void>;
-  refreshUser: () => Promise<string>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthProviderValue>({
@@ -19,7 +19,7 @@ const AuthContext = createContext<AuthProviderValue>({
   signIn: () => Promise.resolve({ success: false, message: '' }),
   signUp: () => Promise.resolve({ success: false, message: '' }),
   signOut: () => Promise.resolve(),
-  refreshUser: () => Promise.resolve('success'),
+  refreshUser: () => Promise.resolve(),
 });
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -46,10 +46,9 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     setCustomer(null);
   };
 
-  const refreshUser = async (): Promise<string> => {
+  const refreshUser = async (): Promise<void> => {
     await authService.refreshUser();
     setCustomer(authService.user);
-    return 'success';
   };
 
   const value: AuthProviderValue = {
