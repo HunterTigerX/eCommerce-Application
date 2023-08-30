@@ -3,7 +3,7 @@ import type { ProductProjection } from '@commercetools/platform-sdk';
 import { ApiClient } from '@app/auth/client';
 import { useApiRequest } from '@shared/api/core';
 import {
-  ProductProjectionsQueryArgs,
+  type ProductProjectionsQueryArgs,
   productProjectionsQueryArgsReducer,
   ProductProjectionsQueryArgsActionTypes,
 } from '@shared/api/products/reducers';
@@ -11,10 +11,27 @@ import {
 const mapResults = (results: ProductProjection[] | null) => {
   return results
     ? results.map((result) => {
+        const id = result.id;
+        const title = result.name.en;
+        const description = result.metaDescription?.en || null;
+        const price = result.masterVariant.price;
+        const discount = price?.discounted;
+        const urlImg = result.masterVariant.images ? result.masterVariant.images[0].url : '';
+        let displayedPrice = null;
+        let displayedDiscount = null;
+        if (price) {
+          displayedPrice = price.value.centAmount / Math.pow(10, price.value.fractionDigits);
+        }
+        if (price && discount) {
+          displayedDiscount = price.value.centAmount / Math.pow(10, price.value.fractionDigits);
+        }
         return {
-          title: result.name.en,
-          description: result.masterVariant.price ? '¢' + result.masterVariant.price.value.centAmount : null,
-          avatar: result.masterVariant.images ? result.masterVariant.images[0].url : null,
+          id: id,
+          title: title,
+          description: description,
+          price: displayedPrice,
+          discount: displayedDiscount,
+          urlImg: urlImg,
         };
       })
     : [];
