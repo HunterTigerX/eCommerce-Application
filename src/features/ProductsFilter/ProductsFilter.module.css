@@ -1,0 +1,24 @@
+.product-filter {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.product-search {
+  width: 300px;
+}
+
+.controll {
+  display: flex;
+  align-items: center;
+  column-gap: var(--spacing-md);
+}
+@media only screen and (max-width: 1200px) {
+}
+@media only screen and (max-width: 992px) {
+}
+@media only screen and (max-width: 768px) {
+}
+
+@media only screen and (max-width: 576px) {
+}
