@@ -41,26 +41,6 @@ const getFullPath = (category: Category, categories: Category[]) => {
   return result.split('/').reverse().join(' / ');
 };
 
-const findCategoryPath = (nodes: CategoryTreeNode[], value: string) => {
-  let result = '';
-
-  for (const node of nodes) {
-    if (node.value === value) {
-      result = node.path;
-      return result;
-    }
-
-    if (node.children.length) {
-      result = findCategoryPath(node.children, value);
-      if (result) {
-        break;
-      }
-    }
-  }
-
-  return result;
-};
-
 type CategoriesTreeNodesRecord = Record<string, CategoryTreeNode>;
 
 const mapCategories = (categories: Category[]): CategoriesTreeNodesRecord => {
@@ -115,7 +95,7 @@ const Categories = ({ onSelect }: { onSelect: (id: string) => void }) => {
   const [treeData, setTreeData] = useState<CategoryTreeNode[]>([]);
 
   const onChange = (newValue: string) => {
-    setValue(() => findCategoryPath(treeData, newValue));
+    setValue(newValue);
     onSelect(newValue);
   };
 
@@ -138,6 +118,7 @@ const Categories = ({ onSelect }: { onSelect: (id: string) => void }) => {
       placeholder="Categories"
       allowClear
       treeDefaultExpandAll={false}
+      treeNodeLabelProp="path"
       onChange={onChange}
       treeData={treeData}
       treeLine
