@@ -58,13 +58,14 @@ const getAllCategoriesRequest = ApiClient.getInstance()
     },
   });
 
-const Categories = () => {
-  const { data } = useApiRequest(getAllCategoriesRequest);
+const Categories = ({ onSelect }: { onSelect: (id: string) => void }) => {
+  const { data, loading } = useApiRequest(getAllCategoriesRequest);
   const [value, setValue] = useState<string | undefined>(undefined);
   const [treeData, setTreeData] = useState<CategoryTreeNode[]>([]);
 
   const onChange = (newValue: string) => {
     setValue(newValue);
+    onSelect(newValue);
   };
 
   useEffect(() => {
@@ -79,6 +80,7 @@ const Categories = () => {
   return (
     <TreeSelect
       showSearch
+      disabled={loading}
       style={{ width: 500 }}
       size="large"
       value={value}

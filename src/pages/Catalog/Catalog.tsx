@@ -1,4 +1,4 @@
-import { AutoComplete } from 'antd';
+import { AutoComplete, Button } from 'antd';
 import {
   useProductProjections,
   ProductProjectionsActionTypes,
@@ -33,9 +33,19 @@ const Catalog = () => {
     setProducts({ type: ProductProjectionsActionTypes.SET_SEARCH, payload: text });
   };
 
+  const handleSort = () => {
+    if (Math.random() > 0.5) {
+      setProducts({ type: ProductProjectionsActionTypes.SORT_BY_PRICE, payload: 'desc' });
+    } else {
+      setProducts({ type: ProductProjectionsActionTypes.SORT_BY_PRICE, payload: 'asc' });
+    }
+  };
+
   return (
     <>
-      <Categories />
+      <Categories
+        onSelect={(id: string) => setProducts({ type: ProductProjectionsActionTypes.SET_CATEGORY, payload: id })}
+      />
       <h2>Catalog Products</h2>
       <AutoComplete
         onSearch={(text) => handleSearch(text)}
@@ -44,6 +54,9 @@ const Catalog = () => {
         placeholder="Search..."
         style={{ width: 300 }}
       />
+      <Button onClick={handleSort} type="primary">
+        Sort By Price
+      </Button>
       {products && (
         <div style={{ marginTop: '1.5rem' }}>
           <ProductList products={products} loading={loading} />

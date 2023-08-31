@@ -23,7 +23,7 @@ const mapResults = (results: ProductProjection[] | null) => {
           displayedPrice = price.value.centAmount / Math.pow(10, price.value.fractionDigits);
         }
         if (price && discount) {
-          displayedDiscount = price.value.centAmount / Math.pow(10, price.value.fractionDigits);
+          displayedDiscount = discount.value.centAmount / Math.pow(10, price.value.fractionDigits);
         }
         return {
           id: id,
@@ -40,7 +40,6 @@ const mapResults = (results: ProductProjection[] | null) => {
 const productProjectionsQueryArgsInitialValue: ProductProjectionsQueryArgs = {
   limit: 20,
   priceCurrency: import.meta.env.VITE_CTP_DEFAULT_CURRENCY,
-  // 'filter.query': 'categories.id:subtree("e663dd66-bed3-4692-bffb-8af2b0dc929a")',
 };
 
 const useProductProjections = (initialValue: ProductProjectionsQueryArgs = productProjectionsQueryArgsInitialValue) => {
