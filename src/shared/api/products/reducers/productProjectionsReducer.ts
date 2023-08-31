@@ -29,6 +29,8 @@ const enum ProductProjectionsActionTypes {
   SET_CATEGORY = 'SET_CATEGORY',
   SET_SORT = 'SET_SORT',
   CLEAR_SORT = 'CLEAR_SORT',
+  CLEAR_FILTER = 'CLEAR_FILTER',
+  RESET = 'RESET',
 }
 
 type SetSearchAction = {
@@ -56,12 +58,24 @@ type ClearSortAction = {
   payload?: undefined;
 };
 
+type ResetAction = {
+  type: ProductProjectionsActionTypes.RESET;
+  payload?: undefined;
+};
+
+type ClearFilterAction = {
+  type: ProductProjectionsActionTypes.CLEAR_FILTER;
+  payload?: undefined;
+};
+
 type ProductProjectionsQueryArgsActions =
   | SetSearchAction
   | ClearSearchAction
   | SetCategoryAction
   | SetSortAction
-  | ClearSortAction;
+  | ClearSortAction
+  | ResetAction
+  | ClearFilterAction;
 
 const productProjectionsQueryArgsReducer = (
   state: ProductProjectionsQueryArgs,
@@ -110,7 +124,27 @@ const productProjectionsQueryArgsReducer = (
 
       return state;
     }
+    case ProductProjectionsActionTypes.CLEAR_SORT: {
+      delete state.sort;
 
+      return {
+        ...state,
+      };
+    }
+    case ProductProjectionsActionTypes.CLEAR_FILTER: {
+      delete state.filter;
+      // delete state['filter.query']
+
+      return {
+        ...state,
+      };
+    }
+    case ProductProjectionsActionTypes.RESET: {
+      return {
+        limit: 20,
+        priceCurrency: import.meta.env.VITE_CTP_DEFAULT_CURRENCY,
+      };
+    }
     default: {
       return state;
     }
