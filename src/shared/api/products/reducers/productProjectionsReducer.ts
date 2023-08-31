@@ -27,11 +27,9 @@ const enum ProductProjectionsActionTypes {
   SET_SEARCH = 'SET_SEARCH',
   CLEAR_SEARCH = 'CLEAR_SEARCH',
   SET_CATEGORY = 'SET_CATEGORY',
-  SORT_BY_PRICE = 'SORT_BY_PRICE',
-  SORT_BY_NAME = 'SORT_BY_NAME',
+  SET_SORT = 'SET_SORT',
+  CLEAR_SORT = 'CLEAR_SORT',
 }
-
-type SortOrder = 'asc' | 'desc';
 
 type SetSearchAction = {
   type: ProductProjectionsActionTypes.SET_SEARCH;
@@ -48,22 +46,22 @@ type SetCategoryAction = {
   payload: string;
 };
 
-type SortByPriceAction = {
-  type: ProductProjectionsActionTypes.SORT_BY_PRICE;
-  payload: SortOrder;
+type SetSortAction = {
+  type: ProductProjectionsActionTypes.SET_SORT;
+  payload: [string, string];
 };
 
-type SortByNameAction = {
-  type: ProductProjectionsActionTypes.SORT_BY_NAME;
-  payload: SortOrder;
+type ClearSortAction = {
+  type: ProductProjectionsActionTypes.CLEAR_SORT;
+  payload?: undefined;
 };
 
 type ProductProjectionsQueryArgsActions =
   | SetSearchAction
   | ClearSearchAction
   | SetCategoryAction
-  | SortByPriceAction
-  | SortByNameAction;
+  | SetSortAction
+  | ClearSortAction;
 
 const productProjectionsQueryArgsReducer = (
   state: ProductProjectionsQueryArgs,
@@ -91,18 +89,28 @@ const productProjectionsQueryArgsReducer = (
         'filter.query': `categories.id:subtree("${payload}")`,
       };
     }
-    case ProductProjectionsActionTypes.SORT_BY_PRICE: {
-      return {
-        ...state,
-        sort: `price ${payload}`,
-      };
+    case ProductProjectionsActionTypes.SET_SORT: {
+      const [sortType, order] = payload;
+
+      if (order === 'asc' || order === 'desc') {
+        if (sortType === 'price') {
+          return {
+            ...state,
+            sort: `price ${order}`,
+          };
+        }
+
+        if (sortType === 'name') {
+          return {
+            ...state,
+            sort: `name.en ${order}`,
+          };
+        }
+      }
+
+      return state;
     }
-    case ProductProjectionsActionTypes.SORT_BY_NAME: {
-      return {
-        ...state,
-        sort: `name.en ${payload}`,
-      };
-    }
+
     default: {
       return state;
     }

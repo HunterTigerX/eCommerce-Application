@@ -1,8 +1,9 @@
-import { ApiClient } from '@app/auth/client';
-import { TreeSelect } from 'antd';
-import { useApiRequest } from '@shared/hooks';
-import { Category, CategoryReference } from '@commercetools/platform-sdk';
 import { useEffect, useState } from 'react';
+import { TreeSelect } from 'antd';
+import { DownOutlined } from '@ant-design/icons';
+import { Category, CategoryReference } from '@commercetools/platform-sdk';
+import { ApiClient } from '@app/auth/client';
+import { useApiRequest } from '@shared/hooks';
 
 interface CategoryTreeNode {
   value: string; // id
@@ -13,6 +14,7 @@ interface CategoryTreeNode {
 }
 
 const getFullPath = (category: Category, categories: Category[]) => {
+  const SEPARATOR = ' / ';
   let result = category.name.en;
   let root: Category | undefined;
 
@@ -22,7 +24,7 @@ const getFullPath = (category: Category, categories: Category[]) => {
 
   while (current) {
     if (current.obj) {
-      result += '/' + current.obj.name.en;
+      result += SEPARATOR + current.obj.name.en;
 
       current = current.obj.parent;
     } else {
@@ -35,10 +37,10 @@ const getFullPath = (category: Category, categories: Category[]) => {
   }
 
   if (root) {
-    result += '/' + root.name.en;
+    result += SEPARATOR + root.name.en;
   }
 
-  return result.split('/').reverse().join(' / ');
+  return result.split(SEPARATOR).reverse().join(SEPARATOR);
 };
 
 type CategoriesTreeNodesRecord = Record<string, CategoryTreeNode>;
@@ -91,11 +93,11 @@ const getAllCategoriesRequest = ApiClient.getInstance()
 
 const Categories = ({ onSelect }: { onSelect: (id: string) => void }) => {
   const { data, loading } = useApiRequest(getAllCategoriesRequest);
-  const [value, setValue] = useState<string | undefined>(undefined);
+  // const [value, setValue] = useState<string | undefined>(undefined);
   const [treeData, setTreeData] = useState<CategoryTreeNode[]>([]);
 
   const onChange = (newValue: string) => {
-    setValue(newValue);
+    // setValue(newValue);
     onSelect(newValue);
   };
 
@@ -113,12 +115,13 @@ const Categories = ({ onSelect }: { onSelect: (id: string) => void }) => {
       disabled={loading}
       style={{ width: 500 }}
       size="large"
-      value={value}
+      // value={value}
       dropdownStyle={{ maxHeight: 500, overflow: 'auto' }}
       placeholder="Categories"
       allowClear
       treeDefaultExpandAll={false}
       treeNodeLabelProp="path"
+      switcherIcon={<DownOutlined />}
       onChange={onChange}
       treeData={treeData}
       treeLine

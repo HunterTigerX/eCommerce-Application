@@ -35,9 +35,9 @@ const Catalog = () => {
 
   const handleSort = () => {
     if (Math.random() > 0.5) {
-      setProducts({ type: ProductProjectionsActionTypes.SORT_BY_PRICE, payload: 'desc' });
+      setProducts({ type: ProductProjectionsActionTypes.SET_SORT, payload: ['price', 'asc'] });
     } else {
-      setProducts({ type: ProductProjectionsActionTypes.SORT_BY_PRICE, payload: 'asc' });
+      setProducts({ type: ProductProjectionsActionTypes.SET_SORT, payload: ['name', 'desc'] });
     }
   };
 
