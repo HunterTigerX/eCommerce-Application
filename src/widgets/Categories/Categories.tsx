@@ -91,7 +91,7 @@ const getAllCategoriesRequest = ApiClient.getInstance()
     },
   });
 
-const Categories = ({ onSelect }: { onSelect: (id: string) => void }) => {
+const Categories = ({ onSelect, onClear }: { onSelect: (id: string) => void; onClear: () => void }) => {
   const { data, loading } = useApiRequest(getAllCategoriesRequest);
   // const [value, setValue] = useState<string | undefined>(undefined);
   const [treeData, setTreeData] = useState<CategoryTreeNode[]>([]);
@@ -123,6 +123,7 @@ const Categories = ({ onSelect }: { onSelect: (id: string) => void }) => {
       treeNodeLabelProp="path"
       switcherIcon={<DownOutlined />}
       onChange={onChange}
+      onClear={onClear}
       treeData={treeData}
       treeLine
     />

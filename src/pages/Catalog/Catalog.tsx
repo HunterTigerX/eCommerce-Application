@@ -45,6 +45,7 @@ const Catalog = () => {
     <>
       <Categories
         onSelect={(id: string) => setProducts({ type: ProductProjectionsActionTypes.SET_CATEGORY, payload: id })}
+        onClear={() => setProducts({ type: ProductProjectionsActionTypes.CLEAR_CATEGORY })}
       />
       <h2>Catalog Products</h2>
       <AutoComplete

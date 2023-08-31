@@ -27,6 +27,7 @@ const enum ProductProjectionsActionTypes {
   SET_SEARCH = 'SET_SEARCH',
   CLEAR_SEARCH = 'CLEAR_SEARCH',
   SET_CATEGORY = 'SET_CATEGORY',
+  CLEAR_CATEGORY = 'CLEAR_CATEGORY',
   SET_SORT = 'SET_SORT',
   CLEAR_SORT = 'CLEAR_SORT',
   CLEAR_FILTER = 'CLEAR_FILTER',
@@ -46,6 +47,11 @@ type ClearSearchAction = {
 type SetCategoryAction = {
   type: ProductProjectionsActionTypes.SET_CATEGORY;
   payload: string;
+};
+
+type ClearCategoryAction = {
+  type: ProductProjectionsActionTypes.CLEAR_CATEGORY;
+  payload?: undefined;
 };
 
 type SetSortAction = {
@@ -72,10 +78,11 @@ type ProductProjectionsQueryArgsActions =
   | SetSearchAction
   | ClearSearchAction
   | SetCategoryAction
+  | ClearCategoryAction
   | SetSortAction
   | ClearSortAction
-  | ResetAction
-  | ClearFilterAction;
+  | ClearFilterAction
+  | ResetAction;
 
 const productProjectionsQueryArgsReducer = (
   state: ProductProjectionsQueryArgs,
@@ -101,6 +108,13 @@ const productProjectionsQueryArgsReducer = (
       return {
         ...state,
         'filter.query': `categories.id:subtree("${payload}")`,
+      };
+    }
+    case ProductProjectionsActionTypes.CLEAR_CATEGORY: {
+      delete state['filter.query'];
+
+      return {
+        ...state,
       };
     }
     case ProductProjectionsActionTypes.SET_SORT: {
