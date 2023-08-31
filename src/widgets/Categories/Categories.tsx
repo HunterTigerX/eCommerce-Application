@@ -64,6 +64,7 @@ const Categories = ({ onSelect }: { onSelect: (id: string) => void }) => {
   const [treeData, setTreeData] = useState<CategoryTreeNode[]>([]);
 
   const onChange = (newValue: string) => {
+    // value = category id
     setValue(newValue);
     onSelect(newValue);
   };
@@ -90,6 +91,7 @@ const Categories = ({ onSelect }: { onSelect: (id: string) => void }) => {
       treeDefaultExpandAll={false}
       onChange={onChange}
       treeData={treeData}
+      treeLine
     />
   );
 };

@@ -1,2 +1,3 @@
-export { useProductProjections, ProductProjectionsActionTypes } from './hooks/useProductProjections';
-export { useProductSuggestions, ProductSuggestionsActionTypes } from './hooks/useProductSuggestions';
+export { useProductProjections, ProductProjectionsActionTypes } from './hooks/';
+export { useProductSuggestions, ProductSuggestionsActionTypes } from './hooks/';
+export { useProduct } from './hooks';
