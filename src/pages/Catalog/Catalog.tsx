@@ -1,4 +1,3 @@
-import { AutoComplete } from 'antd';
 import {
   useProductProjections,
   ProductProjectionsActionTypes,
@@ -7,6 +6,7 @@ import {
 } from '@shared/api/products';
 import { ProductList } from '@widgets/ProductList';
 import { Categories } from '@widgets/Categories';
+import { ProductsFilter } from '@features/ProductsFilter';
 
 const Catalog = () => {
   const {
@@ -33,17 +33,15 @@ const Catalog = () => {
     setProducts({ type: ProductProjectionsActionTypes.SET_SEARCH, payload: text });
   };
 
+  const handleSort = (value: string) => {
+    console.log(value);
+  };
+
   return (
     <>
       <Categories />
       <h2>Catalog Products</h2>
-      <AutoComplete
-        onSearch={(text) => handleSearch(text)}
-        onSelect={(text) => handleSelect(text)}
-        options={suggestions}
-        placeholder="Search..."
-        style={{ width: 300 }}
-      />
+      <ProductsFilter onSearch={handleSearch} onSelect={handleSelect} suggestions={suggestions} onChange={handleSort} />
       {products && (
         <div style={{ marginTop: '1.5rem' }}>
           <ProductList products={products} loading={loading} />
