@@ -33,13 +33,19 @@ const Catalog = () => {
     setProducts({ type: ProductProjectionsActionTypes.SET_SEARCH, payload: text });
   };
 
-  const handleSort = (value: string) => {
-    console.log(value);
+  const handleSort = () => {
+    if (Math.random() > 0.5) {
+      setProducts({ type: ProductProjectionsActionTypes.SORT_BY_PRICE, payload: 'desc' });
+    } else {
+      setProducts({ type: ProductProjectionsActionTypes.SORT_BY_PRICE, payload: 'asc' });
+    }
   };
 
   return (
     <>
-      <Categories />
+      <Categories
+        onSelect={(id: string) => setProducts({ type: ProductProjectionsActionTypes.SET_CATEGORY, payload: id })}
+      />
       <h2>Catalog Products</h2>
       <ProductsFilter onSearch={handleSearch} onSelect={handleSelect} suggestions={suggestions} onChange={handleSort} />
       {products && (

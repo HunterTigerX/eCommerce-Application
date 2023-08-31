@@ -26,7 +26,12 @@ type ProductProjectionsQueryArgs = {
 const enum ProductProjectionsActionTypes {
   SET_SEARCH = 'SET_SEARCH',
   CLEAR_SEARCH = 'CLEAR_SEARCH',
+  SET_CATEGORY = 'SET_CATEGORY',
+  SORT_BY_PRICE = 'SORT_BY_PRICE',
+  SORT_BY_NAME = 'SORT_BY_NAME',
 }
+
+type SortOrder = 'asc' | 'desc';
 
 type SetSearchAction = {
   type: ProductProjectionsActionTypes.SET_SEARCH;
@@ -38,7 +43,27 @@ type ClearSearchAction = {
   payload?: undefined;
 };
 
-type ProductProjectionsQueryArgsActions = SetSearchAction | ClearSearchAction;
+type SetCategoryAction = {
+  type: ProductProjectionsActionTypes.SET_CATEGORY;
+  payload: string;
+};
+
+type SortByPriceAction = {
+  type: ProductProjectionsActionTypes.SORT_BY_PRICE;
+  payload: SortOrder;
+};
+
+type SortByNameAction = {
+  type: ProductProjectionsActionTypes.SORT_BY_NAME;
+  payload: SortOrder;
+};
+
+type ProductProjectionsQueryArgsActions =
+  | SetSearchAction
+  | ClearSearchAction
+  | SetCategoryAction
+  | SortByPriceAction
+  | SortByNameAction;
 
 const productProjectionsQueryArgsReducer = (
   state: ProductProjectionsQueryArgs,
@@ -58,6 +83,24 @@ const productProjectionsQueryArgsReducer = (
 
       return {
         ...state,
+      };
+    }
+    case ProductProjectionsActionTypes.SET_CATEGORY: {
+      return {
+        ...state,
+        'filter.query': `categories.id:subtree("${payload}")`,
+      };
+    }
+    case ProductProjectionsActionTypes.SORT_BY_PRICE: {
+      return {
+        ...state,
+        sort: `price ${payload}`,
+      };
+    }
+    case ProductProjectionsActionTypes.SORT_BY_NAME: {
+      return {
+        ...state,
+        sort: `name.en ${payload}`,
       };
     }
     default: {
