@@ -1,10 +1,13 @@
 import { useParams } from 'react-router-dom';
-import { useMemo } from 'react';
+import React, { RefObject } from 'react';
+import { useMemo, useState } from 'react';
 import { Button, Carousel } from 'antd';
+import Modal from 'react-modal';
 import { ApiClient } from '@app/auth/client';
 import { useApiRequest } from '@shared/hooks';
 import { IImages } from '@widgets/ProductList/ui/ProductCard';
 import './carousel.css';
+import { CarouselRef } from 'antd/es/carousel';
 
 const useProduct = (id: string | undefined) => {
   const request = useMemo(
@@ -34,13 +37,38 @@ const useProduct = (id: string | undefined) => {
 export const ProductDetail = () => {
   const { productId } = useParams<{ productId: string }>();
   const itemData = useProduct(productId);
+  const [isBigPicModalOpened, bigPicModalIsOpen] = useState(false);
+  const [carousel1Index, setCarousel1Index] = useState(0);
+  const carouselRef: RefObject<CarouselRef> = React.createRef();
+  const carouselRefSmall: RefObject<CarouselRef> = React.createRef();
+  const openPicModal = (slideNumber: number) => {
+    setCarousel1Index(slideNumber);
+    bigPicModalIsOpen(true);
+  };
+  const closePicModal = () => {
+    if (carouselRefSmall.current) {
+      carouselRefSmall.current.goTo(carousel1Index, true);
+    }
+    bigPicModalIsOpen(false);
+  };
   const masterData = itemData.product ? itemData.product.masterData.current : null;
 
+  function sliderChangedPage(currentSlide: number) {
+    setCarousel1Index(currentSlide);
+  }
   function addCarousel() {
     const imageStyle: React.CSSProperties = {
       margin: 0,
       height: 'auto',
       maxHeight: '500px',
+      width: '100%',
+      objectFit: 'contain',
+      marginBottom: '20px',
+    };
+    const bigSlider: React.CSSProperties = {
+      margin: 0,
+      height: 'auto',
+      maxHeight: '100%',
       width: '100%',
       objectFit: 'contain',
       marginBottom: '20px',
@@ -60,10 +88,35 @@ export const ProductDetail = () => {
       for (let i = 0; i < prodUrlImg.length; i += 1) {
         carouselSlides.push(
           <div key={`slide${i}`}>
-            <img style={imageStyle} src={prodUrlImg[i].url} alt="product logo" />
+            <img
+              style={imageStyle}
+              onClick={() => {
+                openPicModal(i);
+              }}
+              className="slider-image"
+              src={prodUrlImg[i].url}
+              alt="product logo"
+            />
           </div>
         );
       }
+      const modalWindow = (
+        <Modal isOpen={isBigPicModalOpened} ariaHideApp={false} onRequestClose={closePicModal}>
+          <Button className="closeBigCarousel" onClick={closePicModal}>
+            X
+          </Button>
+          <Carousel
+            ref={carouselRef}
+            className="slider-big"
+            dotPosition={'bottom'}
+            style={bigSlider}
+            initialSlide={carousel1Index}
+            afterChange={sliderChangedPage}
+          >
+            {carouselSlides}
+          </Carousel>
+        </Modal>
+      );
 
       return (
         <>
@@ -74,9 +127,10 @@ export const ProductDetail = () => {
               {prodPrice ? <div className="prodPrice">Only for {prodPrice}$</div> : null}
               <Button className="someButtons">Add to cart</Button>
             </div>
-            <Carousel className="slider" dotPosition={'bottom'}>
+            <Carousel ref={carouselRefSmall} className="slider" dotPosition={'bottom'} afterChange={sliderChangedPage}>
               {carouselSlides}
             </Carousel>
+            {modalWindow}
           </div>
         </>
       );

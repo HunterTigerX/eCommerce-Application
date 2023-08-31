@@ -54,3 +54,24 @@
     gap: 20px 0;
     justify-content: center;
 }
+
+.slider-image:hover,
+.closeBigCarousel:hover {
+    cursor: pointer !important;
+}
+
+/* Чтобы кнопки не были поверх модального окна */
+.slick-dots {
+    z-index: 0 !important;
+}
+
+.slider-big .slick-list .slick-track div div div .slider-image {
+    max-height: 80vh !important;
+}
+
+.closeBigCarousel {
+    border-radius: 50% !important;
+    position: absolute !important;
+    right: 30px !important;
+    z-index: 99 !important;
+}
