@@ -52,7 +52,22 @@ export const ProductDetail = () => {
     bigPicModalIsOpen(false);
   };
   const masterData = itemData.product ? itemData.product.masterData.current : null;
-
+  function openNextSlide() {
+    if (carouselRefSmall.current) {
+      carouselRefSmall.current.next();
+    }
+    if (carouselRef.current) {
+      carouselRef.current.next();
+    }
+  }
+  function openPrevSlide() {
+    if (carouselRefSmall.current) {
+      carouselRefSmall.current.prev();
+    }
+    if (carouselRef.current) {
+      carouselRef.current.prev();
+    }
+  }
   function sliderChangedPage(currentSlide: number) {
     setCarousel1Index(currentSlide);
   }
@@ -109,12 +124,17 @@ export const ProductDetail = () => {
             ref={carouselRef}
             className="slider-big"
             dotPosition={'bottom'}
+            waitForAnimate={true}
             style={bigSlider}
             initialSlide={carousel1Index}
             afterChange={sliderChangedPage}
           >
             {carouselSlides}
           </Carousel>
+          <div className="slider-buttons">
+            <Button type="primary" className="prevSlide" onClick={openPrevSlide}></Button>
+            <Button type="primary" className="nextSlide" onClick={openNextSlide}></Button>
+          </div>
         </Modal>
       );
 
@@ -127,9 +147,19 @@ export const ProductDetail = () => {
               {prodPrice ? <div className="prodPrice">Only for {prodPrice}$</div> : null}
               <Button className="someButtons">Add to cart</Button>
             </div>
-            <Carousel ref={carouselRefSmall} className="slider" dotPosition={'bottom'} afterChange={sliderChangedPage}>
+            <Carousel
+              ref={carouselRefSmall}
+              className="slider"
+              dotPosition={'bottom'}
+              waitForAnimate={true}
+              afterChange={sliderChangedPage}
+            >
               {carouselSlides}
             </Carousel>
+            <div className="slider-buttons">
+              <Button type="primary" className="prevSlide" onClick={openPrevSlide}></Button>
+              <Button type="primary" className="nextSlide" onClick={openNextSlide}></Button>
+            </div>
             {modalWindow}
           </div>
         </>

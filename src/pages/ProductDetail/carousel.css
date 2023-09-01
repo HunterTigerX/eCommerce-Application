@@ -66,7 +66,7 @@
 }
 
 .slider-big .slick-list .slick-track div div div .slider-image {
-    max-height: 80vh !important;
+    max-height: 90vh !important;
 }
 
 .closeBigCarousel {
@@ -74,4 +74,34 @@
     position: absolute !important;
     right: 30px !important;
     z-index: 99 !important;
+}
+
+.slider-buttons {
+    display: flex;
+    margin: 0 auto;
+    gap: 20px;
+    justify-content: center;
+
+}
+
+.nextSlide,
+.prevSlide {
+    border-radius: 50% !important;
+    background-color: transparent;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 75%;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* .nextSlide:hover,
+.prevSlide:hover {
+    background-color: rgba(34, 167, 255, 0.993) !important;
+} */
+
+.prevSlide {
+    background-image: url(../../assets/arrows/arrow-left.png);
+}
+.nextSlide {
+    background-image: url(../../assets/arrows/arrow-right.png);
 }
