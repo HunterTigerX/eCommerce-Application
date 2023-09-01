@@ -1,15 +1,47 @@
-import { ApiClient } from '@app/auth/client';
-import { TreeSelect } from 'antd';
-import { useApiRequest } from '@shared/hooks';
-import { Category } from '@commercetools/platform-sdk';
 import { useEffect, useState } from 'react';
+import { TreeSelect } from 'antd';
+import { DownOutlined } from '@ant-design/icons';
+import { Category, CategoryReference } from '@commercetools/platform-sdk';
+import { ApiClient } from '@app/auth/client';
+import { useApiRequest } from '@shared/hooks';
 
 interface CategoryTreeNode {
   value: string; // id
   title: string; // name
   parent: string | null;
+  path: string;
   children: CategoryTreeNode[];
 }
+
+const getFullPath = (category: Category, categories: Category[]) => {
+  const SEPARATOR = ' / ';
+  let result = category.name.en;
+  let root: Category | undefined;
+
+  if (!category.parent) return result;
+
+  let current: CategoryReference | undefined = category.parent;
+
+  while (current) {
+    if (current.obj) {
+      result += SEPARATOR + current.obj.name.en;
+
+      current = current.obj.parent;
+    } else {
+      const id = current.id;
+
+      root = categories.find((item) => item.id === id);
+
+      current = undefined;
+    }
+  }
+
+  if (root) {
+    result += SEPARATOR + root.name.en;
+  }
+
+  return result.split(SEPARATOR).reverse().join(SEPARATOR);
+};
 
 type CategoriesTreeNodesRecord = Record<string, CategoryTreeNode>;
 
@@ -20,6 +52,7 @@ const mapCategories = (categories: Category[]): CategoriesTreeNodesRecord => {
         value: category.id,
         title: category.name.en,
         parent: category.parent?.id || null,
+        path: getFullPath(category, categories),
         children: [],
       };
     })
@@ -58,13 +91,13 @@ const getAllCategoriesRequest = ApiClient.getInstance()
     },
   });
 
-const Categories = ({ onSelect }: { onSelect: (id: string) => void }) => {
+const Categories = ({ onSelect, onClear }: { onSelect: (id: string) => void; onClear: () => void }) => {
   const { data, loading } = useApiRequest(getAllCategoriesRequest);
-  const [value, setValue] = useState<string | undefined>(undefined);
+  // const [value, setValue] = useState<string | undefined>(undefined);
   const [treeData, setTreeData] = useState<CategoryTreeNode[]>([]);
 
   const onChange = (newValue: string) => {
-    setValue(newValue);
+    // setValue(newValue);
     onSelect(newValue);
   };
 
@@ -79,17 +112,20 @@ const Categories = ({ onSelect }: { onSelect: (id: string) => void }) => {
 
   return (
     <TreeSelect
-      showSearch
       disabled={loading}
       style={{ width: 500 }}
       size="large"
-      value={value}
+      // value={value}
       dropdownStyle={{ maxHeight: 500, overflow: 'auto' }}
-      placeholder="Please select"
+      placeholder="Categories"
       allowClear
       treeDefaultExpandAll={false}
+      treeNodeLabelProp="path"
+      switcherIcon={<DownOutlined />}
       onChange={onChange}
+      onClear={onClear}
       treeData={treeData}
+      treeLine
     />
   );
 };

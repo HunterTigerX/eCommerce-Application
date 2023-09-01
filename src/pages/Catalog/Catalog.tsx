@@ -34,14 +34,11 @@ const Catalog = () => {
     setProducts({ type: ProductProjectionsActionTypes.SET_SEARCH, payload: text });
   };
 
-  const handleSort = (value: string) => {
-    const [type, order] = value.split(' ');
-    if (order === 'asc' || order === 'desc') {
-      if (type === 'price') {
-        setProducts({ type: ProductProjectionsActionTypes.SORT_BY_PRICE, payload: order });
-      } else {
-        setProducts({ type: ProductProjectionsActionTypes.SORT_BY_NAME, payload: order });
-      }
+  const handleSort = () => {
+    if (Math.random() > 0.5) {
+      setProducts({ type: ProductProjectionsActionTypes.SET_SORT, payload: ['price', 'asc'] });
+    } else {
+      setProducts({ type: ProductProjectionsActionTypes.SET_SORT, payload: ['name', 'desc'] });
     }
   };
 
@@ -56,6 +53,7 @@ const Catalog = () => {
       <div className={styles.headerSearch}>
         <Categories
           onSelect={(id: string) => setProducts({ type: ProductProjectionsActionTypes.SET_CATEGORY, payload: id })}
+          onClear={() => setProducts({ type: ProductProjectionsActionTypes.CLEAR_CATEGORY })}
         />
         <ProductsFilter
           onSearch={handleSearch}

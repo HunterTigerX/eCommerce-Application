@@ -27,11 +27,12 @@ const enum ProductProjectionsActionTypes {
   SET_SEARCH = 'SET_SEARCH',
   CLEAR_SEARCH = 'CLEAR_SEARCH',
   SET_CATEGORY = 'SET_CATEGORY',
-  SORT_BY_PRICE = 'SORT_BY_PRICE',
-  SORT_BY_NAME = 'SORT_BY_NAME',
+  CLEAR_CATEGORY = 'CLEAR_CATEGORY',
+  SET_SORT = 'SET_SORT',
+  CLEAR_SORT = 'CLEAR_SORT',
+  CLEAR_FILTER = 'CLEAR_FILTER',
+  RESET = 'RESET',
 }
-
-type SortOrder = 'asc' | 'desc';
 
 type SetSearchAction = {
   type: ProductProjectionsActionTypes.SET_SEARCH;
@@ -48,22 +49,40 @@ type SetCategoryAction = {
   payload: string;
 };
 
-type SortByPriceAction = {
-  type: ProductProjectionsActionTypes.SORT_BY_PRICE;
-  payload: SortOrder;
+type ClearCategoryAction = {
+  type: ProductProjectionsActionTypes.CLEAR_CATEGORY;
+  payload?: undefined;
 };
 
-type SortByNameAction = {
-  type: ProductProjectionsActionTypes.SORT_BY_NAME;
-  payload: SortOrder;
+type SetSortAction = {
+  type: ProductProjectionsActionTypes.SET_SORT;
+  payload: [string, string];
+};
+
+type ClearSortAction = {
+  type: ProductProjectionsActionTypes.CLEAR_SORT;
+  payload?: undefined;
+};
+
+type ResetAction = {
+  type: ProductProjectionsActionTypes.RESET;
+  payload?: undefined;
+};
+
+type ClearFilterAction = {
+  type: ProductProjectionsActionTypes.CLEAR_FILTER;
+  payload?: undefined;
 };
 
 type ProductProjectionsQueryArgsActions =
   | SetSearchAction
   | ClearSearchAction
   | SetCategoryAction
-  | SortByPriceAction
-  | SortByNameAction;
+  | ClearCategoryAction
+  | SetSortAction
+  | ClearSortAction
+  | ClearFilterAction
+  | ResetAction;
 
 const productProjectionsQueryArgsReducer = (
   state: ProductProjectionsQueryArgs,
@@ -91,16 +110,53 @@ const productProjectionsQueryArgsReducer = (
         'filter.query': `categories.id:subtree("${payload}")`,
       };
     }
-    case ProductProjectionsActionTypes.SORT_BY_PRICE: {
+    case ProductProjectionsActionTypes.CLEAR_CATEGORY: {
+      delete state['filter.query'];
+
       return {
         ...state,
-        sort: `price ${payload}`,
       };
     }
-    case ProductProjectionsActionTypes.SORT_BY_NAME: {
+    case ProductProjectionsActionTypes.SET_SORT: {
+      const [sortType, order] = payload;
+
+      if (order === 'asc' || order === 'desc') {
+        if (sortType === 'price') {
+          return {
+            ...state,
+            sort: `price ${order}`,
+          };
+        }
+
+        if (sortType === 'name') {
+          return {
+            ...state,
+            sort: `name.en ${order}`,
+          };
+        }
+      }
+
+      return state;
+    }
+    case ProductProjectionsActionTypes.CLEAR_SORT: {
+      delete state.sort;
+
       return {
         ...state,
-        sort: `name.en ${payload}`,
+      };
+    }
+    case ProductProjectionsActionTypes.CLEAR_FILTER: {
+      delete state.filter;
+      // delete state['filter.query']
+
+      return {
+        ...state,
+      };
+    }
+    case ProductProjectionsActionTypes.RESET: {
+      return {
+        limit: 20,
+        priceCurrency: import.meta.env.VITE_CTP_DEFAULT_CURRENCY,
       };
     }
     default: {
