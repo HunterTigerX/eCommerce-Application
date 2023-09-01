@@ -7,7 +7,6 @@ import {
 import { ProductList } from '@widgets/ProductList';
 import { Categories } from '@widgets/Categories';
 import { ProductsFilter } from '@features/ProductsFilter';
-import styles from './Catalog.module.css';
 
 const Catalog = () => {
   const {
@@ -34,36 +33,33 @@ const Catalog = () => {
     setProducts({ type: ProductProjectionsActionTypes.SET_SEARCH, payload: text });
   };
 
-  const handleSort = () => {
-    if (Math.random() > 0.5) {
-      setProducts({ type: ProductProjectionsActionTypes.SET_SORT, payload: ['price', 'asc'] });
-    } else {
-      setProducts({ type: ProductProjectionsActionTypes.SET_SORT, payload: ['name', 'desc'] });
+  const handleSort = (value: string) => {
+    if (value == 'reset') {
+      return setProducts({ type: ProductProjectionsActionTypes.CLEAR_SORT });
     }
+    const [sortType, order] = value.split(' ');
+    setProducts({ type: ProductProjectionsActionTypes.SET_SORT, payload: [sortType, order] });
   };
 
   const handleClear = () => {
     // todo
-    setProducts({ type: ProductProjectionsActionTypes.CLEAR_SEARCH });
+    setProducts({ type: ProductProjectionsActionTypes.CLEAR_SORT });
   };
 
   return (
     <>
       <h2>Catalog Products</h2>
-      <div className={styles.headerSearch}>
-        <Categories
-          onSelect={(id: string) => setProducts({ type: ProductProjectionsActionTypes.SET_CATEGORY, payload: id })}
-          onClear={() => setProducts({ type: ProductProjectionsActionTypes.CLEAR_CATEGORY })}
-        />
-        <ProductsFilter
-          onSearch={handleSearch}
-          onSelect={handleSelect}
-          suggestions={suggestions}
-          onChange={handleSort}
-          onClear={handleClear}
-        />
-      </div>
-
+      <ProductsFilter
+        onSearch={handleSearch}
+        onSelect={handleSelect}
+        suggestions={suggestions}
+        onChange={handleSort}
+        onClear={handleClear}
+      />
+      <Categories
+        onSelect={(id: string) => setProducts({ type: ProductProjectionsActionTypes.SET_CATEGORY, payload: id })}
+        onClear={() => setProducts({ type: ProductProjectionsActionTypes.CLEAR_CATEGORY })}
+      />
       {products && (
         <div style={{ marginTop: '1.5rem' }}>
           <ProductList products={products} loading={loading} />
