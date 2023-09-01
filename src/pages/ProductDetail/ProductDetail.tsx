@@ -164,7 +164,9 @@ export const ProductDetail = () => {
                   Only for {prodPrice} <EuroCircleOutlined />
                 </div>
               ) : null}
-              <Button className="someButtons">Add to cart</Button>
+              <Button type="primary" className="someButtons">
+                Add to cart
+              </Button>
             </div>
             <Carousel
               ref={carouselRefSmall}
