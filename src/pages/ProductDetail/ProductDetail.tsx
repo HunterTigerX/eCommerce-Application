@@ -177,10 +177,14 @@ export const ProductDetail = () => {
             >
               {carouselSlides}
             </Carousel>
-            <div className="slider-buttons">
-              <Button type="primary" className="prevSlide" onClick={openPrevSlide}></Button>
-              <Button type="primary" className="nextSlide" onClick={openNextSlide}></Button>
-            </div>
+            {masterData.masterVariant.images ? (
+              masterData.masterVariant.images.length > 1 ? (
+                <div className="slider-buttons">
+                  <Button type="primary" className="prevSlide" onClick={openPrevSlide}></Button>
+                  <Button type="primary" className="nextSlide" onClick={openNextSlide}></Button>
+                </div>
+              ) : null
+            ) : null}
             {modalWindow}
           </div>
         </>
