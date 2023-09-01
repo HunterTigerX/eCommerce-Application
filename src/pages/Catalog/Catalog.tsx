@@ -7,6 +7,7 @@ import {
 import { ProductList } from '@widgets/ProductList';
 import { Categories } from '@widgets/Categories';
 import { ProductsFilter } from '@features/ProductsFilter';
+import styles from './Catalog.module.css';
 
 const Catalog = () => {
   const {
@@ -33,21 +34,38 @@ const Catalog = () => {
     setProducts({ type: ProductProjectionsActionTypes.SET_SEARCH, payload: text });
   };
 
-  const handleSort = () => {
-    if (Math.random() > 0.5) {
-      setProducts({ type: ProductProjectionsActionTypes.SORT_BY_PRICE, payload: 'desc' });
-    } else {
-      setProducts({ type: ProductProjectionsActionTypes.SORT_BY_PRICE, payload: 'asc' });
+  const handleSort = (value: string) => {
+    const [type, order] = value.split(' ');
+    if (order === 'asc' || order === 'desc') {
+      if (type === 'price') {
+        setProducts({ type: ProductProjectionsActionTypes.SORT_BY_PRICE, payload: order });
+      } else {
+        setProducts({ type: ProductProjectionsActionTypes.SORT_BY_NAME, payload: order });
+      }
     }
+  };
+
+  const handleClear = () => {
+    // todo
+    setProducts({ type: ProductProjectionsActionTypes.CLEAR_SEARCH });
   };
 
   return (
     <>
-      <Categories
-        onSelect={(id: string) => setProducts({ type: ProductProjectionsActionTypes.SET_CATEGORY, payload: id })}
-      />
       <h2>Catalog Products</h2>
-      <ProductsFilter onSearch={handleSearch} onSelect={handleSelect} suggestions={suggestions} onChange={handleSort} />
+      <div className={styles.headerSearch}>
+        <Categories
+          onSelect={(id: string) => setProducts({ type: ProductProjectionsActionTypes.SET_CATEGORY, payload: id })}
+        />
+        <ProductsFilter
+          onSearch={handleSearch}
+          onSelect={handleSelect}
+          suggestions={suggestions}
+          onChange={handleSort}
+          onClear={handleClear}
+        />
+      </div>
+
       {products && (
         <div style={{ marginTop: '1.5rem' }}>
           <ProductList products={products} loading={loading} />
