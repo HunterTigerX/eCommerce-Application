@@ -3,11 +3,12 @@ import React, { RefObject } from 'react';
 import { useMemo, useState } from 'react';
 import { Button, Carousel } from 'antd';
 import Modal from 'react-modal';
+import { CarouselRef } from 'antd/es/carousel';
 import { ApiClient } from '@app/auth/client';
 import { useApiRequest } from '@shared/hooks';
 import { IImages } from '@widgets/ProductList/ui/ProductCard';
+import { EuroCircleOutlined } from '@ant-design/icons';
 import './carousel.css';
-import { CarouselRef } from 'antd/es/carousel';
 
 const useProduct = (id: string | undefined) => {
   const request = useMemo(
@@ -37,6 +38,7 @@ const useProduct = (id: string | undefined) => {
 export const ProductDetail = () => {
   const { productId } = useParams<{ productId: string }>();
   const itemData = useProduct(productId);
+  console.log(itemData);
   const [isBigPicModalOpened, bigPicModalIsOpen] = useState(false);
   const [carousel1Index, setCarousel1Index] = useState(0);
   const carouselRef: RefObject<CarouselRef> = React.createRef();
@@ -91,13 +93,22 @@ export const ProductDetail = () => {
 
     const carouselSlides: JSX.Element[] = [];
 
-    let prodTitle: string, prodDescription: string | null, prodPrice: number | null, prodUrlImg: IImages[];
+    let prodTitle: string,
+      prodDescription: string | null,
+      prodPrice: number | null,
+      prodUrlImg: IImages[],
+      prodDiscount: number | null;
 
     if (masterData) {
       prodTitle = masterData.name.en;
       prodDescription = masterData.metaDescription ? masterData.metaDescription.en : null;
+      // Цена в центах идёт, но на странице указываем в долларах
       prodPrice = masterData.masterVariant.prices ? masterData.masterVariant.prices[0].value.centAmount / 100 : null;
-      // const prodDiscount = null;
+      prodDiscount = masterData.masterVariant.price
+        ? masterData.masterVariant.price.discounted
+          ? masterData.masterVariant.price.discounted.value.centAmount / 100
+          : null
+        : null;
       prodUrlImg = masterData.masterVariant.images as IImages[]; // Потом подправить
 
       for (let i = 0; i < prodUrlImg.length; i += 1) {
@@ -144,7 +155,15 @@ export const ProductDetail = () => {
             <div className="prodWrapper">
               {prodTitle ? <div className="prodName">{prodTitle}</div> : null}
               {prodDescription ? <div className="prodDesc">{prodDescription}</div> : null}
-              {prodPrice ? <div className="prodPrice">Only for {prodPrice}$</div> : null}
+              {prodDiscount ? (
+                <div className="prodPrice">
+                  Only for <span className="strike">{prodPrice}</span> {prodDiscount} <EuroCircleOutlined />
+                </div>
+              ) : prodPrice ? (
+                <div className="prodPrice">
+                  Only for {prodPrice} <EuroCircleOutlined />
+                </div>
+              ) : null}
               <Button className="someButtons">Add to cart</Button>
             </div>
             <Carousel
