@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Tree } from 'antd';
+import { Button, Drawer, Tree } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { Category, CategoryReference } from '@commercetools/platform-sdk';
 import { ApiClient } from '@app/auth/client';
@@ -91,14 +91,21 @@ const getAllCategoriesRequest = ApiClient.getInstance()
     },
   });
 
-const Categories = ({ onSelect }: { onSelect: (id: Key) => void }) => {
-  const { data, loading } = useApiRequest(getAllCategoriesRequest);
+const Categories = ({ onSelect, loading }: { onSelect: (id: Key) => void; loading: boolean }) => {
+  const { data } = useApiRequest(getAllCategoriesRequest);
   const [treeData, setTreeData] = useState<CategoryTreeNode[]>([]);
+  const [open, setOpen] = useState(false);
+
+  const showDrawer = () => {
+    setOpen(true);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
 
   const onChange = (selected: Key[]) => {
     const id = selected[0];
-    console.log(id);
-
     onSelect(id);
   };
 
@@ -106,20 +113,26 @@ const Categories = ({ onSelect }: { onSelect: (id: Key) => void }) => {
     if (data) {
       const mappedCategories = mapCategories(data.results);
       const tree = getCategoriesTree(mappedCategories);
-
       setTreeData(tree);
-      console.log(tree);
     }
   }, [data]);
 
   return (
-    <Tree
-      disabled={loading}
-      style={{ width: 500 }}
-      switcherIcon={<DownOutlined />}
-      onSelect={onChange}
-      treeData={treeData}
-    />
+    <>
+      <Button type="primary" onClick={showDrawer}>
+        Open
+      </Button>
+      <Drawer title="Basic Drawer" placement="left" onClose={onClose} open={open}>
+        <Tree
+          disabled={loading}
+          showLine
+          style={{ width: 500 }}
+          switcherIcon={<DownOutlined />}
+          onSelect={onChange}
+          treeData={treeData}
+        />
+      </Drawer>
+    </>
   );
 };
 

@@ -1,23 +1,25 @@
 import { useState } from 'react';
 import { AutoComplete, Badge, Button, Checkbox, Drawer, Input, Select, Slider } from 'antd';
+import { ProductProjectionsActionTypes } from '@shared/api/products';
 import Title from 'antd/es/typography/Title';
 import { FilterOutlined } from '@ant-design/icons';
 import { CheckboxValueType } from 'antd/es/checkbox/Group';
+import {
+  useProductSuggestions,
+  ProductSuggestionsActionTypes,
+  type ProductProjectionsQueryArgsActions,
+} from '@shared/api/products';
 import styles from './ProductsFilter.module.css';
 
 interface AutoCompleteFilterProps {
-  onSearch: (text: string) => void;
-  onSelect: (text: string) => void;
-  onChange: (value: string) => void;
-  onClear: () => void;
-  suggestions: { value: string }[];
+  dispatch: React.Dispatch<ProductProjectionsQueryArgsActions>;
 }
 
 const CheckboxGroup = Checkbox.Group;
 const optionsColor = ['black', 'grey', 'white', 'blue', 'red', 'orange'];
 const optionsSize = ['xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl'];
 
-export const ProductsFilter = ({ onSearch, onSelect, suggestions, onChange, onClear }: AutoCompleteFilterProps) => {
+export const ProductsFilter = ({ dispatch }: AutoCompleteFilterProps) => {
   const [open, setOpen] = useState(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 9999]);
   const [checkedColorList, setCheckedColorList] = useState<CheckboxValueType[]>([]);
@@ -26,16 +28,38 @@ export const ProductsFilter = ({ onSearch, onSelect, suggestions, onChange, onCl
   const [isDiscountedProducts, setIsDiscountedProducts] = useState(false);
   const [countFilters, setCountFilters] = useState(0);
 
+  const {
+    state: { suggestions },
+    dispatch: setSuggestions,
+  } = useProductSuggestions();
+
+  const handleSuggestions = (text: string) => {
+    if (text) {
+      setSuggestions({ type: ProductSuggestionsActionTypes.SET_SUGGESTIONS, payload: text });
+    } else {
+      setSuggestions({ type: ProductSuggestionsActionTypes.CLEAR_SUGGESTIONS });
+    }
+  };
+
   const handleSearch = (text: string) => {
-    onSearch(text);
+    if (text) {
+      dispatch({ type: ProductProjectionsActionTypes.SET_SEARCH, payload: text });
+    } else {
+      dispatch({ type: ProductProjectionsActionTypes.CLEAR_SEARCH });
+    }
   };
 
   const handleSelect = (text: string) => {
-    onSelect(text);
+    dispatch({ type: ProductProjectionsActionTypes.SET_SEARCH, payload: text });
   };
 
   const handleSort = (value: string) => {
-    onChange(value);
+    if (value == 'default') {
+      return dispatch({ type: ProductProjectionsActionTypes.CLEAR_SORT });
+    }
+    const [sortType, order] = value.split(' ');
+    dispatch({ type: ProductProjectionsActionTypes.SET_SORT, payload: [sortType, order] });
+
     setSelectedSort(value);
   };
 
@@ -67,7 +91,6 @@ export const ProductsFilter = ({ onSearch, onSelect, suggestions, onChange, onCl
       count += 1;
       setCountFilters(count);
     } else if (isDiscountedProducts) {
-      console.log('+');
       count += 1;
       setCountFilters(count);
     } else {
@@ -80,22 +103,21 @@ export const ProductsFilter = ({ onSearch, onSelect, suggestions, onChange, onCl
     setCheckedSizeList([]);
     setPriceRange([0, 9999]);
     setIsDiscountedProducts(false);
-    onClear();
     countFilter(true);
     setOpen(false);
+    dispatch({ type: ProductProjectionsActionTypes.CLEAR_FILTER });
   };
 
   const applyFilters = () => {
     const filterParameters = {
-      price: priceRange,
+      price: priceRange.map((number) => number * 100),
       color: checkedColorList,
       size: checkedSizeList,
       discountedProducts: isDiscountedProducts,
     };
-    console.log(filterParameters);
     countFilter();
     setOpen(false);
-    return filterParameters;
+    return filterParameters; //todo dispatch
   };
 
   const onDiscountedProducts = () => {
@@ -105,8 +127,14 @@ export const ProductsFilter = ({ onSearch, onSelect, suggestions, onChange, onCl
   return (
     <>
       <div className={styles.productFilter}>
-        <AutoComplete className={styles.productSearch} onSelect={(text) => handleSelect(text)} options={suggestions}>
-          <Input.Search onSearch={(text) => handleSearch(text)} size="large" placeholder="Search..." />
+        <AutoComplete
+          onSearch={(text) => handleSuggestions(text)}
+          onSelect={(text) => handleSelect(text)}
+          options={suggestions}
+          placeholder="Search..."
+          style={{ width: 300 }}
+        >
+          <Input.Search onSearch={(text) => handleSearch(text)} />
         </AutoComplete>
         <div className={styles.controll}>
           <span>Sorting: </span>
@@ -132,8 +160,8 @@ export const ProductsFilter = ({ onSearch, onSelect, suggestions, onChange, onCl
                 label: 'Name z-a',
               },
               {
-                value: 'reset',
-                label: 'Reset',
+                value: 'default',
+                label: 'A set default',
               },
             ]}
           />

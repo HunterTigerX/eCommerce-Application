@@ -1,9 +1,4 @@
-import {
-  useProductProjections,
-  ProductProjectionsActionTypes,
-  useProductSuggestions,
-  ProductSuggestionsActionTypes,
-} from '@shared/api/products';
+import { useProductProjections, ProductProjectionsActionTypes } from '@shared/api/products';
 import { ProductList } from '@widgets/ProductList';
 import { Categories } from '@widgets/Categories';
 import { type Key } from 'rc-tree/lib/interface';
@@ -15,49 +10,12 @@ const Catalog = () => {
     dispatch: setProducts,
   } = useProductProjections();
 
-  const {
-    state: { suggestions },
-    dispatch: setSuggestions,
-  } = useProductSuggestions();
-
-  const handleSearch = (text: string) => {
-    if (text) {
-      setSuggestions({ type: ProductSuggestionsActionTypes.SET_SUGGESTIONS, payload: text });
-      setProducts({ type: ProductProjectionsActionTypes.SET_SEARCH, payload: text });
-    } else {
-      setProducts({ type: ProductProjectionsActionTypes.CLEAR_SEARCH });
-      setSuggestions({ type: ProductSuggestionsActionTypes.CLEAR_SUGGESTIONS });
-    }
-  };
-
-  const handleSelect = (text: string) => {
-    setProducts({ type: ProductProjectionsActionTypes.SET_SEARCH, payload: text });
-  };
-
-  const handleSort = (value: string) => {
-    if (value == 'reset') {
-      return setProducts({ type: ProductProjectionsActionTypes.CLEAR_SORT });
-    }
-    const [sortType, order] = value.split(' ');
-    setProducts({ type: ProductProjectionsActionTypes.SET_SORT, payload: [sortType, order] });
-  };
-
-  const handleClear = () => {
-    // todo
-    setProducts({ type: ProductProjectionsActionTypes.CLEAR_SORT });
-  };
-
   return (
     <>
       <h2>Catalog Products</h2>
-      <ProductsFilter
-        onSearch={handleSearch}
-        onSelect={handleSelect}
-        suggestions={suggestions}
-        onChange={handleSort}
-        onClear={handleClear}
-      />
+      <ProductsFilter dispatch={setProducts} />
       <Categories
+        loading={loading}
         onSelect={(id: Key) => setProducts({ type: ProductProjectionsActionTypes.SET_CATEGORY, payload: id })}
       />
       {products && (

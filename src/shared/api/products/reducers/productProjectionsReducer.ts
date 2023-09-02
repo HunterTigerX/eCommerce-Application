@@ -166,4 +166,9 @@ const productProjectionsQueryArgsReducer = (
   }
 };
 
-export { productProjectionsQueryArgsReducer, ProductProjectionsActionTypes, type ProductProjectionsQueryArgs };
+export {
+  productProjectionsQueryArgsReducer,
+  ProductProjectionsActionTypes,
+  type ProductProjectionsQueryArgs,
+  type ProductProjectionsQueryArgsActions,
+};
