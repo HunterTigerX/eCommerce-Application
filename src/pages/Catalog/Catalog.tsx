@@ -6,6 +6,7 @@ import {
 } from '@shared/api/products';
 import { ProductList } from '@widgets/ProductList';
 import { Categories } from '@widgets/Categories';
+import { type Key } from 'rc-tree/lib/interface';
 import { ProductsFilter } from '@features/ProductsFilter';
 
 const Catalog = () => {
@@ -57,8 +58,7 @@ const Catalog = () => {
         onClear={handleClear}
       />
       <Categories
-        onSelect={(id: string) => setProducts({ type: ProductProjectionsActionTypes.SET_CATEGORY, payload: id })}
-        onClear={() => setProducts({ type: ProductProjectionsActionTypes.CLEAR_CATEGORY })}
+        onSelect={(id: Key) => setProducts({ type: ProductProjectionsActionTypes.SET_CATEGORY, payload: id })}
       />
       {products && (
         <div style={{ marginTop: '1.5rem' }}>

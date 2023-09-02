@@ -37,9 +37,12 @@ const mapResults = (results: ProductProjection[] | null) => {
     : [];
 };
 
+//
 const productProjectionsQueryArgsInitialValue: ProductProjectionsQueryArgs = {
   limit: 20,
   priceCurrency: import.meta.env.VITE_CTP_DEFAULT_CURRENCY,
+  // filter: 'variants.scopedPriceDiscounted:true',
+  expand: 'productType',
 };
 
 const useProductProjections = (initialValue: ProductProjectionsQueryArgs = productProjectionsQueryArgsInitialValue) => {

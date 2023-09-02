@@ -1,20 +1,20 @@
 import { useEffect, useState } from 'react';
-import { TreeSelect } from 'antd';
+import { Tree } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { Category, CategoryReference } from '@commercetools/platform-sdk';
 import { ApiClient } from '@app/auth/client';
 import { useApiRequest } from '@shared/hooks';
+import { type Key } from 'rc-tree/lib/interface';
 
 interface CategoryTreeNode {
-  value: string; // id
+  key: string; // id
   title: string; // name
   parent: string | null;
   path: string;
   children: CategoryTreeNode[];
 }
 
-const getFullPath = (category: Category, categories: Category[]) => {
-  const SEPARATOR = ' / ';
+const getFullPath = (category: Category, categories: Category[], separator = ' / ') => {
   let result = category.name.en;
   let root: Category | undefined;
 
@@ -24,7 +24,7 @@ const getFullPath = (category: Category, categories: Category[]) => {
 
   while (current) {
     if (current.obj) {
-      result += SEPARATOR + current.obj.name.en;
+      result += separator + current.obj.name.en;
 
       current = current.obj.parent;
     } else {
@@ -37,10 +37,10 @@ const getFullPath = (category: Category, categories: Category[]) => {
   }
 
   if (root) {
-    result += SEPARATOR + root.name.en;
+    result += separator + root.name.en;
   }
 
-  return result.split(SEPARATOR).reverse().join(SEPARATOR);
+  return result.split(separator).reverse().join(separator);
 };
 
 type CategoriesTreeNodesRecord = Record<string, CategoryTreeNode>;
@@ -49,7 +49,7 @@ const mapCategories = (categories: Category[]): CategoriesTreeNodesRecord => {
   return categories
     .map((category) => {
       return {
-        value: category.id,
+        key: category.id,
         title: category.name.en,
         parent: category.parent?.id || null,
         path: getFullPath(category, categories),
@@ -59,7 +59,7 @@ const mapCategories = (categories: Category[]): CategoriesTreeNodesRecord => {
     .reduce(
       (acc, node) => ({
         ...acc,
-        [node.value]: node,
+        [node.key]: node,
       }),
       {} as CategoriesTreeNodesRecord
     );
@@ -91,14 +91,15 @@ const getAllCategoriesRequest = ApiClient.getInstance()
     },
   });
 
-const Categories = ({ onSelect, onClear }: { onSelect: (id: string) => void; onClear: () => void }) => {
+const Categories = ({ onSelect }: { onSelect: (id: Key) => void }) => {
   const { data, loading } = useApiRequest(getAllCategoriesRequest);
-  // const [value, setValue] = useState<string | undefined>(undefined);
   const [treeData, setTreeData] = useState<CategoryTreeNode[]>([]);
 
-  const onChange = (newValue: string) => {
-    // setValue(newValue);
-    onSelect(newValue);
+  const onChange = (selected: Key[]) => {
+    const id = selected[0];
+    console.log(id);
+
+    onSelect(id);
   };
 
   useEffect(() => {
@@ -107,25 +108,17 @@ const Categories = ({ onSelect, onClear }: { onSelect: (id: string) => void; onC
       const tree = getCategoriesTree(mappedCategories);
 
       setTreeData(tree);
+      console.log(tree);
     }
   }, [data]);
 
   return (
-    <TreeSelect
+    <Tree
       disabled={loading}
       style={{ width: 500 }}
-      size="large"
-      // value={value}
-      dropdownStyle={{ maxHeight: 500, overflow: 'auto' }}
-      placeholder="Categories"
-      allowClear
-      treeDefaultExpandAll={false}
-      treeNodeLabelProp="path"
       switcherIcon={<DownOutlined />}
-      onChange={onChange}
-      onClear={onClear}
+      onSelect={onChange}
       treeData={treeData}
-      treeLine
     />
   );
 };
