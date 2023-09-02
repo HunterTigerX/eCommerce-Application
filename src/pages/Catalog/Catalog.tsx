@@ -7,6 +7,7 @@ import {
 } from '@shared/api/products';
 import { ProductList } from '@widgets/ProductList';
 import { Categories } from '@widgets/Categories';
+import { type Key } from 'rc-tree/lib/interface';
 
 const Catalog = () => {
   const {
@@ -34,18 +35,13 @@ const Catalog = () => {
   };
 
   const handleSort = () => {
-    if (Math.random() > 0.5) {
-      setProducts({ type: ProductProjectionsActionTypes.SET_SORT, payload: ['price', 'asc'] });
-    } else {
-      setProducts({ type: ProductProjectionsActionTypes.SET_SORT, payload: ['name', 'desc'] });
-    }
+    setProducts({ type: ProductProjectionsActionTypes.SET_SORT, payload: ['price', 'desc'] });
   };
 
   return (
     <>
       <Categories
-        onSelect={(id: string) => setProducts({ type: ProductProjectionsActionTypes.SET_CATEGORY, payload: id })}
-        onClear={() => setProducts({ type: ProductProjectionsActionTypes.CLEAR_CATEGORY })}
+        onSelect={(id: Key) => setProducts({ type: ProductProjectionsActionTypes.SET_CATEGORY, payload: id })}
       />
       <h2>Catalog Products</h2>
       <AutoComplete

@@ -1,4 +1,5 @@
 import type { QueryParam } from '@commercetools/sdk-client-v2';
+import { type Key } from 'rc-tree/lib/interface';
 
 type ProductProjectionsQueryArgs = {
   fuzzy?: boolean;
@@ -46,7 +47,7 @@ type ClearSearchAction = {
 
 type SetCategoryAction = {
   type: ProductProjectionsActionTypes.SET_CATEGORY;
-  payload: string;
+  payload: Key;
 };
 
 type ClearCategoryAction = {
