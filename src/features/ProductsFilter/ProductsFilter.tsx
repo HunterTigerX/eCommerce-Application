@@ -117,6 +117,7 @@ export const ProductsFilter = ({ dispatch }: AutoCompleteFilterProps) => {
     };
     countFilter();
     setOpen(false);
+    dispatch({ type: ProductProjectionsActionTypes.SET_FILTER, payload: filterParameters });
     return filterParameters; //todo dispatch
   };
 

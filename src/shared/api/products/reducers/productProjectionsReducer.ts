@@ -1,5 +1,6 @@
 import type { QueryParam } from '@commercetools/sdk-client-v2';
-import { type Key } from 'rc-tree/lib/interface';
+import type { Key } from 'rc-tree/lib/interface';
+import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 
 type ProductProjectionsQueryArgs = {
   fuzzy?: boolean;
@@ -31,8 +32,16 @@ const enum ProductProjectionsActionTypes {
   CLEAR_CATEGORY = 'CLEAR_CATEGORY',
   SET_SORT = 'SET_SORT',
   CLEAR_SORT = 'CLEAR_SORT',
+  SET_FILTER = 'SET_FILTER',
   CLEAR_FILTER = 'CLEAR_FILTER',
   RESET = 'RESET',
+}
+
+interface ProductProjectionsFilterParameters {
+  price: number[];
+  color: CheckboxValueType[];
+  size: CheckboxValueType[];
+  discountedProducts: boolean;
 }
 
 type SetSearchAction = {
@@ -70,6 +79,11 @@ type ResetAction = {
   payload?: undefined;
 };
 
+type SetFilterAction = {
+  type: ProductProjectionsActionTypes.SET_FILTER;
+  payload: ProductProjectionsFilterParameters;
+};
+
 type ClearFilterAction = {
   type: ProductProjectionsActionTypes.CLEAR_FILTER;
   payload?: undefined;
@@ -82,6 +96,7 @@ type ProductProjectionsQueryArgsActions =
   | ClearCategoryAction
   | SetSortAction
   | ClearSortAction
+  | SetFilterAction
   | ClearFilterAction
   | ResetAction;
 
@@ -137,13 +152,42 @@ const productProjectionsQueryArgsReducer = (
         }
       }
 
-      return state;
+      return {
+        ...state,
+      };
     }
     case ProductProjectionsActionTypes.CLEAR_SORT: {
       delete state.sort;
 
       return {
         ...state,
+      };
+    }
+    case ProductProjectionsActionTypes.SET_FILTER: {
+      const { color, discountedProducts, price, size } = payload;
+      const filter = [];
+
+      delete state.filter;
+
+      if (color.length) {
+        filter.push(`variants.attributes.color.key:${color.map((value) => `"${value}"`).join(', ')}`);
+      }
+
+      if (discountedProducts) {
+        filter.push('variants.scopedPriceDiscounted:true');
+      }
+
+      if (price.length) {
+        filter.push(`variants.scopedPrice.value.centAmount:range (${price[0]} to ${price[1]})`);
+      }
+
+      if (size.length) {
+        filter.push(`variants.attributes.commonSize.key:${size.map((value) => `"${value}"`).join(', ')}`);
+      }
+
+      return {
+        ...state,
+        filter: filter,
       };
     }
     case ProductProjectionsActionTypes.CLEAR_FILTER: {
