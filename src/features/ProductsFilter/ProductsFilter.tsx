@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AutoComplete, Badge, Button, Checkbox, Drawer, Select, Slider } from 'antd';
+import { AutoComplete, Badge, Button, Checkbox, Drawer, Input, Select, Slider } from 'antd';
 import Title from 'antd/es/typography/Title';
 import { FilterOutlined } from '@ant-design/icons';
 import { CheckboxValueType } from 'antd/es/checkbox/Group';
@@ -23,6 +23,7 @@ export const ProductsFilter = ({ onSearch, onSelect, suggestions, onChange, onCl
   const [checkedColorList, setCheckedColorList] = useState<CheckboxValueType[]>([]);
   const [checkedSizeList, setCheckedSizeList] = useState<CheckboxValueType[]>([]);
   const [selectedSort, setSelectedSort] = useState<string | undefined>(undefined);
+  const [isDiscountedProducts, setIsDiscountedProducts] = useState(false);
   const [countFilters, setCountFilters] = useState(0);
 
   const handleSearch = (text: string) => {
@@ -65,6 +66,10 @@ export const ProductsFilter = ({ onSearch, onSelect, suggestions, onChange, onCl
     if (priceRange[0] !== 0 || priceRange[1] !== 9999) {
       count += 1;
       setCountFilters(count);
+    } else if (isDiscountedProducts) {
+      console.log('+');
+      count += 1;
+      setCountFilters(count);
     } else {
       setCountFilters(count);
     }
@@ -74,6 +79,7 @@ export const ProductsFilter = ({ onSearch, onSelect, suggestions, onChange, onCl
     setCheckedColorList([]);
     setCheckedSizeList([]);
     setPriceRange([0, 9999]);
+    setIsDiscountedProducts(false);
     onClear();
     countFilter(true);
     setOpen(false);
@@ -84,6 +90,7 @@ export const ProductsFilter = ({ onSearch, onSelect, suggestions, onChange, onCl
       price: priceRange,
       color: checkedColorList,
       size: checkedSizeList,
+      discountedProducts: isDiscountedProducts,
     };
     console.log(filterParameters);
     countFilter();
@@ -91,16 +98,16 @@ export const ProductsFilter = ({ onSearch, onSelect, suggestions, onChange, onCl
     return filterParameters;
   };
 
+  const onDiscountedProducts = () => {
+    setIsDiscountedProducts(!isDiscountedProducts);
+  };
+
   return (
     <>
       <div className={styles.productFilter}>
-        <AutoComplete
-          className={styles.productSearch}
-          onSearch={(text) => handleSearch(text)}
-          onSelect={(text) => handleSelect(text)}
-          options={suggestions}
-          placeholder="Search..."
-        ></AutoComplete>
+        <AutoComplete className={styles.productSearch} onSelect={(text) => handleSelect(text)} options={suggestions}>
+          <Input.Search onSearch={(text) => handleSearch(text)} size="large" placeholder="Search..." />
+        </AutoComplete>
         <div className={styles.controll}>
           <span>Sorting: </span>
           <Select
@@ -135,7 +142,7 @@ export const ProductsFilter = ({ onSearch, onSelect, suggestions, onChange, onCl
               Filter
             </Button>
           </Badge>
-          <Drawer title="Filter" placement="right" onClose={onClose} open={open}>
+          <Drawer style={{ paddingRight: '17px' }} title="Filter" placement="right" onClose={onClose} open={open}>
             <div className={styles.filterSection}>
               <Title level={4}>Price</Title>
               <Slider
@@ -165,6 +172,13 @@ export const ProductsFilter = ({ onSearch, onSelect, suggestions, onChange, onCl
                 onChange={onSizeList}
               />
             </div>
+            <div className={styles.filterSection}>
+              <Title level={4}>Discounted</Title>
+              <Checkbox onChange={onDiscountedProducts} checked={isDiscountedProducts}>
+                Show discounted products.
+              </Checkbox>
+            </div>
+
             <div className={`${styles.controll} ${styles.filterSection}`}>
               <Button onClick={applyFilters}>Apply</Button>
               <Button onClick={clearFilters}>Clear</Button>
