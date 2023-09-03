@@ -1,4 +1,5 @@
-.produck-list-container {
+.products-list-container {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   grid-column-gap: 30px;
@@ -6,8 +7,22 @@
   grid-row-gap: 32px;
   row-gap: 32px;
 }
+.products-list-spin-block {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  z-index: 10;
+}
+.spin {
+  position: absolute;
+  top: 200px;
+}
+
 @media only screen and (max-width: 1024px) {
-  .produck-list-container {
+  .products-list-container {
     grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
     grid-column-gap: 25px;
     column-gap: 25px;
@@ -16,7 +31,7 @@
   }
 }
 @media only screen and (max-width: 500px) {
-  .produck-list-container {
+  .products-list-container {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     grid-column-gap: 8px;
     column-gap: 8px;

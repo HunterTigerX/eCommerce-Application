@@ -11,7 +11,7 @@ interface ProductCardMap {
   urlImg: string;
 }
 
-export const ProductCard = ({ product }: { product: ProductCardMap }) => {
+const ProductCard = ({ product }: { product: ProductCardMap }) => {
   const { id, title, description, urlImg, price, discount } = product;
 
   return (
@@ -52,3 +52,5 @@ export const ProductCard = ({ product }: { product: ProductCardMap }) => {
     </Link>
   );
 };
+
+export { type ProductCardMap, ProductCard };
