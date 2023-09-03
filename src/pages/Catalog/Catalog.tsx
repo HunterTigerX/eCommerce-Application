@@ -14,11 +14,9 @@ const Catalog = () => {
       <h2>Catalog Products</h2>
       <ProductsFilter dispatch={dispatch} />
       <Categories loading={loading} dispatch={dispatch} />
-      {products && (
-        <div style={{ marginTop: '1.5rem' }}>
-          <ProductList products={products} loading={loading} />
-        </div>
-      )}
+      <div style={{ marginTop: '1.5rem' }}>
+        <ProductList products={products} loading={loading} />
+      </div>
     </>
   );
 };

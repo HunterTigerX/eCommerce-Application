@@ -192,7 +192,6 @@ const productProjectionsQueryArgsReducer = (
     }
     case ProductProjectionsActionTypes.CLEAR_FILTER: {
       delete state.filter;
-      // delete state['filter.query']
 
       return {
         ...state,

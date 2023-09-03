@@ -22,7 +22,7 @@ const getFullPath = (category: Category, categories: Category[], separator = ' /
 
   while (current) {
     if (current.obj) {
-      result += separator + current.obj.name.en;
+      result += separator + current.obj.name.en + ':' + current.obj.id;
 
       current = current.obj.parent;
     } else {
@@ -35,7 +35,7 @@ const getFullPath = (category: Category, categories: Category[], separator = ' /
   }
 
   if (root) {
-    result += separator + root.name.en;
+    result += separator + root.name.en + ':' + root.id;
   }
 
   return result.split(separator).reverse().join(separator);
@@ -98,4 +98,4 @@ const useCategories = () => {
   };
 };
 
-export { useCategories };
+export { useCategories, type CategoryTreeNode };
