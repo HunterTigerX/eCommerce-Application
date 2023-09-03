@@ -9,7 +9,9 @@ import { ApiClient } from '@app/auth/client';
 
 export function ReturnAddresses(user: Customer): JSX.Element {
   const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
-  const apiClient = new ApiClient();
+  const { setUser } = useAuth();
+  const apiClient = ApiClient.getInstance();
+
   // Модальное окно для смены данных адреса
   const countryOptions = [
     { label: 'United States', value: 'US' },
@@ -35,9 +37,7 @@ export function ReturnAddresses(user: Customer): JSX.Element {
   const [billingAddressCheckBox, setBillingAddressCheckBox] = useState(false);
   const [clickedAddressId, setAddressId] = useState('');
   const hasSpecialCharacters = /[!@#$%'^&*(),.?":{}|<>0-9\\-]|[!$%^&*()_+|~=`{}[\]:/;<>?,.@#]/;
-  const { refreshUser } = useAuth();
   const [isAddressInfoModalOpened, userAddressModalIsOpen] = useState(false);
-
   // Вставляет данные адреса, который был выбран, в поля модального окна
   function inputValidAddressInfo(buttonNumber: number) {
     if (user) {
@@ -351,9 +351,9 @@ export function ReturnAddresses(user: Customer): JSX.Element {
             },
           })
           .execute()
-          .then(async () => {
+          .then((response) => {
             successMessage('success', `Information successfully updated`);
-            await refreshUser();
+            setUser(response.body);
             closeAddressInfoModal();
           });
       }
@@ -372,9 +372,9 @@ export function ReturnAddresses(user: Customer): JSX.Element {
           },
         })
         .execute()
-        .then(async () => {
+        .then((response) => {
           successMessage('success', `Address successfully deleted`);
-          await refreshUser();
+          setUser(response.body);
           closeAddressInfoModal();
         });
     }
