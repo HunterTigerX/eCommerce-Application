@@ -27,6 +27,8 @@ export const ProductsFilter = ({ dispatch }: AutoCompleteFilterProps) => {
   const [selectedSort, setSelectedSort] = useState<string | undefined>(undefined);
   const [isDiscountedProducts, setIsDiscountedProducts] = useState(false);
   const [countFilters, setCountFilters] = useState(0);
+  const disabledButton =
+    !checkedColorList.length && !checkedSizeList.length && !isDiscountedProducts && priceRange.toString() === '0,9999';
 
   const {
     state: { suggestions },
@@ -78,6 +80,7 @@ export const ProductsFilter = ({ dispatch }: AutoCompleteFilterProps) => {
   const onColorList = (list: CheckboxValueType[]) => {
     setCheckedColorList(list);
   };
+
   const onSizeList = (list: CheckboxValueType[]) => {
     setCheckedSizeList(list);
   };
@@ -118,7 +121,6 @@ export const ProductsFilter = ({ dispatch }: AutoCompleteFilterProps) => {
     countFilter();
     setOpen(false);
     dispatch({ type: ProductProjectionsActionTypes.SET_FILTER, payload: filterParameters });
-    return filterParameters; //todo dispatch
   };
 
   const onDiscountedProducts = () => {
@@ -141,6 +143,7 @@ export const ProductsFilter = ({ dispatch }: AutoCompleteFilterProps) => {
           <span>Sorting: </span>
           <Select
             style={{ width: 180 }}
+            defaultValue={'Default'}
             onChange={(value) => handleSort(value)}
             value={selectedSort}
             options={[
@@ -162,7 +165,7 @@ export const ProductsFilter = ({ dispatch }: AutoCompleteFilterProps) => {
               },
               {
                 value: 'default',
-                label: 'A set default',
+                label: 'Default',
               },
             ]}
           />
@@ -209,8 +212,12 @@ export const ProductsFilter = ({ dispatch }: AutoCompleteFilterProps) => {
             </div>
 
             <div className={`${styles.controll} ${styles.filterSection}`}>
-              <Button onClick={applyFilters}>Apply</Button>
-              <Button onClick={clearFilters}>Clear</Button>
+              <Button onClick={applyFilters} disabled={disabledButton}>
+                Apply
+              </Button>
+              <Button onClick={clearFilters} disabled={disabledButton}>
+                Clear
+              </Button>
             </div>
           </Drawer>
         </div>
