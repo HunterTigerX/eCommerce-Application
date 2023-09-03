@@ -75,16 +75,11 @@ export class AuthService {
     const token = localStorage.getItem('auth');
 
     if (token) {
-      await this.client.revokeToken(window.atob(token));
+      await this.client.revokeToken(token);
       localStorage.removeItem('auth');
     }
 
     this.client.switchToDefaultClient();
     this.user = null;
-  }
-
-  public async refreshUser(): Promise<void> {
-    const updatedUser = await this.client.requestBuilder.me().get().execute();
-    this.user = updatedUser.body;
   }
 }

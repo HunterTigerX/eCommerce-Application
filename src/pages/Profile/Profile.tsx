@@ -15,8 +15,6 @@ import { FillDesriptionProps } from './UserDesc.tsx';
 import { ReturnAddresses } from './UserAddresses.tsx';
 import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
 
-const apiClient = new ApiClient();
-
 type FieldType = {
   passwordOld: string;
   passwordNew: string;
@@ -24,6 +22,8 @@ type FieldType = {
 
 export const Profile = () => {
   const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
+  const { user, signIn, setUser } = useAuth();
+  const apiClient = ApiClient.getInstance();
 
   function successMessage(result: 'success' | 'error', errorMessage: string): void {
     messageApi.open({
@@ -39,8 +39,6 @@ export const Profile = () => {
     { label: 'Russia', value: 'RU' },
     { label: 'France', value: 'FR' },
   ];
-  const { user, signIn } = useAuth();
-  const { refreshUser } = useAuth();
 
   // Модальное окно изменения данных пользователя
   const [isUserInfoModalOpened, userInfoModalIsOpen] = useState(false);
@@ -122,9 +120,9 @@ export const Profile = () => {
               },
             })
             .execute()
-            .then(async () => {
+            .then((response) => {
               successMessage('success', `Information successfully updated`);
-              await refreshUser();
+              setUser(response.body);
               closeUserInfoModal();
             });
         }
@@ -157,14 +155,14 @@ export const Profile = () => {
           body,
         })
         .execute()
-        .then(async () => {
+        .then(async (response) => {
           successMessage('success', `Information successfully updated`);
           const credentials: UserAuthOptions = {
             username: user.email,
             password: values.passwordNew,
           };
           await signIn(credentials);
-          await refreshUser();
+          setUser(response.body);
           closePasswordInfoModal();
         })
         .catch((error) => {
@@ -332,9 +330,9 @@ export const Profile = () => {
             },
           })
           .execute()
-          .then(async () => {
+          .then((response) => {
             successMessage('success', 'New address successfully added.');
-            await refreshUser();
+            setUser(response.body);
 
             setNewShippingCountry('');
             setNewCity('');
