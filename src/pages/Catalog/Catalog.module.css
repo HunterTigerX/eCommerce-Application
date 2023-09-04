@@ -1,0 +1,17 @@
+.header-catalog {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+}
+
+@media only screen and (max-width: 1280px) {
+}
+
+@media only screen and (max-width: 576px) {
+  .header-catalog {
+    justify-content: center;
+  }
+}
