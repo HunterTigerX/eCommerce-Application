@@ -52,7 +52,7 @@ const useProduct = (id: string | undefined) => {
 export const ProductDetail = () => {
   const { productId } = useParams<{ productId: string }>();
   const itemData = useProduct(productId);
-  // console.log(itemData);
+  console.log(itemData);
   const [isBigPicModalOpened, bigPicModalIsOpen] = useState(false);
   const [carousel1Index, setCarousel1Index] = useState(0);
   const carouselRefModal = useRef<CarouselRef>(null);
@@ -202,7 +202,7 @@ export const ProductDetail = () => {
             <div className="prodWrapper">
               {prodTitle ? <div className="prodName">{prodTitle}</div> : null}
               {prodDescription ? <div className="prodDesc">{prodDescription}</div> : null}
-              {color ? <div className="prodDesc">{color}</div> : null}
+              {color ? <div className="prodDesc">We only have this item in {color} color today</div> : null}
               {releaseDate ? <div className="prodDesc">Product was released in {releaseDate}</div> : null}
               {/* {specialAttr ? <div className="prodDesc">{specialAttr}</div> : null} */}
               {prodDiscount ? (

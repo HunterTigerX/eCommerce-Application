@@ -26,6 +26,11 @@ const routes: RouteObject[] = [
         caseSensitive: true,
       },
       {
+        path: '/catalog/:id',
+        element: <Catalog />,
+        caseSensitive: true,
+      },
+      {
         path: '/product/:productId', // Добавляем маршрут для детальной страницы продукта
         element: <ProductDetail />,
         caseSensitive: true,

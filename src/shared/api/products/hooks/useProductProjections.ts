@@ -8,6 +8,7 @@ import {
   productProjectionsQueryArgsReducer,
   ProductProjectionsActionTypes,
 } from '@shared/api/products/reducers';
+import type { ApiRequest } from '@commercetools/platform-sdk/dist/declarations/src/generated/shared/utils/requests-utils';
 
 const mapResults = (results: ProductProjection[] | null) => {
   return results
