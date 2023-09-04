@@ -1,62 +1,47 @@
-#login_form,
-#register {
-    margin: 0 auto;
-    position: relative !important;
-    right: 50px;
+#login_form {
+  margin: 0 auto;
+  position: relative !important;
+  right: 50px;
 }
 
-
 @media only screen and (max-width: 575px) {
-    #login_form {
-        justify-content: flex-end;
-        right: auto;
-        width: 90%;
-    }
+  #login_form {
+    justify-content: flex-end;
+    position: static;
+    width: 90%;
+  }
 
-    .submit_login {
-        margin-right: auto !important;
-        margin-left: -127px !important;
-    }
-
-    #register {
-        max-width: 100%;
-        padding: 0;
-        margin: 0 auto;
-        right: 0;
-        position:unset !important;
-    }
+  .submit_login {
+    margin-right: auto !important;
+    margin-left: -127px !important;
+  }
 }
 
 .signIn-header {
-    margin-right: 30px;
+  margin-right: 30px;
 }
 
 .redirectToSignUp {
-    margin-left: 10px;
+  margin-left: 10px;
 }
 
 @media only screen and (max-width: 700px) {
-.ant-form-item-required {
+  .ant-form-item-required {
     word-wrap: break-word;
-    white-space:break-spaces;
-}
+    white-space: break-spaces;
+  }
 }
 
 @media only screen and (max-width: 700px) {
-    ._sugn-up-form_1pejx_1 {
-        padding: 0 !important;
-        overflow: hidden !important;
-    }
-
-    #login_form {
-        right: auto;
-    }
+  #login_form {
+    right: auto;
+  }
 }
 
 .ant-form-item-control-input-content {
-    margin-right: 20px;
+  margin-right: 20px;
 }
 
 .ant-row.ant-form-item-row.css-dev-only-do-not-override-19gw05y {
-    overflow: hidden;
+  overflow: hidden;
 }

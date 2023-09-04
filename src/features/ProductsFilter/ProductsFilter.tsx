@@ -196,7 +196,7 @@ export const ProductsFilter = ({ dispatch, id, isFilter }: ProductsFilterProps) 
             Filter
           </Button>
         </Badge>
-        <Drawer style={{ paddingRight: '17px' }} title="Filter" placement="right" onClose={onClose} open={open}>
+        <Drawer title="Filter" placement="right" onClose={onClose} open={open}>
           <div className={styles.filterSection}>
             <Title level={4}>Price</Title>
             <Slider
