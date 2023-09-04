@@ -1,1 +1,1 @@
-export { ProductCard, type ProductCardMap, type IImages } from './ProductCard.tsx';
+export { ProductCard, type ProductCardMap } from './ProductCard.tsx';

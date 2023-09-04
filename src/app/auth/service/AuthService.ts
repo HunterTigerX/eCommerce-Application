@@ -82,9 +82,4 @@ export class AuthService {
     this.client.switchToDefaultClient();
     this.user = null;
   }
-
-  public async refreshUser(): Promise<void> {
-    const updatedUser = await this.client.requestBuilder.me().get().execute();
-    this.user = updatedUser.body;
-  }
 }

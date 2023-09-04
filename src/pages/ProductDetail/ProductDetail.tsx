@@ -5,10 +5,17 @@ import Modal from 'react-modal';
 import { CarouselRef } from 'antd/es/carousel';
 import { ApiClient } from '@app/auth/client';
 import { useApiRequest } from '@shared/hooks';
-import { IImages } from '@widgets/ProductList/ui/ProductCard';
 import { EuroCircleOutlined } from '@ant-design/icons';
 import './carousel.css';
 
+interface IDimentions {
+  w: number;
+  h: number;
+}
+interface IImages {
+  url: string;
+  dimensions: IDimentions;
+}
 interface IAttributes {
   name: string;
   value: string;

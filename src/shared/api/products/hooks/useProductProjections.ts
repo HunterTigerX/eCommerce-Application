@@ -1,4 +1,5 @@
 import { useMemo, useReducer } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { ProductProjection } from '@commercetools/platform-sdk';
 import { ApiClient } from '@app/auth/client';
 import { useApiRequest } from '@shared/api/core';
@@ -42,24 +43,52 @@ const productProjectionsQueryArgsInitialValue: ProductProjectionsQueryArgs = {
   priceCurrency: import.meta.env.VITE_CTP_DEFAULT_CURRENCY,
 };
 
-const useProductProjections = (initialValue: ProductProjectionsQueryArgs = productProjectionsQueryArgsInitialValue) => {
-  const [queryArgs, dispatch] = useReducer(productProjectionsQueryArgsReducer, initialValue);
-
-  const request = useMemo(
-    () =>
-      ApiClient.getInstance().requestBuilder.productProjections().search().get({
-        queryArgs,
-      }),
-    [queryArgs]
+const useProductProjections = (id: string | undefined) => {
+  const [queryArgs, dispatch] = useReducer(productProjectionsQueryArgsReducer, productProjectionsQueryArgsInitialValue);
+  const isCategoriExistsRequest = useMemo(
+    () => (id ? ApiClient.getInstance().requestBuilder.categories().withId({ ID: id }).get() : null),
+    [id]
   );
+  const { data, error, loading } = useApiRequest(isCategoriExistsRequest);
 
-  const { data, error, loading } = useApiRequest(request);
+  const navigate = useNavigate();
+
+  const request = useMemo(() => {
+    if (id && !data && error && !loading) {
+      navigate('/');
+
+      return null;
+    }
+
+    if (id && data && !error && !loading) {
+      return ApiClient.getInstance()
+        .requestBuilder.productProjections()
+        .search()
+        .get({
+          queryArgs: {
+            ...queryArgs,
+            'filter.query': `categories.id:subtree("${id}")`,
+          },
+        });
+    }
+
+    if (!id) {
+      return ApiClient.getInstance().requestBuilder.productProjections().search().get({
+        queryArgs,
+      });
+    }
+
+    return null;
+    // eslint-disable-next-line
+  }, [data, error, loading, queryArgs, navigate]);
+
+  const state = useApiRequest(request);
 
   return {
     state: {
-      products: mapResults(data?.results || null),
-      error,
-      loading,
+      products: mapResults(state.data?.results || null),
+      error: state.error,
+      loading: state.loading,
     },
     dispatch,
   };
