@@ -50,7 +50,3 @@ h2 {
 .overflow-hidden {
   overflow: hidden;
 }
-
-.css-dev-only-do-not-override-19gw05y.ant-form-item .ant-form-item-label > label {
-  display: inline-block !important;
-}

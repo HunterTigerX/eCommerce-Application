@@ -76,11 +76,9 @@ const SignInInputForm = () => {
         >
           <Input.Password />
         </Form.Item>
-        <Form.Item wrapperCol={{ offset: 4, span: 16 }}>
-          <Button type="primary" htmlType="submit" className="submit_login">
-            Submit
-          </Button>
-        </Form.Item>
+        <Button type="primary" htmlType="submit" className="submit_login">
+          Submit
+        </Button>
         <div className="redirectToSignUp">
           You don&apos;t have an account? <Link to="/signup">Sign Up</Link>
         </div>

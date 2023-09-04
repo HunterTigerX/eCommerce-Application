@@ -4,44 +4,44 @@
   right: 50px;
 }
 
-@media only screen and (max-width: 575px) {
-  #login_form {
-    justify-content: flex-end;
-    position: static;
-    width: 90%;
-  }
-
-  .submit_login {
-    margin-right: auto !important;
-    margin-left: -127px !important;
-  }
+.submit_login {
+  position: relative;
+  left: 50px;
+  width: fit-content;
+  align-self: center;
 }
 
 .signIn-header {
-  margin-right: 30px;
+  text-align: center;
 }
 
 .redirectToSignUp {
-  margin-left: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-left: 50px;
+  padding-top: 1rem;
 }
 
-@media only screen and (max-width: 700px) {
-  .ant-form-item-required {
-    word-wrap: break-word;
-    white-space: break-spaces;
-  }
-}
-
-@media only screen and (max-width: 700px) {
+@media screen and (max-width: 575px) {
   #login_form {
-    right: auto;
+    margin: 0 auto;
+    position: static;
+    right: 0;
   }
-}
 
-.ant-form-item-control-input-content {
-  margin-right: 20px;
-}
+  .redirectToSignUp {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-left: 0;
+    padding-top: 1rem;
+  }
 
-.ant-row.ant-form-item-row.css-dev-only-do-not-override-19gw05y {
-  overflow: hidden;
+  .submit_login {
+    position: static;
+    left: 0;
+    width: fit-content;
+    align-self: center;
+  }
 }
