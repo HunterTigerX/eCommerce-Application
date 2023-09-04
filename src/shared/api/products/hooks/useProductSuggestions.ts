@@ -10,7 +10,7 @@ import {
 } from '@shared/api/products/reducers';
 
 const mapSuggestions = (suggestions: Suggestion[] | null) => {
-  return suggestions ? suggestions.map((suggestion) => ({ value: suggestion.text })) : [];
+  return suggestions ? suggestions.map((suggestion) => ({ value: suggestion.text.trim() })) : [];
 };
 
 const productSuggestionsQueryArgsInitialValue = {

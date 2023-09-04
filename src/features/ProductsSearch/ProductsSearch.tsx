@@ -1,4 +1,5 @@
 import { AutoComplete, Input } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import {
   ProductProjectionsActionTypes,
   type ProductProjectionsQueryArgsActions,
@@ -7,30 +8,41 @@ import {
 } from '@shared/api/products';
 import style from './ProductsSearch.module.css';
 
-export const ProductsSearch = ({ dispatch }: { dispatch: React.Dispatch<ProductProjectionsQueryArgsActions> }) => {
+interface ProductsSearchProps {
+  dispatch: React.Dispatch<ProductProjectionsQueryArgsActions>;
+  clearFilters: () => void;
+}
+
+export const ProductsSearch = ({ dispatch, clearFilters }: ProductsSearchProps) => {
   const {
     state: { suggestions },
     dispatch: setSuggestions,
   } = useProductSuggestions();
+  const navigate = useNavigate();
 
   const handleSuggestions = (text: string) => {
     if (text) {
       setSuggestions({ type: ProductSuggestionsActionTypes.SET_SUGGESTIONS, payload: text });
     } else {
       setSuggestions({ type: ProductSuggestionsActionTypes.CLEAR_SUGGESTIONS });
+      dispatch({ type: ProductProjectionsActionTypes.CLEAR_SEARCH });
     }
   };
 
   const handleSearch = (text: string) => {
+    if (!text) return;
+
     if (text) {
       dispatch({ type: ProductProjectionsActionTypes.SET_SEARCH, payload: text });
-    } else {
-      dispatch({ type: ProductProjectionsActionTypes.CLEAR_SEARCH });
+      navigate('/catalog');
+      clearFilters();
     }
   };
 
   const handleSelect = (text: string) => {
     dispatch({ type: ProductProjectionsActionTypes.SET_SEARCH, payload: text });
+    navigate('/catalog');
+    clearFilters();
   };
 
   return (
@@ -38,7 +50,7 @@ export const ProductsSearch = ({ dispatch }: { dispatch: React.Dispatch<ProductP
       onSearch={(text) => handleSuggestions(text)}
       onSelect={(text) => handleSelect(text)}
       options={suggestions}
-      placeholder="Search..."
+      placeholder="Search in store..."
       className={style.productsSearch}
     >
       <Input.Search onSearch={(text) => handleSearch(text)} />
