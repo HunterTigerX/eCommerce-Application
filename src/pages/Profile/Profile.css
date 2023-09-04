@@ -20,11 +20,11 @@
   color: black;
 }
 
-.personal-info-form label>div:last-child {
+.personal-info-form label > div:last-child {
   width: 200px;
 }
 
-.personal-info-form label>input:last-child {
+.personal-info-form label > input:last-child {
   width: 200px;
 }
 
@@ -39,7 +39,7 @@
   padding: 3px;
 }
 
-.personal-info-form input[type="text"] {
+.personal-info-form input[type='text'] {
   text-indent: 7px;
 }
 
@@ -86,38 +86,28 @@
   margin: 0 auto;
 }
 
-
 @media screen and (max-width: 1100px) {
-
-
   .ant-form label div {
     min-width: 150px !important;
   }
-
 }
 
-
 @media screen and (max-width: 900px) {
-
   .main-profile-block {
     width: 75vw;
     margin: 0 auto;
   }
-
 }
 
 @media screen and (max-width: 700px) {
-
   .main-profile-block {
     width: 90vw;
     margin: 0 auto;
   }
 
-
   .ant-form label {
-    justify-content: space-between
+    justify-content: space-between;
   }
-
 
   .ant-form {
     display: flex !important;
@@ -127,5 +117,4 @@
   .ReactModal__Content {
     inset: 0;
   }
-
 }
