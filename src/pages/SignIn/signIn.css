@@ -17,6 +17,14 @@
         margin-right: auto !important;
         margin-left: -127px !important;
     }
+
+    #register {
+        max-width: 100%;
+        padding: 0;
+        margin: 0 auto;
+        right: 0;
+        position:unset !important;
+    }
 }
 
 .signIn-header {
@@ -28,14 +36,27 @@
 }
 
 @media only screen and (max-width: 700px) {
+.ant-form-item-required {
+    word-wrap: break-word;
+    white-space:break-spaces;
+}
+}
+
+@media only screen and (max-width: 700px) {
     ._sugn-up-form_1pejx_1 {
         padding: 0 !important;
         overflow: hidden !important;
     }
 
     #login_form {
-        justify-content: flex-end;
         right: auto;
-        width: 90%;
     }
+}
+
+.ant-form-item-control-input-content {
+    margin-right: 20px;
+}
+
+.ant-row.ant-form-item-row.css-dev-only-do-not-override-19gw05y {
+    overflow: hidden;
 }
