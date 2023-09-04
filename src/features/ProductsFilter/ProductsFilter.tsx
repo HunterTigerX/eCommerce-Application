@@ -13,19 +13,53 @@ interface ProductsFilterProps {
 }
 
 const CheckboxGroup = Checkbox.Group;
-const optionsColor = ['black', 'grey', 'white', 'blue', 'red', 'orange'];
-const optionsSize = ['xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl'];
+const optionsColor = [
+  'red',
+  'blue',
+  'green',
+  'yellow',
+  'purple',
+  'pink',
+  'orange',
+  'brown',
+  'black',
+  'white',
+  'gray',
+  'gold',
+  'silver',
+  'navy blue',
+  'sky blue',
+  'lime green',
+  'teal',
+  'indigo',
+  'magenta',
+  'violet',
+  'khaki',
+  'salmon',
+  'crimson',
+  'lavender',
+  'plum',
+  'blue violet',
+  'olive',
+  'cyan',
+  'maroon',
+  'beige',
+];
+const years = ['2023', '2022', '2021', '2020', '2019', '2018', '2017', '2016', '2015', '2014'];
 
 export const ProductsFilter = ({ dispatch }: ProductsFilterProps) => {
   const [open, setOpen] = useState(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 9999]);
   const [checkedColorList, setCheckedColorList] = useState<CheckboxValueType[]>([]);
-  const [checkedSizeList, setCheckedSizeList] = useState<CheckboxValueType[]>([]);
+  const [checkedReleaseDate, setCheckedReleaseDate] = useState<CheckboxValueType[]>([]);
   const [selectedSort, setSelectedSort] = useState('default');
   const [isDiscountedProducts, setIsDiscountedProducts] = useState(false);
   const [countFilters, setCountFilters] = useState(0);
   const disabledButton =
-    !checkedColorList.length && !checkedSizeList.length && !isDiscountedProducts && priceRange.toString() === '0,9999';
+    !checkedColorList.length &&
+    !checkedReleaseDate.length &&
+    !isDiscountedProducts &&
+    priceRange.toString() === '0,9999';
 
   const handleSort = (value: string) => {
     if (value === 'default') {
@@ -43,10 +77,6 @@ export const ProductsFilter = ({ dispatch }: ProductsFilterProps) => {
     setOpen(true);
   };
 
-  const onClose = () => {
-    setOpen(false);
-  };
-
   const handlePriceChange = (value: [number, number]) => {
     setPriceRange(value);
   };
@@ -55,14 +85,14 @@ export const ProductsFilter = ({ dispatch }: ProductsFilterProps) => {
     setCheckedColorList(list);
   };
 
-  const onSizeList = (list: CheckboxValueType[]) => {
-    setCheckedSizeList(list);
+  const onReleaseList = (list: CheckboxValueType[]) => {
+    setCheckedReleaseDate(list);
   };
 
   const countFilter = (reset?: boolean) => {
     if (reset) return setCountFilters(0);
     const colorCount = checkedColorList.length;
-    const sizeCount = checkedSizeList.length;
+    const sizeCount = checkedReleaseDate.length;
     let count = colorCount + sizeCount;
     if (priceRange[0] !== 0 || priceRange[1] !== 9999) {
       count += 1;
@@ -77,7 +107,7 @@ export const ProductsFilter = ({ dispatch }: ProductsFilterProps) => {
 
   const clearFilters = () => {
     setCheckedColorList([]);
-    setCheckedSizeList([]);
+    setCheckedReleaseDate([]);
     setPriceRange([0, 9999]);
     setIsDiscountedProducts(false);
     countFilter(true);
@@ -89,7 +119,7 @@ export const ProductsFilter = ({ dispatch }: ProductsFilterProps) => {
     const filterParameters = {
       price: priceRange.map((number) => number * 100),
       color: checkedColorList,
-      size: checkedSizeList,
+      release: checkedReleaseDate,
       discountedProducts: isDiscountedProducts,
     };
     countFilter();
@@ -97,6 +127,12 @@ export const ProductsFilter = ({ dispatch }: ProductsFilterProps) => {
     dispatch({ type: ProductProjectionsActionTypes.SET_FILTER, payload: filterParameters });
   };
 
+  const onClose = () => {
+    setOpen(false);
+    if (disabledButton) {
+      clearFilters();
+    }
+  };
   const onDiscountedProducts = () => {
     setIsDiscountedProducts(!isDiscountedProducts);
   };
@@ -156,6 +192,7 @@ export const ProductsFilter = ({ dispatch }: ProductsFilterProps) => {
           <div className={styles.filterSection}>
             <Title level={4}>Color</Title>
             <CheckboxGroup
+              className={styles.checkboxGroupList}
               style={{ flexDirection: 'column' }}
               options={optionsColor}
               value={checkedColorList}
@@ -163,12 +200,13 @@ export const ProductsFilter = ({ dispatch }: ProductsFilterProps) => {
             />
           </div>
           <div className={styles.filterSection}>
-            <Title level={4}>Size</Title>
+            <Title level={4}>Release Date</Title>
             <CheckboxGroup
+              className={styles.checkboxGroupList}
               style={{ flexDirection: 'column' }}
-              options={optionsSize}
-              value={checkedSizeList}
-              onChange={onSizeList}
+              options={years}
+              value={checkedReleaseDate}
+              onChange={onReleaseList}
             />
           </div>
           <div className={styles.filterSection}>

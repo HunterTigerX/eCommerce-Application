@@ -40,7 +40,7 @@ const enum ProductProjectionsActionTypes {
 interface ProductProjectionsFilterParameters {
   price: number[];
   color: CheckboxValueType[];
-  size: CheckboxValueType[];
+  release: CheckboxValueType[];
   discountedProducts: boolean;
 }
 
@@ -164,13 +164,13 @@ const productProjectionsQueryArgsReducer = (
       };
     }
     case ProductProjectionsActionTypes.SET_FILTER: {
-      const { color, discountedProducts, price, size } = payload;
+      const { color, discountedProducts, price, release } = payload;
       const filter = [];
 
       delete state.filter;
 
       if (color.length) {
-        filter.push(`variants.attributes.color.key:${color.map((value) => `"${value}"`).join(', ')}`);
+        filter.push(`variants.attributes.colorsList.key:${color.map((value) => `"${value}"`).join(', ')}`);
       }
 
       if (discountedProducts) {
@@ -181,8 +181,8 @@ const productProjectionsQueryArgsReducer = (
         filter.push(`variants.scopedPrice.value.centAmount:range (${price[0]} to ${price[1]})`);
       }
 
-      if (size.length) {
-        filter.push(`variants.attributes.commonSize.key:${size.map((value) => `"${value}"`).join(', ')}`);
+      if (release.length) {
+        filter.push(`variants.attributes.releaseDate:${release.map((value) => `"${value}"`).join(', ')}`);
       }
 
       return {
