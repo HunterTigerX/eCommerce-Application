@@ -15,13 +15,7 @@ const ProductCard = ({ product }: { product: ProductCardMap }) => {
   const { id, title, description, urlImg, price, discount } = product;
 
   return (
-    <Link
-      to={`/product/${id}`}
-      className={style.productCard}
-      // onClick={() => {
-      //   localStorage.setItem('product', JSON.stringify(product))
-      // }}
-    >
+    <Link to={`/product/${id}`} className={style.productCard}>
       <div className={style.productImg}>
         <img src={urlImg} alt={title} />
       </div>
