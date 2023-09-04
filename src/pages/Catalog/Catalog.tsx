@@ -5,6 +5,8 @@ import { ProductList } from '@widgets/ProductList';
 import { Categories } from '@widgets/Categories';
 import { ProductsFilter } from '@features/ProductsFilter';
 import { Breadcrumbs } from '@features/Breadcrumbs';
+import { ProductsSearch } from '@features/ProductsSearch';
+import style from './Catalog.module.css';
 
 const Catalog = () => {
   const { id } = useParams();
@@ -18,10 +20,12 @@ const Catalog = () => {
 
   return (
     <>
-      <h2>Catalog Products</h2>
-      <ProductsFilter dispatch={dispatch} />
+      <div className={style.headerCatalog}>
+        <Categories loading={loading} id={id} tree={categoriesTree} />
+        <ProductsSearch dispatch={dispatch} />
+        <ProductsFilter dispatch={dispatch} />
+      </div>
       <Breadcrumbs tree={categoriesTree} id={id} />
-      <Categories loading={loading} id={id} tree={categoriesTree} />
       <ProductList products={products} loading={loading} />
     </>
   );

@@ -1,14 +1,10 @@
 import { useState } from 'react';
-import { AutoComplete, Badge, Button, Checkbox, Drawer, Input, Select, Slider } from 'antd';
+import { Badge, Button, Checkbox, Drawer, Select, Slider } from 'antd';
 import { ProductProjectionsActionTypes } from '@shared/api/products';
 import Title from 'antd/es/typography/Title';
 import { FilterOutlined } from '@ant-design/icons';
 import { CheckboxValueType } from 'antd/es/checkbox/Group';
-import {
-  useProductSuggestions,
-  ProductSuggestionsActionTypes,
-  type ProductProjectionsQueryArgsActions,
-} from '@shared/api/products';
+import { type ProductProjectionsQueryArgsActions } from '@shared/api/products';
 import styles from './ProductsFilter.module.css';
 
 interface AutoCompleteFilterProps {
@@ -24,39 +20,15 @@ export const ProductsFilter = ({ dispatch }: AutoCompleteFilterProps) => {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 9999]);
   const [checkedColorList, setCheckedColorList] = useState<CheckboxValueType[]>([]);
   const [checkedSizeList, setCheckedSizeList] = useState<CheckboxValueType[]>([]);
-  const [selectedSort, setSelectedSort] = useState<string | undefined>(undefined);
+  const [selectedSort, setSelectedSort] = useState('default');
   const [isDiscountedProducts, setIsDiscountedProducts] = useState(false);
   const [countFilters, setCountFilters] = useState(0);
   const disabledButton =
     !checkedColorList.length && !checkedSizeList.length && !isDiscountedProducts && priceRange.toString() === '0,9999';
 
-  const {
-    state: { suggestions },
-    dispatch: setSuggestions,
-  } = useProductSuggestions();
-
-  const handleSuggestions = (text: string) => {
-    if (text) {
-      setSuggestions({ type: ProductSuggestionsActionTypes.SET_SUGGESTIONS, payload: text });
-    } else {
-      setSuggestions({ type: ProductSuggestionsActionTypes.CLEAR_SUGGESTIONS });
-    }
-  };
-
-  const handleSearch = (text: string) => {
-    if (text) {
-      dispatch({ type: ProductProjectionsActionTypes.SET_SEARCH, payload: text });
-    } else {
-      dispatch({ type: ProductProjectionsActionTypes.CLEAR_SEARCH });
-    }
-  };
-
-  const handleSelect = (text: string) => {
-    dispatch({ type: ProductProjectionsActionTypes.SET_SEARCH, payload: text });
-  };
-
   const handleSort = (value: string) => {
-    if (value == 'default') {
+    if (value === 'default') {
+      setSelectedSort(value);
       return dispatch({ type: ProductProjectionsActionTypes.CLEAR_SORT });
     }
     const [sortType, order] = value.split(' ');
@@ -130,19 +102,10 @@ export const ProductsFilter = ({ dispatch }: AutoCompleteFilterProps) => {
   return (
     <>
       <div className={styles.productFilter}>
-        <AutoComplete
-          onSearch={(text) => handleSuggestions(text)}
-          onSelect={(text) => handleSelect(text)}
-          options={suggestions}
-          placeholder="Search..."
-          style={{ width: 300 }}
-        >
-          <Input.Search onSearch={(text) => handleSearch(text)} />
-        </AutoComplete>
-        <div className={styles.controll}>
+        <div>
           <span>Sorting: </span>
           <Select
-            style={{ width: 180 }}
+            className={styles.selectSort}
             defaultValue={'Default'}
             onChange={(value) => handleSort(value)}
             value={selectedSort}
@@ -157,11 +120,11 @@ export const ProductsFilter = ({ dispatch }: AutoCompleteFilterProps) => {
               },
               {
                 value: 'name asc',
-                label: 'Name a-z',
+                label: 'Name: a-z',
               },
               {
                 value: 'name desc',
-                label: 'Name z-a',
+                label: 'Name: z-a',
               },
               {
                 value: 'default',
@@ -169,58 +132,58 @@ export const ProductsFilter = ({ dispatch }: AutoCompleteFilterProps) => {
               },
             ]}
           />
-          <Badge count={countFilters}>
-            <Button icon={<FilterOutlined />} onClick={showDrawer}>
-              Filter
-            </Button>
-          </Badge>
-          <Drawer style={{ paddingRight: '17px' }} title="Filter" placement="right" onClose={onClose} open={open}>
-            <div className={styles.filterSection}>
-              <Title level={4}>Price</Title>
-              <Slider
-                range
-                marks={{ 0: '€0', 9999: '€9999' }}
-                value={priceRange}
-                min={0}
-                max={9999}
-                onChange={handlePriceChange}
-              />
-            </div>
-            <div className={styles.filterSection}>
-              <Title level={4}>Color</Title>
-              <CheckboxGroup
-                style={{ flexDirection: 'column' }}
-                options={optionsColor}
-                value={checkedColorList}
-                onChange={onColorList}
-              />
-            </div>
-            <div className={styles.filterSection}>
-              <Title level={4}>Size</Title>
-              <CheckboxGroup
-                style={{ flexDirection: 'column' }}
-                options={optionsSize}
-                value={checkedSizeList}
-                onChange={onSizeList}
-              />
-            </div>
-            <div className={styles.filterSection}>
-              <Title level={4}>Discounted</Title>
-              <Checkbox onChange={onDiscountedProducts} checked={isDiscountedProducts}>
-                Show discounted products.
-              </Checkbox>
-            </div>
-
-            <div className={`${styles.controll} ${styles.filterSection}`}>
-              <Button onClick={applyFilters} disabled={disabledButton}>
-                Apply
-              </Button>
-              <Button onClick={clearFilters} disabled={disabledButton}>
-                Clear
-              </Button>
-            </div>
-          </Drawer>
         </div>
+        <Badge offset={[-10, 0]} count={countFilters}>
+          <Button icon={<FilterOutlined />} onClick={showDrawer}>
+            Filter
+          </Button>
+        </Badge>
+        <Drawer style={{ paddingRight: '17px' }} title="Filter" placement="right" onClose={onClose} open={open}>
+          <div className={styles.filterSection}>
+            <Title level={4}>Price</Title>
+            <Slider
+              range
+              marks={{ 0: '€0', 9999: '€9999' }}
+              value={priceRange}
+              min={0}
+              max={9999}
+              onChange={handlePriceChange}
+            />
+          </div>
+          <div className={styles.filterSection}>
+            <Title level={4}>Color</Title>
+            <CheckboxGroup
+              style={{ flexDirection: 'column' }}
+              options={optionsColor}
+              value={checkedColorList}
+              onChange={onColorList}
+            />
+          </div>
+          <div className={styles.filterSection}>
+            <Title level={4}>Size</Title>
+            <CheckboxGroup
+              style={{ flexDirection: 'column' }}
+              options={optionsSize}
+              value={checkedSizeList}
+              onChange={onSizeList}
+            />
+          </div>
+          <div className={styles.filterSection}>
+            <Title level={4}>Discounted</Title>
+            <Checkbox onChange={onDiscountedProducts} checked={isDiscountedProducts}>
+              Show discounted products.
+            </Checkbox>
+          </div>
+
+          <div className={`${styles.controll} ${styles.filterSection}`}>
+            <Button onClick={applyFilters} disabled={disabledButton}>
+              Apply
+            </Button>
+            <Button onClick={clearFilters} disabled={disabledButton}>
+              Clear
+            </Button>
+          </div>
+        </Drawer>
       </div>
     </>
   );
