@@ -17,7 +17,7 @@ const mapResults = (results: ProductProjection[] | null) => {
         const description = result.metaDescription?.en || null;
         const price = result.masterVariant.price;
         const discount = price?.discounted;
-        const urlImg = result.masterVariant.images ? result.masterVariant.images : [];
+        const urlImg = result.masterVariant.images ? result.masterVariant.images[0].url : '';
         let displayedPrice = null;
         let displayedDiscount = null;
         if (price) {
