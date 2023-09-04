@@ -363,7 +363,7 @@ export const Profile = () => {
       {user ? (
         <>
           <h2>Profile</h2>
-          <div>
+          <div className="main-profile-block">
             {contextHolder}
             {FillDesriptionProps(user)}
             <div className="user-data-controls">

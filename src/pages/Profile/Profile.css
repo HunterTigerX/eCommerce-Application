@@ -81,3 +81,52 @@
 .ant-descriptions-item-label {
     width: 130px !important;
 }
+
+.main-profile-block {
+    width: 45vw;
+    margin: 0 auto;
+}
+
+
+@media screen and (max-width: 1100px) {
+
+
+    .ant-form label div {
+        min-width: 150px !important;
+    }
+
+}
+
+
+@media screen and (max-width: 900px) {
+
+    .main-profile-block {
+        width: 75vw;
+        margin: 0 auto;
+    }
+
+}
+
+@media screen and (max-width: 700px) {
+
+    .main-profile-block {
+        width: 90vw;
+        margin: 0 auto;
+    }
+
+    
+    .ant-form label {
+        justify-content: space-between
+    }
+
+
+    .ant-form {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .ReactModal__Content {
+        inset: 0;
+    }
+
+}
