@@ -27,16 +27,17 @@
 
 @media only screen and (max-width: 1024px) {
   .products-list-container {
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
     grid-column-gap: 25px;
     column-gap: 25px;
     grid-row-gap: 28px;
     row-gap: 28px;
   }
 }
-@media only screen and (max-width: 500px) {
+
+@media only screen and (max-width: 700px) {
   .products-list-container {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     grid-column-gap: 8px;
     column-gap: 8px;
     grid-row-gap: 24px;
