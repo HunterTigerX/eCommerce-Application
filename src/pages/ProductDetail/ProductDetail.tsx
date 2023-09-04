@@ -1,6 +1,5 @@
 import { useParams } from 'react-router-dom';
-import React, { RefObject } from 'react';
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { Button, Carousel } from 'antd';
 import Modal from 'react-modal';
 import { CarouselRef } from 'antd/es/carousel';
@@ -38,11 +37,14 @@ const useProduct = (id: string | undefined) => {
 export const ProductDetail = () => {
   const { productId } = useParams<{ productId: string }>();
   const itemData = useProduct(productId);
-  console.log(itemData);
+  // console.log(itemData);
   const [isBigPicModalOpened, bigPicModalIsOpen] = useState(false);
   const [carousel1Index, setCarousel1Index] = useState(0);
-  const carouselRef: RefObject<CarouselRef> = React.createRef();
-  const carouselRefSmall: RefObject<CarouselRef> = React.createRef();
+  const carouselRefModal = useRef<CarouselRef>(null);
+  const carouselRefSmall = useRef<CarouselRef>(null);
+
+  useEffect(() => {}, [carousel1Index]);
+
   const openPicModal = (slideNumber: number) => {
     setCarousel1Index(slideNumber);
     bigPicModalIsOpen(true);
@@ -51,28 +53,37 @@ export const ProductDetail = () => {
     if (carouselRefSmall.current) {
       carouselRefSmall.current.goTo(carousel1Index, true);
     }
+    if (carouselRefModal.current) {
+      carouselRefModal.current.goTo(carousel1Index, true);
+    }
     bigPicModalIsOpen(false);
   };
   const masterData = itemData.product ? itemData.product.masterData.current : null;
+
   function openNextSlide() {
     if (carouselRefSmall.current) {
       carouselRefSmall.current.next();
     }
-    if (carouselRef.current) {
-      carouselRef.current.next();
+  }
+  function openNextSlideModal() {
+    if (carouselRefModal.current) {
+      carouselRefModal.current.next();
     }
   }
   function openPrevSlide() {
     if (carouselRefSmall.current) {
       carouselRefSmall.current.prev();
     }
-    if (carouselRef.current) {
-      carouselRef.current.prev();
+  }
+  function openPrevSlideModal() {
+    if (carouselRefModal.current) {
+      carouselRefModal.current.prev();
     }
   }
   function sliderChangedPage(currentSlide: number) {
     setCarousel1Index(currentSlide);
   }
+
   function addCarousel() {
     const imageStyle: React.CSSProperties = {
       margin: 0,
@@ -92,6 +103,7 @@ export const ProductDetail = () => {
     };
 
     const carouselSlides: JSX.Element[] = [];
+    const modalSlides: JSX.Element[] = [];
 
     let prodTitle: string,
       prodDescription: string | null,
@@ -119,20 +131,32 @@ export const ProductDetail = () => {
               onClick={() => {
                 openPicModal(i);
               }}
-              className="slider-image"
+              id="imageStyle"
+              className="slider-image imageStyle"
+              src={prodUrlImg[i].url}
+              alt="product logo"
+            />
+          </div>
+        );
+        modalSlides.push(
+          <div key={`slide${i}`}>
+            <img
+              style={imageStyle}
+              className="slider-image slider-image-modal"
               src={prodUrlImg[i].url}
               alt="product logo"
             />
           </div>
         );
       }
+
       const modalWindow = (
         <Modal isOpen={isBigPicModalOpened} ariaHideApp={false} onRequestClose={closePicModal}>
           <Button className="closeBigCarousel" onClick={closePicModal}>
             X
           </Button>
           <Carousel
-            ref={carouselRef}
+            ref={carouselRefModal}
             className="slider-big"
             dotPosition={'bottom'}
             waitForAnimate={true}
@@ -140,15 +164,18 @@ export const ProductDetail = () => {
             initialSlide={carousel1Index}
             afterChange={sliderChangedPage}
           >
-            {carouselSlides}
+            {modalSlides}
           </Carousel>
-          <div className="slider-buttons">
-            <Button type="primary" className="prevSlide" onClick={openPrevSlide}></Button>
-            <Button type="primary" className="nextSlide" onClick={openNextSlide}></Button>
-          </div>
+          {masterData.masterVariant.images ? (
+            masterData.masterVariant.images.length > 1 ? (
+              <div className="slider-buttons">
+                <Button type="primary" className="prevSlide" onClick={openPrevSlideModal}></Button>
+                <Button type="primary" className="nextSlide" onClick={openNextSlideModal}></Button>
+              </div>
+            ) : null
+          ) : null}
         </Modal>
       );
-
       return (
         <>
           <div className="product-container">
@@ -194,8 +221,6 @@ export const ProductDetail = () => {
 
   return (
     <>
-      {/* <div>ProductDetail</div>
-      <p>Product ID: {productId}</p> */}
       <div>{addCarousel()}</div>
     </>
   );

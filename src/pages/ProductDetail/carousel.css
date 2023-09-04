@@ -120,5 +120,8 @@
 
 .ReactModal__Content {
     overflow: hidden;
+}
 
+.slider-image-modal:hover {
+    cursor:initial !important;
 }
