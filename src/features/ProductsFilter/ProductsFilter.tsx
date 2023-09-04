@@ -140,7 +140,7 @@ export const ProductsFilter = ({ dispatch, id }: ProductsFilterProps) => {
 
   const reset = () => {
     setCheckedColorList([]);
-    setCheckedSizeList([]);
+    setCheckedReleaseDate([]);
     setPriceRange([0, 9999]);
     setIsDiscountedProducts(false);
     countFilter(true);
