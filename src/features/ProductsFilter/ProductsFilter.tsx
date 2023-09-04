@@ -5,9 +5,10 @@ import Title from 'antd/es/typography/Title';
 import { FilterOutlined } from '@ant-design/icons';
 import { CheckboxValueType } from 'antd/es/checkbox/Group';
 import { type ProductProjectionsQueryArgsActions } from '@shared/api/products';
+import { ProductsSearch } from '@features/ProductsSearch';
 import styles from './ProductsFilter.module.css';
 
-interface AutoCompleteFilterProps {
+interface ProductsFilterProps {
   dispatch: React.Dispatch<ProductProjectionsQueryArgsActions>;
 }
 
@@ -15,7 +16,7 @@ const CheckboxGroup = Checkbox.Group;
 const optionsColor = ['black', 'grey', 'white', 'blue', 'red', 'orange'];
 const optionsSize = ['xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl'];
 
-export const ProductsFilter = ({ dispatch }: AutoCompleteFilterProps) => {
+export const ProductsFilter = ({ dispatch }: ProductsFilterProps) => {
   const [open, setOpen] = useState(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 9999]);
   const [checkedColorList, setCheckedColorList] = useState<CheckboxValueType[]>([]);
@@ -31,6 +32,7 @@ export const ProductsFilter = ({ dispatch }: AutoCompleteFilterProps) => {
       setSelectedSort(value);
       return dispatch({ type: ProductProjectionsActionTypes.CLEAR_SORT });
     }
+
     const [sortType, order] = value.split(' ');
     dispatch({ type: ProductProjectionsActionTypes.SET_SORT, payload: [sortType, order] });
 
@@ -101,6 +103,7 @@ export const ProductsFilter = ({ dispatch }: AutoCompleteFilterProps) => {
 
   return (
     <>
+      <ProductsSearch dispatch={dispatch} clearFilters={clearFilters} />
       <div className={styles.productFilter}>
         <div>
           <span>Sorting: </span>
