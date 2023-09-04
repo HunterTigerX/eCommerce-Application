@@ -25,6 +25,7 @@ export const ProductsSearch = ({ dispatch, clearFilters, id }: ProductsSearchPro
 
   const handleSuggestions = (text: string) => {
     setSearchText(text);
+
     if (text) {
       setSuggestions({ type: ProductSuggestionsActionTypes.SET_SUGGESTIONS, payload: text });
     } else {
