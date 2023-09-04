@@ -21,9 +21,9 @@ const Catalog = () => {
     <>
       <div className={style.headerCatalog}>
         <Categories loading={loading} id={id} tree={categoriesTree} />
-        <ProductsFilter dispatch={dispatch} />
+        <ProductsFilter dispatch={dispatch} id={id} />
       </div>
-      <Breadcrumbs tree={categoriesTree} id={id} />
+      <Breadcrumbs id={id} tree={categoriesTree} dispatch={dispatch} />
       <ProductList products={products} loading={loading} />
     </>
   );

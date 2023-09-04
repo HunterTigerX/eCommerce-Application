@@ -106,6 +106,11 @@ const productProjectionsQueryArgsReducer = (
 ) => {
   switch (type) {
     case ProductProjectionsActionTypes.SET_SEARCH: {
+      delete state['filter.query'];
+      delete state.filter;
+      delete state.fuzzy;
+      delete state['text.en'];
+
       return {
         ...state,
         fuzzy: true,

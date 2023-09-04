@@ -49,18 +49,21 @@ const useProductProjections = (id: string | undefined) => {
     () => (id ? ApiClient.getInstance().requestBuilder.categories().withId({ ID: id }).get() : null),
     [id]
   );
-  const { data, error, loading } = useApiRequest(isCategoryExistsRequest);
+  const { data, error } = useApiRequest(isCategoryExistsRequest);
 
   const navigate = useNavigate();
 
   const request = useMemo(() => {
-    if (id && !data && error && !loading) {
+    if (id && !data && error) {
       navigate('/');
 
       return null;
     }
 
-    if (id && data && !error && !loading) {
+    if (id && data && !error) {
+      delete queryArgs.fuzzy;
+      delete queryArgs['text.en'];
+
       return ApiClient.getInstance()
         .requestBuilder.productProjections()
         .search()
@@ -80,7 +83,7 @@ const useProductProjections = (id: string | undefined) => {
 
     return null;
     // eslint-disable-next-line
-  }, [data, error, loading, queryArgs, navigate]);
+  }, [data, error, queryArgs]);
 
   const state = useApiRequest(request);
 

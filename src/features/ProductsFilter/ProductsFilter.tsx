@@ -10,13 +10,14 @@ import styles from './ProductsFilter.module.css';
 
 interface ProductsFilterProps {
   dispatch: React.Dispatch<ProductProjectionsQueryArgsActions>;
+  id: string | undefined;
 }
 
 const CheckboxGroup = Checkbox.Group;
 const optionsColor = ['black', 'grey', 'white', 'blue', 'red', 'orange'];
 const optionsSize = ['xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl'];
 
-export const ProductsFilter = ({ dispatch }: ProductsFilterProps) => {
+export const ProductsFilter = ({ dispatch, id }: ProductsFilterProps) => {
   const [open, setOpen] = useState(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 9999]);
   const [checkedColorList, setCheckedColorList] = useState<CheckboxValueType[]>([]);
@@ -101,9 +102,18 @@ export const ProductsFilter = ({ dispatch }: ProductsFilterProps) => {
     setIsDiscountedProducts(!isDiscountedProducts);
   };
 
+  const reset = () => {
+    setCheckedColorList([]);
+    setCheckedSizeList([]);
+    setPriceRange([0, 9999]);
+    setIsDiscountedProducts(false);
+    countFilter(true);
+    setOpen(false);
+  };
+
   return (
     <>
-      <ProductsSearch dispatch={dispatch} clearFilters={clearFilters} />
+      <ProductsSearch dispatch={dispatch} clearFilters={reset} id={id} />
       <div className={styles.productFilter}>
         <div>
           <span>Sorting: </span>
