@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Breadcrumb } from 'antd';
 import { HomeOutlined } from '@ant-design/icons';
@@ -43,15 +42,7 @@ const getBreadcrumbItems = (nodes: CategoryTreeNode[], ID: string) => {
 };
 
 const Breadcrumbs = ({ id, tree }: BreadcrumbsProps) => {
-  const [items, setItems] = useState<{ title: JSX.Element | string }[]>([]);
-
-  useEffect(() => {
-    if (id) {
-      setItems(getBreadcrumbItems(tree, id));
-    } else {
-      setItems([]);
-    }
-  }, [tree, id]);
+  const items: { title: JSX.Element | string }[] = id ? getBreadcrumbItems(tree, id) : [];
 
   return (
     <>

@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useReducer, useState } from 'react';
+import { useMemo, useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { ProductProjection, ProductProjectionPagedSearchResponse } from '@commercetools/platform-sdk';
+import type { ProductProjection } from '@commercetools/platform-sdk';
 import { ApiClient } from '@app/auth/client';
 import { useApiRequest } from '@shared/api/core';
 import {
@@ -8,7 +8,6 @@ import {
   productProjectionsQueryArgsReducer,
   ProductProjectionsActionTypes,
 } from '@shared/api/products/reducers';
-import type { ApiRequest } from '@commercetools/platform-sdk/dist/declarations/src/generated/shared/utils/requests-utils';
 
 const mapResults = (results: ProductProjection[] | null) => {
   return results
@@ -46,60 +45,50 @@ const productProjectionsQueryArgsInitialValue: ProductProjectionsQueryArgs = {
 
 const useProductProjections = (id: string | undefined) => {
   const [queryArgs, dispatch] = useReducer(productProjectionsQueryArgsReducer, productProjectionsQueryArgsInitialValue);
-  const [request, setRequest] = useState<ApiRequest<ProductProjectionPagedSearchResponse> | null>(null);
+  const isCategoryExistsRequest = useMemo(
+    () => (id ? ApiClient.getInstance().requestBuilder.categories().withId({ ID: id }).get() : null),
+    [id]
+  );
+  const { data, error, loading } = useApiRequest(isCategoryExistsRequest);
+
   const navigate = useNavigate();
 
-  const { data, error, loading } = useApiRequest(request);
+  const request = useMemo(() => {
+    if (id && !data && error && !loading) {
+      navigate('/');
 
-  const { error: notFoundError, loading: categoryLoading } = useApiRequest(
-    useMemo(() => (id ? ApiClient.getInstance().requestBuilder.categories().withId({ ID: id }).get() : null), [id])
-  );
-
-  useEffect(() => {
-    if (id && !notFoundError && !categoryLoading) {
-      setRequest(
-        ApiClient.getInstance()
-          .requestBuilder.productProjections()
-          .search()
-          .get({
-            queryArgs: {
-              ...queryArgs,
-              'filter.query': `categories.id:subtree("${id}")`,
-            },
-          })
-      );
+      return null;
     }
 
-    if (id && notFoundError && !categoryLoading) {
-      setRequest(() => {
-        delete queryArgs['filter.query'];
-
-        return ApiClient.getInstance()
-          .requestBuilder.productProjections()
-          .search()
-          .get({
-            queryArgs: {
-              ...queryArgs,
-            },
-          });
-      });
-      navigate('/catalog');
+    if (id && data && !error && !loading) {
+      return ApiClient.getInstance()
+        .requestBuilder.productProjections()
+        .search()
+        .get({
+          queryArgs: {
+            ...queryArgs,
+            'filter.query': `categories.id:subtree("${id}")`,
+          },
+        });
     }
 
     if (!id) {
-      setRequest(
-        ApiClient.getInstance().requestBuilder.productProjections().search().get({
-          queryArgs,
-        })
-      );
+      return ApiClient.getInstance().requestBuilder.productProjections().search().get({
+        queryArgs,
+      });
     }
-  }, [id, notFoundError, categoryLoading, queryArgs, navigate]);
+
+    return null;
+    // eslint-disable-next-line
+  }, [data, error, loading, queryArgs, navigate]);
+
+  const state = useApiRequest(request);
 
   return {
     state: {
-      products: mapResults(data?.results || null),
-      error,
-      loading,
+      products: mapResults(state.data?.results || null),
+      error: state.error,
+      loading: state.loading,
     },
     dispatch,
   };
