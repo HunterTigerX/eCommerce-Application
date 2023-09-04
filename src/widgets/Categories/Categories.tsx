@@ -44,7 +44,7 @@ const Categories = ({ loading, id, tree }: CategoriesProps) => {
       <Drawer title="Catalog" placement="left" onClose={onClose} open={open}>
         <Tree
           disabled={loading}
-          activeKey={id}
+          selectedKeys={id ? [id] : undefined}
           defaultExpandedKeys={id ? [id] : undefined}
           showLine
           switcherIcon={<DownOutlined />}

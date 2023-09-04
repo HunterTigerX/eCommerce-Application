@@ -46,9 +46,7 @@ const productSuggestionsQueryArgsReducer = (
       delete state.fuzzy;
       delete state[SEARCH_KEYWORDS_ARG];
 
-      return {
-        ...state,
-      };
+      return state;
     }
     default: {
       return state;
