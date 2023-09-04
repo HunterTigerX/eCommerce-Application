@@ -18,8 +18,3 @@
     width: calc(100% - 139px);
   }
 }
-@media only screen and (max-width: 576px) {
-  .products-search {
-    width: 229px;
-  }
-}
