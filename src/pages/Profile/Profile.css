@@ -1,83 +1,82 @@
 .ant-descriptions-view .emptyPrev {
-    text-align: center;
+  text-align: center;
 }
 
 .user-data-controls,
 .address-controls {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    margin-top: 7.5px;
-    margin-bottom: 15px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  margin-top: 7.5px;
+  margin-bottom: 15px;
 }
 
 .personal-info-form label {
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  flex-direction: row;
 }
 
 .personal-info-form input {
-    color: black;
+  color: black;
 }
 
-.personal-info-form label>div:last-child {
-    width: 200px;
+.personal-info-form label > div:last-child {
+  width: 200px;
 }
 
-.personal-info-form label>input:last-child {
-    width: 200px;
+.personal-info-form label > input:last-child {
+  width: 200px;
 }
 
 .personal-info-form div {
-    min-width: 13%;
+  min-width: 13%;
 }
 
 .personal-info-form input {
-    background-color: rgba(255, 255, 255, 0.582);
-    border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.582);
+  border-radius: 5px;
 
-    padding: 3px;
+  padding: 3px;
 }
 
-.personal-info-form input[type="text"] {
-    text-indent: 7px;
+.personal-info-form input[type='text'] {
+  text-indent: 7px;
 }
 
 .modal-controls {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 }
 
 .modal-controls button {
-    min-width: 80px;
-    min-height: 25px;
+  min-width: 80px;
+  min-height: 25px;
 }
 
 .personal-info-date div {
-    margin: 0;
-    display: flex;
-    align-items: flex-start;
+  margin: 0;
+  display: flex;
+  align-items: flex-start;
 }
 
 .dateOfBirth {
-    padding-top: 4px;
+  padding-top: 4px;
 }
 
 .personal-info-date .ant-form-item .ant-row .ant-form-item-control-input,
 .personal-info-date .ant-form-item .ant-row {
-    width: 100%;
-
+  width: 100%;
 }
 
 .ant-picker {
-    border-color: black;
+  border-color: black;
 }
 
 .address-info-form div {
-    min-width: 15%;
+  min-width: 15%;
 }
 
 .ant-descriptions-item-label {
-    width: 130px !important;
+  width: 130px !important;
 }

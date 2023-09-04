@@ -56,7 +56,8 @@ export const ProductsFilter = ({ dispatch }: AutoCompleteFilterProps) => {
   };
 
   const handleSort = (value: string) => {
-    if (value == 'default') {
+    if (value === 'default') {
+      setSelectedSort(value);
       return dispatch({ type: ProductProjectionsActionTypes.CLEAR_SORT });
     }
     const [sortType, order] = value.split(' ');
