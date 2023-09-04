@@ -1,6 +1,6 @@
 import type { QueryParam } from '@commercetools/sdk-client-v2';
 
-const SEARCH_KEYWORDS_LANGUAGE = `searchKeywords.en`;
+const SEARCH_KEYWORDS_ARG = `searchKeywords.en`;
 
 interface ProductSuggestionsQueryArgs {
   fuzzy?: boolean;
@@ -9,42 +9,42 @@ interface ProductSuggestionsQueryArgs {
   offset?: number;
   withTotal?: boolean;
   staged?: boolean;
-  [SEARCH_KEYWORDS_LANGUAGE]?: string;
+  [SEARCH_KEYWORDS_ARG]?: string;
   [key: string]: QueryParam;
 }
 
-const enum ProductSuggestionsQueryArgsActionTypes {
-  SET_SUGGESTION = 'SET_SUGGESTION',
-  CLEAR_SUGGESTION = 'CLEAR_SUGGESTION',
+const enum ProductSuggestionsActionTypes {
+  SET_SUGGESTIONS = 'SET_SUGGESTIONS',
+  CLEAR_SUGGESTIONS = 'CLEAR_SUGGESTIONS',
 }
 
-type SetSuggestionAction = {
-  type: ProductSuggestionsQueryArgsActionTypes.SET_SUGGESTION;
+type SetProductSuggestionsAction = {
+  type: ProductSuggestionsActionTypes.SET_SUGGESTIONS;
   payload: string;
 };
 
-type ClearSuggestionAction = {
-  type: ProductSuggestionsQueryArgsActionTypes.CLEAR_SUGGESTION;
+type ProductClearSuggestionsAction = {
+  type: ProductSuggestionsActionTypes.CLEAR_SUGGESTIONS;
   payload?: undefined;
 };
 
-type ProductSuggestionsQueryArgsActions = SetSuggestionAction | ClearSuggestionAction;
+type ProductSuggestionsActions = SetProductSuggestionsAction | ProductClearSuggestionsAction;
 
 const productSuggestionsQueryArgsReducer = (
   state: ProductSuggestionsQueryArgs,
-  { type, payload }: ProductSuggestionsQueryArgsActions
+  { type, payload }: ProductSuggestionsActions
 ) => {
   switch (type) {
-    case ProductSuggestionsQueryArgsActionTypes.SET_SUGGESTION: {
+    case ProductSuggestionsActionTypes.SET_SUGGESTIONS: {
       return {
         ...state,
         fuzzy: true,
-        [SEARCH_KEYWORDS_LANGUAGE]: payload,
+        [SEARCH_KEYWORDS_ARG]: payload,
       };
     }
-    case ProductSuggestionsQueryArgsActionTypes.CLEAR_SUGGESTION: {
+    case ProductSuggestionsActionTypes.CLEAR_SUGGESTIONS: {
       delete state.fuzzy;
-      delete state[SEARCH_KEYWORDS_LANGUAGE];
+      delete state[SEARCH_KEYWORDS_ARG];
 
       return {
         ...state,
@@ -58,7 +58,7 @@ const productSuggestionsQueryArgsReducer = (
 
 export {
   productSuggestionsQueryArgsReducer,
-  ProductSuggestionsQueryArgsActionTypes,
+  ProductSuggestionsActionTypes,
   type ProductSuggestionsQueryArgs,
-  SEARCH_KEYWORDS_LANGUAGE,
+  SEARCH_KEYWORDS_ARG,
 };

@@ -9,6 +9,9 @@ import { ApiClient } from '@app/auth/client';
 
 export function ReturnAddresses(user: Customer): JSX.Element {
   const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
+  const { setUser } = useAuth();
+  const apiClient = ApiClient.getInstance();
+
   // Модальное окно для смены данных адреса
   const countryOptions = [
     { label: 'United States', value: 'US' },
@@ -34,9 +37,7 @@ export function ReturnAddresses(user: Customer): JSX.Element {
   const [billingAddressCheckBox, setBillingAddressCheckBox] = useState(false);
   const [clickedAddressId, setAddressId] = useState('');
   const hasSpecialCharacters = /[!@#$%'^&*(),.?":{}|<>0-9\\-]|[!$%^&*()_+|~=`{}[\]:/;<>?,.@#]/;
-  const { refreshUser } = useAuth();
   const [isAddressInfoModalOpened, userAddressModalIsOpen] = useState(false);
-
   // Вставляет данные адреса, который был выбран, в поля модального окна
   function inputValidAddressInfo(buttonNumber: number) {
     if (user) {
@@ -341,8 +342,8 @@ export function ReturnAddresses(user: Customer): JSX.Element {
       }
 
       if (user) {
-        ApiClient.getInstance()
-          .requestBuilder.me()
+        apiClient.requestBuilder
+          .me()
           .post({
             body: {
               version: user.version,
@@ -350,9 +351,9 @@ export function ReturnAddresses(user: Customer): JSX.Element {
             },
           })
           .execute()
-          .then(async () => {
+          .then((response) => {
             successMessage('success', `Information successfully updated`);
-            await refreshUser();
+            setUser(response.body);
             closeAddressInfoModal();
           });
       }
@@ -362,8 +363,8 @@ export function ReturnAddresses(user: Customer): JSX.Element {
   function removeAddress(addressId: number): void {
     const deleteAddressId = user?.addresses[addressId].id as string;
     if (user) {
-      ApiClient.getInstance()
-        .requestBuilder.me()
+      apiClient.requestBuilder
+        .me()
         .post({
           body: {
             version: user.version,
@@ -371,9 +372,9 @@ export function ReturnAddresses(user: Customer): JSX.Element {
           },
         })
         .execute()
-        .then(async () => {
+        .then((response) => {
           successMessage('success', `Address successfully deleted`);
-          await refreshUser();
+          setUser(response.body);
           closeAddressInfoModal();
         });
     }

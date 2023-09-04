@@ -44,7 +44,7 @@ export class ApiClient {
 
     if (token) {
       try {
-        this.switchToAccessTokenClient(window.atob(token));
+        this.switchToAccessTokenClient(token);
 
         const signInResult = await this.requestBuilder.me().get().execute();
 

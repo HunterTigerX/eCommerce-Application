@@ -75,7 +75,7 @@ export class AuthService {
     const token = localStorage.getItem('auth');
 
     if (token) {
-      await this.client.revokeToken(window.atob(token));
+      await this.client.revokeToken(token);
       localStorage.removeItem('auth');
     }
 

@@ -6,11 +6,11 @@ interface IDimentions {
   w: number;
   h: number;
 }
-export interface IImages {
+interface IImages {
   url: string;
   dimensions: IDimentions;
 }
-export interface ProductCardMap {
+interface ProductCardMap {
   id: string;
   title: string;
   description: string | null;
@@ -19,7 +19,7 @@ export interface ProductCardMap {
   urlImg: IImages[];
 }
 
-export const ProductCard = ({ product }: { product: ProductCardMap }) => {
+const ProductCard = ({ product }: { product: ProductCardMap }) => {
   const { id, title, description, urlImg, price, discount } = product;
 
   return (
@@ -66,3 +66,5 @@ export const ProductCard = ({ product }: { product: ProductCardMap }) => {
     </Link>
   );
 };
+
+export { type IImages, type ProductCardMap, ProductCard };

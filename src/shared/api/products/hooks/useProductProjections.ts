@@ -5,7 +5,7 @@ import { useApiRequest } from '@shared/api/core';
 import {
   type ProductProjectionsQueryArgs,
   productProjectionsQueryArgsReducer,
-  ProductProjectionsQueryArgsActionTypes,
+  ProductProjectionsActionTypes,
 } from '@shared/api/products/reducers';
 
 const mapResults = (results: ProductProjection[] | null) => {
@@ -23,7 +23,7 @@ const mapResults = (results: ProductProjection[] | null) => {
           displayedPrice = price.value.centAmount / Math.pow(10, price.value.fractionDigits);
         }
         if (price && discount) {
-          displayedDiscount = price.value.centAmount / Math.pow(10, price.value.fractionDigits);
+          displayedDiscount = discount.value.centAmount / Math.pow(10, price.value.fractionDigits);
         }
         return {
           id: id,
@@ -37,7 +37,7 @@ const mapResults = (results: ProductProjection[] | null) => {
     : [];
 };
 
-const productProjectionsQueryArgsInitialValue = {
+const productProjectionsQueryArgsInitialValue: ProductProjectionsQueryArgs = {
   limit: 20,
   priceCurrency: import.meta.env.VITE_CTP_DEFAULT_CURRENCY,
 };
@@ -65,4 +65,4 @@ const useProductProjections = (initialValue: ProductProjectionsQueryArgs = produ
   };
 };
 
-export { useProductProjections, ProductProjectionsQueryArgsActionTypes };
+export { useProductProjections, ProductProjectionsActionTypes };

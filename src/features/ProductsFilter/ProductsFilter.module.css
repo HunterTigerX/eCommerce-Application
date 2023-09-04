@@ -1,0 +1,34 @@
+.product-filter {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+}
+
+.product-search {
+  min-width: 355px;
+}
+@media only screen and (max-width: 768px) {
+  .product-search {
+    width: 100%;
+  }
+}
+
+.controll {
+  display: flex;
+  align-items: center;
+  column-gap: var(--spacing-md);
+}
+
+.filter-section {
+  margin-top: var(--spacing-md);
+}
+
+@media only screen and (max-width: 768px) {
+  .product-filter {
+    flex-direction: column;
+    row-gap: var(--spacing-md);
+    align-items: flex-start;
+    min-width: 350px;
+  }
+}

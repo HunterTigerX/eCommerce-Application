@@ -22,6 +22,8 @@ type FieldType = {
 
 export const Profile = () => {
   const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
+  const { user, signIn, setUser } = useAuth();
+  const apiClient = ApiClient.getInstance();
 
   function successMessage(result: 'success' | 'error', errorMessage: string): void {
     messageApi.open({
@@ -37,8 +39,6 @@ export const Profile = () => {
     { label: 'Russia', value: 'RU' },
     { label: 'France', value: 'FR' },
   ];
-  const { user, signIn } = useAuth();
-  const { refreshUser } = useAuth();
 
   // Модальное окно изменения данных пользователя
   const [isUserInfoModalOpened, userInfoModalIsOpen] = useState(false);
@@ -94,8 +94,8 @@ export const Profile = () => {
       // Если введённая дата валидна (более 13 лет назад, выше проверка на високосный год)
       if (dateFromInput < targetDate) {
         if (user) {
-          ApiClient.getInstance()
-            .requestBuilder.me()
+          apiClient.requestBuilder
+            .me()
             .post({
               body: {
                 version: user.version,
@@ -120,9 +120,9 @@ export const Profile = () => {
               },
             })
             .execute()
-            .then(async () => {
+            .then((response) => {
               successMessage('success', `Information successfully updated`);
-              await refreshUser();
+              setUser(response.body);
               closeUserInfoModal();
             });
         }
@@ -148,21 +148,21 @@ export const Profile = () => {
         currentPassword: values.passwordOld,
         newPassword: values.passwordNew,
       };
-      ApiClient.getInstance()
-        .requestBuilder.me()
+      apiClient.requestBuilder
+        .me()
         .password()
         .post({
           body,
         })
         .execute()
-        .then(async () => {
+        .then(async (response) => {
           successMessage('success', `Information successfully updated`);
           const credentials: UserAuthOptions = {
             username: user.email,
             password: values.passwordNew,
           };
           await signIn(credentials);
-          await refreshUser();
+          setUser(response.body);
           closePasswordInfoModal();
         })
         .catch((error) => {
@@ -321,8 +321,8 @@ export const Profile = () => {
       }
 
       if (user) {
-        ApiClient.getInstance()
-          .requestBuilder.me()
+        apiClient.requestBuilder
+          .me()
           .post({
             body: {
               version: user.version,
@@ -330,9 +330,9 @@ export const Profile = () => {
             },
           })
           .execute()
-          .then(async () => {
+          .then((response) => {
             successMessage('success', 'New address successfully added.');
-            await refreshUser();
+            setUser(response.body);
 
             setNewShippingCountry('');
             setNewCity('');
