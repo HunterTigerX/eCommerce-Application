@@ -52,7 +52,7 @@ const useProduct = (id: string | undefined) => {
 export const ProductDetail = () => {
   const { productId } = useParams<{ productId: string }>();
   const itemData = useProduct(productId);
-  // console.log(itemData);
+  console.log(itemData);
   const [isBigPicModalOpened, bigPicModalIsOpen] = useState(false);
   const [carousel1Index, setCarousel1Index] = useState(0);
   const carouselRefModal = useRef<CarouselRef>(null);
@@ -125,14 +125,14 @@ export const ProductDetail = () => {
       prodPrice: number | null,
       prodUrlImg: IImages[],
       prodDiscount: number | null,
-      // color: string,
+      color: string,
       releaseDate: string;
     // specialAttr: string;
 
     if (masterData) {
       prodTitle = masterData.name.en;
       prodDescription = masterData.metaDescription ? masterData.metaDescription.en : null;
-      // color = (masterData.masterVariant as IAttributesArr).attributes[0].value;
+      color = (masterData.masterVariant as IAttributesArr).attributes[0].value;
       releaseDate = (masterData.masterVariant as IAttributesArr).attributes[1].value;
       // specialAttr = (masterData.masterVariant as IAttributesArr).attributes[2].value;
       // Цена в центах идёт, но на странице указываем в долларах
@@ -142,8 +142,7 @@ export const ProductDetail = () => {
           ? masterData.masterVariant.price.discounted.value.centAmount / 100
           : null
         : null;
-      prodUrlImg = masterData.masterVariant.images as IImages[]; // Потом подправить
-
+      prodUrlImg = (masterData.masterVariant.images as IImages[]).filter((n) => n.url !== ''); // Потом подправить
       for (let i = 0; i < prodUrlImg.length; i += 1) {
         carouselSlides.push(
           <div key={`slide${i}`}>
@@ -188,7 +187,7 @@ export const ProductDetail = () => {
             {modalSlides}
           </Carousel>
           {masterData.masterVariant.images ? (
-            masterData.masterVariant.images.length > 1 ? (
+            masterData.masterVariant.images.filter((n) => n.url !== '').length > 1 ? (
               <div className="slider-buttons">
                 <Button type="primary" className="prevSlide" onClick={openPrevSlideModal}></Button>
                 <Button type="primary" className="nextSlide" onClick={openNextSlideModal}></Button>
@@ -203,7 +202,7 @@ export const ProductDetail = () => {
             <div className="prodWrapper">
               {prodTitle ? <div className="prodName">{prodTitle}</div> : null}
               {prodDescription ? <div className="prodDesc">{prodDescription}</div> : null}
-              {/* {color ? <div className="prodDesc">{color}</div> : null} */}
+              {color ? <div className="prodDesc">We only have this item in {color} color today</div> : null}
               {releaseDate ? <div className="prodDesc">Product was released in {releaseDate}</div> : null}
               {/* {specialAttr ? <div className="prodDesc">{specialAttr}</div> : null} */}
               {prodDiscount ? (
@@ -229,7 +228,7 @@ export const ProductDetail = () => {
               {carouselSlides}
             </Carousel>
             {masterData.masterVariant.images ? (
-              masterData.masterVariant.images.length > 1 ? (
+              masterData.masterVariant.images.filter((n) => n.url !== '').length > 1 ? (
                 <div className="slider-buttons">
                   <Button type="primary" className="prevSlide" onClick={openPrevSlide}></Button>
                   <Button type="primary" className="nextSlide" onClick={openNextSlide}></Button>
