@@ -21,6 +21,9 @@
   position: absolute;
   top: 200px;
 }
+.no-products-title {
+  font-size: 48px;
+}
 
 @media only screen and (max-width: 1024px) {
   .products-list-container {
@@ -38,5 +41,8 @@
     column-gap: 8px;
     grid-row-gap: 24px;
     row-gap: 24px;
+  }
+  .no-products-title {
+    font-size: 38px;
   }
 }

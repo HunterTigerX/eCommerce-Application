@@ -47,6 +47,7 @@ const Breadcrumbs = ({ id, tree }: BreadcrumbsProps) => {
   return (
     <>
       <Breadcrumb
+        className={styles.breadcrumb}
         items={[
           {
             title: items.length ? (

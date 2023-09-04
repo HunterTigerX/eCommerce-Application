@@ -10,7 +10,7 @@ interface ProductListProps {
 export const ProductList = ({ products, loading }: ProductListProps) => {
   return (
     <>
-      {!products.length && !loading && <h1>No Products Found</h1>}
+      {!products.length && !loading && <h2 className={styles.noProductsTitle}>No Products Found</h2>}
 
       <div className={styles.productsListContainer}>
         {loading && (
