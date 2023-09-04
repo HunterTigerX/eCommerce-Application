@@ -1,0 +1,41 @@
+#login_form,
+#register {
+    margin: 0 auto;
+    position: relative !important;
+    right: 50px;
+}
+
+
+@media only screen and (max-width: 575px) {
+    #login_form {
+        justify-content: flex-end;
+        right: auto;
+        width: 90%;
+    }
+
+    .submit_login {
+        margin-right: auto !important;
+        margin-left: -127px !important;
+    }
+}
+
+.signIn-header {
+    margin-right: 30px;
+}
+
+.redirectToSignUp {
+    margin-left: 10px;
+}
+
+@media only screen and (max-width: 700px) {
+    ._sugn-up-form_1pejx_1 {
+        padding: 0 !important;
+        overflow: hidden !important;
+    }
+
+    #login_form {
+        justify-content: flex-end;
+        right: auto;
+        width: 90%;
+    }
+}
