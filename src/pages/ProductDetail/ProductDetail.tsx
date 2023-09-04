@@ -9,6 +9,14 @@ import { IImages } from '@widgets/ProductList/ui/ProductCard';
 import { EuroCircleOutlined } from '@ant-design/icons';
 import './carousel.css';
 
+interface IAttributes {
+  name: string;
+  value: string;
+}
+interface IAttributesArr {
+  attributes: IAttributes[];
+}
+
 const useProduct = (id: string | undefined) => {
   const request = useMemo(
     () =>
@@ -109,11 +117,17 @@ export const ProductDetail = () => {
       prodDescription: string | null,
       prodPrice: number | null,
       prodUrlImg: IImages[],
-      prodDiscount: number | null;
+      prodDiscount: number | null,
+      // color: string,
+      releaseDate: string;
+    // specialAttr: string;
 
     if (masterData) {
       prodTitle = masterData.name.en;
       prodDescription = masterData.metaDescription ? masterData.metaDescription.en : null;
+      // color = (masterData.masterVariant as IAttributesArr).attributes[0].value;
+      releaseDate = (masterData.masterVariant as IAttributesArr).attributes[1].value;
+      // specialAttr = (masterData.masterVariant as IAttributesArr).attributes[2].value;
       // Цена в центах идёт, но на странице указываем в долларах
       prodPrice = masterData.masterVariant.prices ? masterData.masterVariant.prices[0].value.centAmount / 100 : null;
       prodDiscount = masterData.masterVariant.price
@@ -182,6 +196,9 @@ export const ProductDetail = () => {
             <div className="prodWrapper">
               {prodTitle ? <div className="prodName">{prodTitle}</div> : null}
               {prodDescription ? <div className="prodDesc">{prodDescription}</div> : null}
+              {/* {color ? <div className="prodDesc">{color}</div> : null} */}
+              {releaseDate ? <div className="prodDesc">Product was released in {releaseDate}</div> : null}
+              {/* {specialAttr ? <div className="prodDesc">{specialAttr}</div> : null} */}
               {prodDiscount ? (
                 <div className="prodPrice">
                   Only for <span className="strike">{prodPrice}</span> {prodDiscount} <EuroCircleOutlined />
