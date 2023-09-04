@@ -45,9 +45,9 @@
 }
 
 .someButtons {
-  grid-area: someButtons;
-  align-self: center;
-  width: 25%;
+    grid-area: someButtons;
+    align-self: center;
+    min-width: 70px !important;
 }
 
 .prodWrapper {
