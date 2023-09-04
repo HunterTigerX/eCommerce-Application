@@ -1,40 +1,19 @@
 import { useState } from 'react';
-import { Button, Drawer, Tree, Breadcrumb } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { Button, Drawer, Tree } from 'antd';
 import type { Key } from 'rc-tree/lib/interface';
 import { DownOutlined } from '@ant-design/icons';
-import { ProductProjectionsActionTypes, type ProductProjectionsQueryArgsActions } from '@shared/api/products';
-import { useCategories, type CategoryTreeNode } from '@shared/api/categories/';
-import { Link } from 'react-router-dom';
+import { type CategoryTreeNode } from '@shared/api/categories/';
 
 interface CategoriesProps {
-  dispatch: React.Dispatch<ProductProjectionsQueryArgsActions>;
   loading: boolean;
+  id: string | undefined;
+  tree: CategoryTreeNode[];
 }
 
-const findCategoryPath = (nodes: CategoryTreeNode[], key: string) => {
-  let result = '';
-
-  for (const node of nodes) {
-    if (node.key === key) {
-      result = node.path;
-      return result;
-    }
-
-    if (node.children.length) {
-      result = findCategoryPath(node.children, key);
-      if (result) {
-        break;
-      }
-    }
-  }
-
-  return result;
-};
-
-const Categories = ({ dispatch, loading }: CategoriesProps) => {
-  const { categoriesTree } = useCategories();
+const Categories = ({ loading, id, tree }: CategoriesProps) => {
   const [open, setOpen] = useState(false);
-  const [items, setItems] = useState<{ title: JSX.Element | string }[]>([]);
+  const navigate = useNavigate();
 
   const showDrawer = () => {
     setOpen(true);
@@ -45,47 +24,25 @@ const Categories = ({ dispatch, loading }: CategoriesProps) => {
   };
 
   const onChange = (selected: Key[]) => {
-    dispatch({ type: ProductProjectionsActionTypes.SET_CATEGORY, payload: selected[0] });
-    setItems(
-      findCategoryPath(categoriesTree, selected[0] as string)
-        .split(' / ')
-        .map((item, index, arr) => {
-          const [name, id] = item.split(':');
-
-          return {
-            title:
-              index === arr.length - 1 ? (
-                name
-              ) : (
-                <Link onClick={() => console.log(1)} to={id ? `/catalog?category=${id}` : ''}>
-                  {name}
-                </Link>
-              ),
-          };
-        })
-    );
+    if (selected.length) {
+      navigate(`/catalog/${selected[0]}`);
+    }
   };
 
   return (
     <>
-      <Breadcrumb
-        items={[
-          {
-            title: items.length ? <Link to={'/catalog'}>Catalog</Link> : 'Catalog',
-          },
-          ...items,
-        ]}
-      />
       <Button type="primary" onClick={showDrawer}>
         Open
       </Button>
       <Drawer title="Basic Drawer" placement="left" onClose={onClose} open={open}>
         <Tree
           disabled={loading}
+          activeKey={id}
+          defaultExpandedKeys={id ? [id] : undefined}
           showLine
           switcherIcon={<DownOutlined />}
           onSelect={onChange}
-          treeData={categoriesTree}
+          treeData={tree}
         />
       </Drawer>
     </>

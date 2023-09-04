@@ -1,5 +1,6 @@
-import { useMemo, useReducer } from 'react';
-import type { ProductProjection } from '@commercetools/platform-sdk';
+import { useEffect, useMemo, useReducer, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import type { ProductProjection, ProductProjectionPagedSearchResponse } from '@commercetools/platform-sdk';
 import { ApiClient } from '@app/auth/client';
 import { useApiRequest } from '@shared/api/core';
 import {
@@ -7,6 +8,7 @@ import {
   productProjectionsQueryArgsReducer,
   ProductProjectionsActionTypes,
 } from '@shared/api/products/reducers';
+import type { ApiRequest } from '@commercetools/platform-sdk/dist/declarations/src/generated/shared/utils/requests-utils';
 
 const mapResults = (results: ProductProjection[] | null) => {
   return results
@@ -42,18 +44,56 @@ const productProjectionsQueryArgsInitialValue: ProductProjectionsQueryArgs = {
   priceCurrency: import.meta.env.VITE_CTP_DEFAULT_CURRENCY,
 };
 
-const useProductProjections = (initialValue: ProductProjectionsQueryArgs = productProjectionsQueryArgsInitialValue) => {
-  const [queryArgs, dispatch] = useReducer(productProjectionsQueryArgsReducer, initialValue);
-
-  const request = useMemo(
-    () =>
-      ApiClient.getInstance().requestBuilder.productProjections().search().get({
-        queryArgs,
-      }),
-    [queryArgs]
-  );
+const useProductProjections = (id: string | undefined) => {
+  const [queryArgs, dispatch] = useReducer(productProjectionsQueryArgsReducer, productProjectionsQueryArgsInitialValue);
+  const [request, setRequest] = useState<ApiRequest<ProductProjectionPagedSearchResponse> | null>(null);
+  const navigate = useNavigate();
 
   const { data, error, loading } = useApiRequest(request);
+
+  const { error: notFoundError, loading: categoryLoading } = useApiRequest(
+    useMemo(() => (id ? ApiClient.getInstance().requestBuilder.categories().withId({ ID: id }).get() : null), [id])
+  );
+
+  useEffect(() => {
+    if (id && !notFoundError && !categoryLoading) {
+      setRequest(
+        ApiClient.getInstance()
+          .requestBuilder.productProjections()
+          .search()
+          .get({
+            queryArgs: {
+              ...queryArgs,
+              'filter.query': `categories.id:subtree("${id}")`,
+            },
+          })
+      );
+    }
+
+    if (id && notFoundError && !categoryLoading) {
+      setRequest(() => {
+        delete queryArgs['filter.query'];
+
+        return ApiClient.getInstance()
+          .requestBuilder.productProjections()
+          .search()
+          .get({
+            queryArgs: {
+              ...queryArgs,
+            },
+          });
+      });
+      navigate('/catalog');
+    }
+
+    if (!id) {
+      setRequest(
+        ApiClient.getInstance().requestBuilder.productProjections().search().get({
+          queryArgs,
+        })
+      );
+    }
+  }, [id, notFoundError, categoryLoading, queryArgs, navigate]);
 
   return {
     state: {
