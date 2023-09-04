@@ -23,10 +23,6 @@
   box-sizing: border-box;
 }
 
-html {
-  scrollbar-gutter: stable;
-}
-
 body {
   min-width: 320px;
   height: 100%;
