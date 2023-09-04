@@ -11,6 +11,7 @@ import styles from './ProductsFilter.module.css';
 interface ProductsFilterProps {
   dispatch: React.Dispatch<ProductProjectionsQueryArgsActions>;
   id: string | undefined;
+  isFilter: boolean;
 }
 
 const CheckboxGroup = Checkbox.Group;
@@ -48,7 +49,7 @@ const optionsColor = [
 ];
 const years = ['2023', '2022', '2021', '2020', '2019', '2018', '2017', '2016', '2015', '2014'];
 
-export const ProductsFilter = ({ dispatch, id }: ProductsFilterProps) => {
+export const ProductsFilter = ({ dispatch, id, isFilter }: ProductsFilterProps) => {
   const [open, setOpen] = useState(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 9999]);
   const [checkedColorList, setCheckedColorList] = useState<CheckboxValueType[]>([]);
@@ -113,7 +114,19 @@ export const ProductsFilter = ({ dispatch, id }: ProductsFilterProps) => {
     setIsDiscountedProducts(false);
     countFilter(true);
     setOpen(false);
-    dispatch({ type: ProductProjectionsActionTypes.CLEAR_FILTER });
+
+    if (isFilter) {
+      dispatch({ type: ProductProjectionsActionTypes.CLEAR_FILTER });
+    }
+  };
+
+  const reset = () => {
+    setCheckedColorList([]);
+    setCheckedReleaseDate([]);
+    setPriceRange([0, 9999]);
+    setIsDiscountedProducts(false);
+    countFilter(true);
+    setOpen(false);
   };
 
   const applyFilters = () => {
@@ -130,21 +143,17 @@ export const ProductsFilter = ({ dispatch, id }: ProductsFilterProps) => {
 
   const onClose = () => {
     setOpen(false);
+
+    if (!isFilter) {
+      return setOpen(false);
+    }
+
     if (disabledButton) {
-      clearFilters();
+      return clearFilters();
     }
   };
   const onDiscountedProducts = () => {
     setIsDiscountedProducts(!isDiscountedProducts);
-  };
-
-  const reset = () => {
-    setCheckedColorList([]);
-    setCheckedReleaseDate([]);
-    setPriceRange([0, 9999]);
-    setIsDiscountedProducts(false);
-    countFilter(true);
-    setOpen(false);
   };
 
   return (
