@@ -575,7 +575,7 @@ export const Profile = () => {
           </Modal>
         </>
       ) : (
-        <Navigate to={'/'} replace={true} />
+        <Navigate to={'/signin'} replace={true} />
       )}
     </>
   );

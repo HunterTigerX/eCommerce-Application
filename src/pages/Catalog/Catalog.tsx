@@ -11,7 +11,7 @@ const Catalog = () => {
   const { id } = useParams();
 
   const {
-    state: { products, loading },
+    state: { products, loading, isFilter },
     dispatch,
   } = useProductProjections(id);
 
@@ -21,7 +21,7 @@ const Catalog = () => {
     <>
       <div className={style.headerCatalog}>
         <Categories loading={loading} id={id} tree={categoriesTree} />
-        <ProductsFilter dispatch={dispatch} id={id} />
+        <ProductsFilter dispatch={dispatch} id={id} isFilter={isFilter} />
       </div>
       <Breadcrumbs id={id} tree={categoriesTree} dispatch={dispatch} />
       <ProductList products={products} loading={loading} />

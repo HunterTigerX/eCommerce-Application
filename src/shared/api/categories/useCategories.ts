@@ -1,6 +1,7 @@
 import { Category, CategoryReference } from '@commercetools/platform-sdk';
 import { ApiClient } from '@app/auth/client';
 import { useApiRequest } from '@shared/hooks';
+import { useMemo } from 'react';
 
 interface CategoryTreeNode {
   key: string; // id
@@ -78,17 +79,18 @@ const getCategoriesTree = (categories: CategoriesTreeNodesRecord) => {
   return tree;
 };
 
-const request = ApiClient.getInstance()
-  .requestBuilder.categories()
-  .get({
-    queryArgs: {
-      limit: 500,
-      expand: ['parent'],
-    },
-  });
-
-// todo: add id param
 const useCategories = () => {
+  const client = ApiClient.getInstance();
+  const request = useMemo(
+    () =>
+      client.requestBuilder.categories().get({
+        queryArgs: {
+          limit: 500,
+          expand: ['parent'],
+        },
+      }),
+    [client]
+  );
   const { data, error, loading } = useApiRequest(request);
 
   return {

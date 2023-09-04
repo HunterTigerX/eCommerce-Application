@@ -92,6 +92,7 @@ const useProductProjections = (id: string | undefined) => {
       products: mapResults(state.data?.results || null),
       error: state.error,
       loading: state.loading,
+      isFilter: queryArgs.filter ? true : false,
     },
     dispatch,
   };
