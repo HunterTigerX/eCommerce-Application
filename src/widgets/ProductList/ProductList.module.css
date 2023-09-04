@@ -6,6 +6,7 @@
   column-gap: 30px;
   grid-row-gap: 32px;
   row-gap: 32px;
+  margin-top: var(--spacing-lg);
 }
 .products-list-spin-block {
   position: absolute;

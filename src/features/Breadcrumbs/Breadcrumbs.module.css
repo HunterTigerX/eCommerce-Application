@@ -1,0 +1,4 @@
+.disabled {
+  color: rgb(153, 153, 153);
+  user-select: none;
+}
