@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Drawer, Tree } from 'antd';
+import { Drawer, Tree } from 'antd';
 import type { Key } from 'rc-tree/lib/interface';
-import { DownOutlined } from '@ant-design/icons';
+import { DownOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { type CategoryTreeNode } from '@shared/api/categories/';
-
+import style from './Categories.module.css';
 interface CategoriesProps {
   loading: boolean;
   id: string | undefined;
@@ -14,6 +14,7 @@ interface CategoriesProps {
 const Categories = ({ loading, id, tree }: CategoriesProps) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const width = window.innerWidth;
 
   const showDrawer = () => {
     setOpen(true);
@@ -27,17 +28,23 @@ const Categories = ({ loading, id, tree }: CategoriesProps) => {
     if (selected.length) {
       navigate(`/catalog/${selected[0]}`);
     }
+
+    if (width < 768) {
+      setOpen(false);
+    }
   };
 
   return (
     <>
-      <Button type="primary" onClick={showDrawer}>
-        Open
-      </Button>
-      <Drawer title="Basic Drawer" placement="left" onClose={onClose} open={open}>
+      <div className={style.categories}>
+        <button className={style.categoriesBtn} onClick={showDrawer}>
+          <MenuUnfoldOutlined style={{ marginRight: '10px' }} /> Catalog
+        </button>
+      </div>
+      <Drawer title="Catalog" placement="left" onClose={onClose} open={open}>
         <Tree
           disabled={loading}
-          activeKey={id}
+          selectedKeys={id ? [id] : undefined}
           defaultExpandedKeys={id ? [id] : undefined}
           showLine
           switcherIcon={<DownOutlined />}

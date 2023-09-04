@@ -1,11 +1,10 @@
-import { useParams } from 'react-router-dom';
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button, Carousel } from 'antd';
-import Modal from 'react-modal';
 import { CarouselRef } from 'antd/es/carousel';
-import { ApiClient } from '@app/auth/client';
-import { useApiRequest } from '@shared/hooks';
+import { useParams, Navigate } from 'react-router-dom';
+import Modal from 'react-modal';
 import { EuroCircleOutlined } from '@ant-design/icons';
+import { useProduct } from '@shared/api/products';
 import './carousel.css';
 
 interface IDimentions {
@@ -24,35 +23,9 @@ interface IAttributesArr {
   attributes: IAttributes[];
 }
 
-const useProduct = (id: string | undefined) => {
-  const request = useMemo(
-    () =>
-      id
-        ? ApiClient.getInstance()
-            .requestBuilder.products()
-            .withId({ ID: id })
-            .get({
-              queryArgs: {
-                priceCurrency: import.meta.env.VITE_CTP_DEFAULT_CURRENCY,
-              },
-            })
-        : null,
-    [id]
-  );
-
-  const { data, error, loading } = useApiRequest(request);
-
-  return {
-    product: data,
-    error,
-    loading,
-  };
-};
-
 export const ProductDetail = () => {
   const { productId } = useParams<{ productId: string }>();
   const itemData = useProduct(productId);
-  console.log(itemData);
   const [isBigPicModalOpened, bigPicModalIsOpen] = useState(false);
   const [carousel1Index, setCarousel1Index] = useState(0);
   const carouselRefModal = useRef<CarouselRef>(null);
@@ -242,9 +215,5 @@ export const ProductDetail = () => {
     }
   }
 
-  return (
-    <>
-      <div>{addCarousel()}</div>
-    </>
-  );
+  return <>{itemData.error ? <Navigate to={'/catalog'} replace={true} /> : <div>{addCarousel()}</div>}</>;
 };

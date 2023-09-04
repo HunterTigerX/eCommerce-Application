@@ -1,16 +1,23 @@
 .product-filter {
-  width: 100%;
   display: flex;
   justify-content: space-between;
-  margin-bottom: var(--spacing-md);
+  align-items: center;
+  column-gap: var(--spacing-md);
 }
 
-.product-search {
-  min-width: 355px;
+@media only screen and (max-width: 430px) {
+  .product-filter {
+    min-width: 350px;
+  }
 }
-@media only screen and (max-width: 768px) {
-  .product-search {
-    width: 100%;
+
+.select-sort {
+  min-width: 205px;
+}
+
+@media only screen and (min-width: 767px) {
+  .select-sort {
+    min-width: 180px;
   }
 }
 
@@ -23,12 +30,10 @@
 .filter-section {
   margin-top: var(--spacing-md);
 }
-
-@media only screen and (max-width: 768px) {
-  .product-filter {
-    flex-direction: column;
-    row-gap: var(--spacing-md);
-    align-items: flex-start;
-    min-width: 350px;
-  }
+.checkbox-group-list {
+  flex-wrap: nowrap;
+  max-height: 155px;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
 }

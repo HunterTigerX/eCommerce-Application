@@ -8,7 +8,6 @@ import {
   productProjectionsQueryArgsReducer,
   ProductProjectionsActionTypes,
 } from '@shared/api/products/reducers';
-import type { ApiRequest } from '@commercetools/platform-sdk/dist/declarations/src/generated/shared/utils/requests-utils';
 
 const mapResults = (results: ProductProjection[] | null) => {
   return results
@@ -46,22 +45,25 @@ const productProjectionsQueryArgsInitialValue: ProductProjectionsQueryArgs = {
 
 const useProductProjections = (id: string | undefined) => {
   const [queryArgs, dispatch] = useReducer(productProjectionsQueryArgsReducer, productProjectionsQueryArgsInitialValue);
-  const isCategoriExistsRequest = useMemo(
+  const isCategoryExistsRequest = useMemo(
     () => (id ? ApiClient.getInstance().requestBuilder.categories().withId({ ID: id }).get() : null),
     [id]
   );
-  const { data, error, loading } = useApiRequest(isCategoriExistsRequest);
+  const { data, error } = useApiRequest(isCategoryExistsRequest);
 
   const navigate = useNavigate();
 
   const request = useMemo(() => {
-    if (id && !data && error && !loading) {
+    if (id && !data && error) {
       navigate('/');
 
       return null;
     }
 
-    if (id && data && !error && !loading) {
+    if (id && data && !error) {
+      delete queryArgs.fuzzy;
+      delete queryArgs['text.en'];
+
       return ApiClient.getInstance()
         .requestBuilder.productProjections()
         .search()
@@ -81,7 +83,7 @@ const useProductProjections = (id: string | undefined) => {
 
     return null;
     // eslint-disable-next-line
-  }, [data, error, loading, queryArgs, navigate]);
+  }, [data, error, queryArgs]);
 
   const state = useApiRequest(request);
 

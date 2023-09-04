@@ -52,3 +52,13 @@
   display: inline-block;
   margin-right: 5px;
 }
+
+@media only screen and (max-width: 576px) {
+  .product-info {
+    font-size: 15px;
+  }
+
+  .product-description {
+    font-size: 13px;
+  }
+}
