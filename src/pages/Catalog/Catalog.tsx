@@ -23,7 +23,7 @@ const Catalog = () => {
         <Categories id={id} tree={categoriesTree} loading={loading} />
         <ProductsFilter id={id} filter={filter} dispatch={dispatch} />
       </div>
-      <Breadcrumbs id={id} tree={categoriesTree} />
+      <Breadcrumbs id={id} tree={categoriesTree} loading={loading} />
       <ProductList products={products} loading={loading} />
     </>
   );

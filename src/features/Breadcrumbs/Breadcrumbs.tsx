@@ -7,6 +7,7 @@ import styles from './Breadcrumbs.module.css';
 interface BreadcrumbsProps {
   id: string | undefined;
   tree: CategoryTreeNode[];
+  loading: boolean;
 }
 
 const getCategoryPath = (nodes: CategoryTreeNode[], key: string) => {
@@ -41,13 +42,13 @@ const getBreadcrumbItems = (nodes: CategoryTreeNode[], ID: string) => {
     });
 };
 
-const Breadcrumbs = ({ id, tree }: BreadcrumbsProps) => {
+const Breadcrumbs = ({ id, tree, loading }: BreadcrumbsProps) => {
   const items: { title: JSX.Element | string }[] = id ? getBreadcrumbItems(tree, id) : [];
 
   return (
     <>
       <Breadcrumb
-        className={styles.breadcrumb}
+        className={loading ? styles.disabled : styles.breadcrumb}
         items={[
           {
             title: items.length ? (
