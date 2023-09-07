@@ -6,6 +6,7 @@ import { FilterOutlined } from '@ant-design/icons';
 import { CheckboxValueType } from 'antd/es/checkbox/Group';
 import type { ProductProjectionsQueryArgsActions } from '@shared/api/products';
 import { ProductsSearch } from '@features/ProductsSearch';
+import { colors, years } from './data/options.json';
 import styles from './ProductsFilter.module.css';
 
 interface FilterFields {
@@ -20,43 +21,6 @@ interface ProductsFilterProps {
   id: string | undefined;
   filter: FilterFields | null;
 }
-
-const CheckboxGroup = Checkbox.Group;
-
-const optionsColor = [
-  'red',
-  'blue',
-  'green',
-  'yellow',
-  'purple',
-  'pink',
-  'orange',
-  'brown',
-  'black',
-  'white',
-  'gray',
-  'gold',
-  'silver',
-  'navy blue',
-  'sky blue',
-  'lime green',
-  'teal',
-  'indigo',
-  'magenta',
-  'violet',
-  'khaki',
-  'salmon',
-  'crimson',
-  'lavender',
-  'plum',
-  'blue violet',
-  'olive',
-  'cyan',
-  'maroon',
-  'beige',
-];
-
-const years = ['2023', '2022', '2021', '2020', '2019', '2018', '2017', '2016', '2015', '2014'];
 
 const areFiltersEqual = (current: FilterFields, applied: FilterFields) => {
   const areColorsEqual =
@@ -79,6 +43,8 @@ const initialValue: FilterFields = {
   priceRange: [0, 9999],
   discountedProducts: false,
 };
+
+const CheckboxGroup = Checkbox.Group;
 
 const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -283,7 +249,7 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
             <CheckboxGroup
               className={styles.checkboxGroupList}
               style={{ flexDirection: 'column' }}
-              options={optionsColor}
+              options={colors}
               value={filterState.color}
               onChange={onColorList}
             />
