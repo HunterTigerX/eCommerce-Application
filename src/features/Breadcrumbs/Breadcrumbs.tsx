@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Breadcrumb } from 'antd';
-import { HomeOutlined } from '@ant-design/icons';
+import { HomeTwoTone } from '@ant-design/icons';
 import type { CategoryTreeNode } from '@shared/api/categories/';
 import styles from './Breadcrumbs.module.css';
 
@@ -56,7 +56,7 @@ const Breadcrumbs = ({ id, tree, loading }: BreadcrumbsProps) => {
             ) : (
               <>
                 <Link to={'/'}>
-                  <HomeOutlined />
+                  <HomeTwoTone />
                 </Link>
                 <span className={styles.disabled}> / Catalog</span>
               </>
