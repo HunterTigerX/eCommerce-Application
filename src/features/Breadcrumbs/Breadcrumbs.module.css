@@ -1,3 +1,8 @@
+.breadcrumb,
+.disabled {
+  font-size: 14px;
+}
+
 .disabled {
   color: rgb(153, 153, 153);
   user-select: none;
@@ -5,7 +10,8 @@
 }
 
 @media only screen and (max-width: 576px) {
-  .breadcrumb {
+  .breadcrumb,
+  .disabled {
     font-size: 10px;
   }
 }
