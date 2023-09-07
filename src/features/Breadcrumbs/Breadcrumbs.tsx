@@ -4,12 +4,6 @@ import { HomeTwoTone } from '@ant-design/icons';
 import type { CategoryTreeNode } from '@shared/api/categories/';
 import styles from './Breadcrumbs.module.css';
 
-interface BreadcrumbsProps {
-  id: string | undefined;
-  tree: CategoryTreeNode[];
-  loading: boolean;
-}
-
 const getCategoryPath = (nodes: CategoryTreeNode[], key: string) => {
   let result = '';
 
@@ -42,8 +36,18 @@ const getBreadcrumbItems = (nodes: CategoryTreeNode[], ID: string) => {
     });
 };
 
+interface BreadcrumbsProps {
+  id: string | undefined;
+  tree: CategoryTreeNode[];
+  loading: boolean;
+}
+
+interface BreadcrumbItem {
+  title: JSX.Element | string;
+}
+
 const Breadcrumbs = ({ id, tree, loading }: BreadcrumbsProps) => {
-  const items: { title: JSX.Element | string }[] = id ? getBreadcrumbItems(tree, id) : [];
+  const items: BreadcrumbItem[] = id ? getBreadcrumbItems(tree, id) : [];
 
   return (
     <>

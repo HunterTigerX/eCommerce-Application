@@ -68,7 +68,7 @@ export const ProductsSearch = ({ dispatch, clearFilters, id }: ProductsSearchPro
       placeholder="Search in store..."
       className={styles.productsSearch}
     >
-      <Input.Search onSearch={(text) => handleSearch(text)} />
+      <Input.Search allowClear onSearch={(text) => handleSearch(text)} />
     </AutoComplete>
   );
 };
