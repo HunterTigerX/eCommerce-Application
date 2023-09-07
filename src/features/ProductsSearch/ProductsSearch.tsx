@@ -62,7 +62,6 @@ export const ProductsSearch = ({ dispatch, clearFilters, id }: ProductsSearchPro
   return (
     <AutoComplete
       value={searchText}
-      allowClear
       onSearch={(text) => handleSuggestions(text)}
       onSelect={(text) => handleSelect(text)}
       options={suggestions}
