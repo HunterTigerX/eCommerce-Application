@@ -443,7 +443,7 @@ export const Profile = () => {
               <label className="personal-info-date">
                 <div className="dateOfBirth">Date of Birth:</div>
                 <Form.Item name="dateOfBirth" required={true} rules={[{ validator: validateData }]}>
-                  <DatePicker disabledDate={disabledDate} style={{ width: '100%' }} />
+                  <DatePicker disabledDate={disabledDate} style={{ width: '100%' }} className="date-picker" />
                 </Form.Item>
               </label>
               <br />

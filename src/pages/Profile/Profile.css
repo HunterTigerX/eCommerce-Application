@@ -68,8 +68,8 @@
 .personal-info-date .ant-form-item .ant-row {
   width: 100% !important;
 }
-
-.ant-picker {
+/* ant-picker -> conflict with signUp */
+.date-picker {
   border-color: black;
 }
 
