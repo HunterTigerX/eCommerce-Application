@@ -6,7 +6,7 @@ import { FilterOutlined } from '@ant-design/icons';
 import { CheckboxValueType } from 'antd/es/checkbox/Group';
 import type { ProductProjectionsQueryArgsActions } from '@shared/api/products';
 import { ProductsSearch } from '@features/ProductsSearch';
-import { colors, years } from './data/options.json';
+import { colors, years, sort } from './data/options.json';
 import styles from './ProductsFilter.module.css';
 
 interface FilterFields {
@@ -203,28 +203,7 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
             defaultValue={'Default'}
             onChange={(value) => handleSort(value)}
             value={selectedSort}
-            options={[
-              {
-                value: 'price asc',
-                label: 'Price: Low to High',
-              },
-              {
-                value: 'price desc',
-                label: 'Price: High to Low',
-              },
-              {
-                value: 'name asc',
-                label: 'Name: a-z',
-              },
-              {
-                value: 'name desc',
-                label: 'Name: z-a',
-              },
-              {
-                value: 'default',
-                label: 'Default',
-              },
-            ]}
+            options={sort}
           />
         </div>
         <Badge offset={[-10, 0]} count={countFilters}>

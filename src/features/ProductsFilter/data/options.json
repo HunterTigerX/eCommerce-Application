@@ -31,5 +31,27 @@
     "cyan",
     "maroon",
     "beige"
+  ],
+  "sort": [
+    {
+      "value": "price asc",
+      "label": "Price: Low to High"
+    },
+    {
+      "value": "price desc",
+      "label": "Price: High to Low"
+    },
+    {
+      "value": "name asc",
+      "label": "Name: a-z"
+    },
+    {
+      "value": "name desc",
+      "label": "Name: z-a"
+    },
+    {
+      "value": "default",
+      "label": "Default"
+    }
   ]
 }
