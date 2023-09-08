@@ -6,6 +6,7 @@ import Modal from 'react-modal';
 import { EuroCircleOutlined } from '@ant-design/icons';
 import { useProduct } from '@shared/api/products';
 import './carousel.css';
+// import { router } from '@app/router';
 
 interface IDimentions {
   w: number;
@@ -30,6 +31,7 @@ export const ProductDetail = () => {
   const [carousel1Index, setCarousel1Index] = useState(0);
   const carouselRefModal = useRef<CarouselRef>(null);
   const carouselRefSmall = useRef<CarouselRef>(null);
+  const [isProductInCard, setProductInCard] = useState(false); //todo
 
   useEffect(() => {}, [carousel1Index]);
 
@@ -169,6 +171,17 @@ export const ProductDetail = () => {
           ) : null}
         </Modal>
       );
+
+      const addProductCart = () => {
+        // console.log(`add to cart: ${id}`);
+        //Todo api;
+        setProductInCard(true);
+      };
+
+      const removeProductFromCart = () => {
+        //Todo api;
+        setProductInCard(false);
+      };
       return (
         <>
           <div className="product-container">
@@ -187,9 +200,16 @@ export const ProductDetail = () => {
                   Only for {prodPrice} <EuroCircleOutlined />
                 </div>
               ) : null}
-              <Button type="primary" className="someButtons">
-                Add to cart
-              </Button>
+
+              {isProductInCard ? (
+                <Button type="primary" danger className="someButtons" onClick={removeProductFromCart}>
+                  Remove from Cart
+                </Button>
+              ) : (
+                <Button type="primary" className="someButtons" onClick={addProductCart}>
+                  Add to cart
+                </Button>
+              )}
             </div>
             <Carousel
               ref={carouselRefSmall}
