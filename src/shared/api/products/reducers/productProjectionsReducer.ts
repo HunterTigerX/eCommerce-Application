@@ -11,8 +11,8 @@ type ProductProjectionsQueryArgs = {
   'filter.query'?: string | string[];
   facet?: string | string[];
   sort?: string | string[];
-  limit?: number;
-  offset?: number;
+  limit: number;
+  offset: number;
   withTotal?: boolean;
   staged?: boolean;
   priceCurrency?: string;
@@ -35,6 +35,7 @@ const enum ProductProjectionsActionTypes {
   CLEAR_SORT = 'CLEAR_SORT',
   SET_FILTER = 'SET_FILTER',
   CLEAR_FILTER = 'CLEAR_FILTER',
+  SET_PAGE = 'SET_PAGE',
   RESET = 'RESET',
 }
 
@@ -83,6 +84,11 @@ type ClearFilterAction = {
   payload?: undefined;
 };
 
+type SetPageAction = {
+  type: ProductProjectionsActionTypes.SET_PAGE;
+  payload: number;
+};
+
 type ProductProjectionsQueryArgsActions =
   | SetSearchAction
   | ClearSearchAction
@@ -92,7 +98,8 @@ type ProductProjectionsQueryArgsActions =
   | ClearSortAction
   | SetFilterAction
   | ClearFilterAction
-  | ResetAction;
+  | ResetAction
+  | SetPageAction;
 
 const productProjectionsQueryArgsReducer = (
   state: ProductProjectionsQueryArgs,
@@ -125,6 +132,8 @@ const productProjectionsQueryArgsReducer = (
 
       return {
         ...state,
+        limit: 20,
+        offset: 0,
         'filter.query': `categories.id:subtree("${payload}")`,
       };
     }
@@ -203,10 +212,17 @@ const productProjectionsQueryArgsReducer = (
         ...state,
       };
     }
+    case ProductProjectionsActionTypes.SET_PAGE: {
+      return {
+        ...state,
+        offset: state.limit * payload - state.limit,
+      };
+    }
     case ProductProjectionsActionTypes.RESET: {
       return {
-        limit: 20,
         priceCurrency: import.meta.env.VITE_CTP_DEFAULT_CURRENCY,
+        limit: 20,
+        offset: 0,
       };
     }
     default: {
