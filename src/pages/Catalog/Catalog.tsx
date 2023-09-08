@@ -12,7 +12,7 @@ const Catalog = () => {
   const { id } = useParams();
 
   const {
-    state: { products, loading, filter, count },
+    state: { products, loading, filter, count, currentPage },
     dispatch,
   } = useProductProjections(id);
 
@@ -26,9 +26,9 @@ const Catalog = () => {
       </div>
       <Breadcrumbs id={id} tree={categoriesTree} loading={loading} />
       <Pagination
-        id={id}
         count={count}
         loading={loading}
+        currentPage={currentPage}
         onPageChange={(page: number) => dispatch({ type: ProductProjectionsActionTypes.SET_PAGE, payload: page })}
       />
       <ProductList loading={loading} products={products} />

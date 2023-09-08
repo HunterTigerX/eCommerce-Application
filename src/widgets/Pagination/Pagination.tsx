@@ -4,29 +4,15 @@ import { Pagination as AntPagination } from 'antd';
 interface PaginationProps {
   count: number | null;
   loading: boolean;
-  id: string | undefined;
+  currentPage: number;
   onPageChange: (page: number) => void;
 }
 
 const showTotal = (total: number) => `Total ${total} items`;
 
-const defaultPage = 1;
-
-const Pagination = ({ onPageChange, loading, count, id }: PaginationProps) => {
-  const [current, setCurrent] = useState(defaultPage);
-  const [total, setTotal] = useState(0);
+const Pagination = ({ count, loading, currentPage, onPageChange }: PaginationProps) => {
+  const [total, setTotal] = useState(count || 0);
   const totalRef = useRef<number>();
-
-  const handlePageChange = (page: number) => {
-    setCurrent(page);
-    onPageChange(page);
-  };
-
-  useEffect(() => {
-    if (id) {
-      setCurrent(defaultPage);
-    }
-  }, [id]);
 
   useEffect(() => {
     if (count !== null && count !== totalRef.current) {
@@ -38,13 +24,13 @@ const Pagination = ({ onPageChange, loading, count, id }: PaginationProps) => {
   return (
     <>
       <AntPagination
-        showTotal={showTotal}
-        current={current}
+        total={total}
+        current={currentPage}
         disabled={loading}
         pageSize={20}
-        total={total}
+        showTotal={showTotal}
+        onChange={onPageChange}
         showSizeChanger={false}
-        onChange={handlePageChange}
       />
     </>
   );
