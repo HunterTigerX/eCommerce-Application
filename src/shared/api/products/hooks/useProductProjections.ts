@@ -136,7 +136,7 @@ const useProductProjections = (id: string | undefined) => {
       error: state.error,
       loading: state.loading,
       filter: queryArgs.filter && Array.isArray(queryArgs.filter) ? mapFilter(queryArgs.filter) : null,
-      count: state.data && state.data.total ? state.data.total : null,
+      count: state.data && state.data.total !== undefined ? state.data.total : null,
       currentPage: queryArgs.offset / queryArgs.limit + 1,
     },
     dispatch,
