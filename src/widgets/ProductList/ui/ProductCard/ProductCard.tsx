@@ -1,6 +1,8 @@
 import { EuroCircleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import style from './ProductCard.module.css';
+import { Button } from 'antd';
+import { useState } from 'react';
 
 interface ProductCardMap {
   id: string;
@@ -13,6 +15,14 @@ interface ProductCardMap {
 
 const ProductCard = ({ product }: { product: ProductCardMap }) => {
   const { id, title, description, urlImg, price, discount } = product;
+  const [isButtonDisabled, setButtonDisabled] = useState(false);
+
+  const addProductCart = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    console.log(`add to cart: ${id}`);
+
+    setButtonDisabled(true);
+  };
 
   return (
     <Link to={`/product/${id}`} className={style.productCard}>
@@ -22,32 +32,32 @@ const ProductCard = ({ product }: { product: ProductCardMap }) => {
       <div className={style.productInfo}>
         <h4>{title}</h4>
         {description && <p className={style.productDescription}>{description}</p>}
-
-        {price && (
-          <div className={style.productPrice}>
-            {discount ? (
-              <>
-                <small>
-                  <span>
-                    <EuroCircleOutlined />
-                  </span>{' '}
-                  {price}
-                </small>
-                <span>
-                  <EuroCircleOutlined />
-                </span>{' '}
-                <strong>{discount}</strong>
-              </>
-            ) : (
-              <span>
+        <div className={style.productPrice}>
+          {discount ? (
+            <>
+              <small>
                 <span>
                   <EuroCircleOutlined />
                 </span>{' '}
                 {price}
-              </span>
-            )}
-          </div>
-        )}
+              </small>
+              <span>
+                <EuroCircleOutlined />
+              </span>{' '}
+              <strong>{discount}</strong>
+            </>
+          ) : (
+            <span>
+              <span>
+                <EuroCircleOutlined />
+              </span>{' '}
+              {price}
+            </span>
+          )}
+        </div>
+        <Button type="primary" onClick={addProductCart} disabled={isButtonDisabled}>
+          add to cart
+        </Button>
       </div>
     </Link>
   );
