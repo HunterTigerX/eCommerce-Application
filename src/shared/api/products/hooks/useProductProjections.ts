@@ -94,10 +94,15 @@ const useProductProjections = (id: string | undefined) => {
   const prevIdRef = useRef<typeof id>();
   const navigate = useNavigate();
 
+  // on first catalog/:id load
   const isCategoryExistsRequest = useMemo(
-    () => (id ? ApiClient.getInstance().requestBuilder.categories().withId({ ID: id }).get() : null),
-    [id]
+    () =>
+      id && queryArgs === productProjectionsQueryArgsInitialValue
+        ? ApiClient.getInstance().requestBuilder.categories().withId({ ID: id }).get()
+        : null,
+    [id, queryArgs]
   );
+
   const { data, error } = useApiRequest(isCategoryExistsRequest);
 
   const request = useMemo(
