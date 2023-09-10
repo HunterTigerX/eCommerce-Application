@@ -13,7 +13,7 @@ const Layout = () => {
         <Suspense fallback={<Spin size="large" className={styles.spin} />}>
           <Outlet />
         </Suspense>
-        <FloatButton.BackTop />
+        <FloatButton.BackTop visibilityHeight={300} />
       </main>
       <Footer />
     </>
