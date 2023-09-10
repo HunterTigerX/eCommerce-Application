@@ -22,7 +22,7 @@ const Pagination = ({ count, loading, currentPage, onPageChange }: PaginationPro
 
   return (
     <>
-      <h3 className={styles.total}>Total {total} items</h3>
+      {total ? <h3 className={styles.total}>Total {total} items</h3> : null}
       <AntPagination
         total={total}
         current={currentPage}

@@ -43,7 +43,7 @@ const items: MenuProps['items'] = [
   },
 ];
 
-export const Main = () => {
+const Main = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
@@ -75,3 +75,5 @@ export const Main = () => {
     </div>
   );
 };
+
+export { Main };

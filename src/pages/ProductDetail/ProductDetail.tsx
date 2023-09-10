@@ -23,7 +23,7 @@ interface IAttributesArr {
   attributes: IAttributes[];
 }
 
-export const ProductDetail = () => {
+const ProductDetail = () => {
   const { productId } = useParams<{ productId: string }>();
   const itemData = useProduct(productId);
   const [isBigPicModalOpened, bigPicModalIsOpen] = useState(false);
@@ -217,3 +217,5 @@ export const ProductDetail = () => {
 
   return <>{itemData.error ? <Navigate to={'/catalog'} replace={true} /> : <div>{addCarousel()}</div>}</>;
 };
+
+export { ProductDetail };
