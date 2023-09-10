@@ -125,8 +125,22 @@
     font-size: 25px;
 }
 
+
+
+.product-link,
+.product-link:link,
+.product-link:visited,
+.product-link:active {
+    color: black;
+    font-weight: bold;
+}
+
+.product-link:hover {
+    color: rgba(58, 58, 58, 0.692);
+}
+
 @media screen and (max-width: 830px) {
-    
+
     .cart-wrapper {
         grid-template-columns: 1fr;
         grid-template-rows: auto auto;

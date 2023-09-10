@@ -4,6 +4,8 @@ import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarat
 import { ClientOptions } from './ClientOptions';
 
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
+const anonID = localStorage.getItem('anon_id');
+const token = localStorage.getItem('auth');
 
 class ApiClient {
   private static instance: ApiClient;
@@ -11,6 +13,10 @@ class ApiClient {
   private readonly options: ClientOptions;
 
   private readonly defaultClient: Client;
+
+  private readonly anonClient: Client;
+
+  private readonly refreshAnonClient: Client;
 
   private currentClient: Client;
 
@@ -24,7 +30,30 @@ class ApiClient {
       .withHttpMiddleware(this.options.getHttpOptions())
       .build();
 
-    this.currentClient = this.defaultClient;
+    this.anonClient = new ClientBuilder()
+
+      .withProjectKey(projectKey)
+      .withAnonymousSessionFlow(this.options.getAnonCredentialOptions())
+      .withHttpMiddleware(this.options.getHttpOptions())
+      .withLoggerMiddleware()
+      .build();
+
+    this.refreshAnonClient = new ClientBuilder()
+
+      .withProjectKey(projectKey)
+      .withRefreshTokenFlow(this.options.getRefreshCredentialOptions())
+      .withHttpMiddleware(this.options.getHttpOptions())
+      .withLoggerMiddleware()
+      .build();
+
+    this.currentClient =
+      !anonID && !token
+        ? this.anonClient
+        : anonID && token
+        ? this.refreshAnonClient
+        : !anonID && token
+        ? this.defaultClient
+        : this.defaultClient;
   }
 
   public static getInstance() {
@@ -40,26 +69,28 @@ class ApiClient {
   }
 
   public async init(): Promise<Customer | null> {
-    const token = localStorage.getItem('auth');
-
-    if (token) {
+    if (!this.currentClient && anonID && !token) {
+      this.currentClient = this.anonClient;
+    }
+    if (!this.currentClient && anonID && token) {
+      this.currentClient = this.refreshAnonClient;
+    }
+    if (token && !anonID) {
       try {
-        this.switchToAccessTokenClient(token);
+        this.switchToAccessTokenClient();
 
         const signInResult = await this.requestBuilder.me().get().execute();
 
         return signInResult.body;
       } catch {
         this.switchToDefaultClient();
-
-        localStorage.removeItem('auth');
       }
     }
 
     return null;
   }
 
-  public async revokeToken(token: string): Promise<void> {
+  public async revokeToken(): Promise<void> {
     const {
       VITE_CTP_AUTH_URL: authUrl,
       VITE_CTP_CLIENT_SECRET: clientSecret,
@@ -80,7 +111,7 @@ class ApiClient {
     }
   }
 
-  public switchToAccessTokenClient(token: string): void {
+  public switchToAccessTokenClient(): void {
     this.currentClient = new ClientBuilder()
       .withProjectKey(projectKey)
       .withExistingTokenFlow(`Bearer ${token}`, { force: true })

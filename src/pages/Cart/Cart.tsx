@@ -5,22 +5,70 @@ import { EuroCircleOutlined } from '@ant-design/icons';
 import { LineItem } from '@commercetools/platform-sdk';
 import './cart.css';
 import { NavLink } from 'react-router-dom';
-import { KeyboardEventHandler } from 'react';
-// import { useState } from 'react';
+import {
+  // ChangeEventHandler,
+  KeyboardEventHandler,
+  // useState
+} from 'react';
 
 export const Cart = () => {
-  const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
   const { cart, updateCart, clearCart } = useCart();
   const apiClient = ApiClient.getInstance();
-  let clickedNumber: string;
 
   // console.log(cart);
+  const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
   function successMessage(result: 'success' | 'error', errorMessage: string): void {
     messageApi.open({
       type: result,
       content: errorMessage,
       duration: 2,
     });
+  }
+
+  // const [promocode, setPromocode] = useState('');
+  // const handleInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+  //   if (event.target) {
+  //     setPromocode(event.target.value);
+  //   }
+  // };
+  // Phone promocode
+  // 69.53
+
+  function applyPromocode() {
+    // console.log(promocode);
+    if (cart) {
+      apiClient.requestBuilder
+        .me()
+        .carts()
+        .withId({
+          ID: cart.id,
+        })
+        .post({
+          body: {
+            version: cart.version,
+            actions: [
+              {
+                action: 'addDiscountCode',
+                // code: promocode,
+                code: 'Phone discount',
+              },
+              {
+                action: 'recalculate',
+                updateProductData: true,
+              },
+            ],
+          },
+        })
+        .execute()
+        .then((response) => {
+          // console.log(response);
+          updateCart(response.body);
+        })
+        .catch((error) => {
+          successMessage('error', error.message);
+          console.error(error);
+        });
+    }
   }
 
   // lineItems отвечает за количество предметов в корзине
@@ -56,6 +104,7 @@ export const Cart = () => {
     }
   }
 
+  let clickedNumber: string;
   function inputNumberChanged(event: EventTarget & HTMLInputElement) {
     const newNumber = event.value;
     const goodsKey = event.id;
@@ -105,7 +154,11 @@ export const Cart = () => {
             <div className="cart-item-block" key={`card${i}`}>
               <Image src={image} className="cart-image" alt="product-image"></Image>
               <div className="cart-description">
-                <div className="cart-name">{obj.name.en}</div>
+                <div className="cart-name">
+                  <NavLink className="product-link" to={`/product/${obj.productId}`}>
+                    {obj.name.en}
+                  </NavLink>
+                </div>
                 <div className="cart-card-description">
                   {attr1} | {atrr2}
                 </div>
@@ -180,8 +233,13 @@ export const Cart = () => {
               </div>
               <hr className="line-cart-summary" />
               <div className="promocode-wrapper">
-                <Input placeholder="Enter promocode" className="promocode-input"></Input>
-                <Button>Apply</Button>
+                <Input
+                  placeholder="Enter promocode"
+                  value="Phone promocode"
+                  className="promocode-input"
+                  // onChange={handleInputChange}
+                ></Input>
+                <Button onClick={applyPromocode}>Apply</Button>
               </div>
               <hr className="line-cart-summary" />
               <div className="cart-summary-block">
