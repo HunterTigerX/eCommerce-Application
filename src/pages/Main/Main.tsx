@@ -62,7 +62,10 @@ export const Main = () => {
   useEffect(() => {
     const hi = state?.hi;
     const bye = state?.bye;
-
+    if (hi) {
+      localStorage.removeItem('anon_id');
+      localStorage.removeItem('anon_refresh_token');
+    }
     if (hi || bye) {
       messageApi.open({
         type: 'success',

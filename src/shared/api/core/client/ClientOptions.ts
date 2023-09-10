@@ -64,6 +64,8 @@ class ClientOptions {
   }
 
   public getAnonCredentialOptions(): AnonymousAuthMiddlewareOptions {
+    const token = localStorage.getItem('auth');
+
     function generateUniqId(): string {
       let result = '';
       const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -75,8 +77,9 @@ class ClientOptions {
       }
       return result;
     }
-
-    localStorage.setItem('anon_id', generateUniqId());
+    if (!token) {
+      localStorage.setItem('anon_id', generateUniqId());
+    }
 
     const anonId = localStorage.getItem('anon_id');
 

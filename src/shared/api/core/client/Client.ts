@@ -6,7 +6,7 @@ import { ClientOptions } from './ClientOptions';
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
 const anonID = localStorage.getItem('anon_id');
 const token = localStorage.getItem('auth');
-
+console.log(anonID, token);
 class ApiClient {
   private static instance: ApiClient;
 
