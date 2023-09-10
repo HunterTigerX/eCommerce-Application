@@ -1,5 +1,5 @@
 import { ClientBuilder, type Client } from '@commercetools/sdk-client-v2';
-import { createApiBuilderFromCtpClient, type Customer } from '@commercetools/platform-sdk';
+import { createApiBuilderFromCtpClient, Project, type Customer } from '@commercetools/platform-sdk';
 import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
 import { ClientOptions } from './ClientOptions';
 
@@ -68,13 +68,25 @@ class ApiClient {
     return createApiBuilderFromCtpClient(this.currentClient).withProjectKey({ projectKey });
   }
 
-  public async init(): Promise<Customer | null> {
-    if (token && !anonID) {
+  public async init(): Promise<Customer | null | Project> {
+    const tokenCheck = localStorage.getItem('auth');
+    const anonIDCheck = localStorage.getItem('anon_id');
+    if (tokenCheck && !anonIDCheck) {
       try {
         this.switchToAccessTokenClient();
 
         const signInResult = await this.requestBuilder.me().get().execute();
 
+        return signInResult.body;
+      } catch {
+        this.switchToDefaultClient();
+      }
+    } else if (!tokenCheck && anonIDCheck) {
+      try {
+        this.switchToAnonFlow();
+
+        const signInResult = await this.requestBuilder.get().execute();
+        console.log('signInResult', signInResult);
         return signInResult.body;
       } catch {
         this.switchToDefaultClient();
@@ -90,11 +102,12 @@ class ApiClient {
       VITE_CTP_CLIENT_SECRET: clientSecret,
       VITE_CTP_CLIENT_ID: clientId,
     } = import.meta.env;
+    const tokenToRevoke = localStorage.getItem('auth');
 
     try {
       await fetch(`${authUrl}/oauth/token/revoke`, {
         method: 'POST',
-        body: `token=${token}&token_type_hint=access_token`,
+        body: `token=${tokenToRevoke}&token_type_hint=access_token`,
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           Authorization: `Basic ${window.btoa(`${clientId}:${clientSecret}`)}`,
@@ -106,9 +119,10 @@ class ApiClient {
   }
 
   public switchToAccessTokenClient(): void {
+    const tokenFlow = localStorage.getItem('auth');
     this.currentClient = new ClientBuilder()
       .withProjectKey(projectKey)
-      .withExistingTokenFlow(`Bearer ${token}`, { force: true })
+      .withExistingTokenFlow(`Bearer ${tokenFlow}`, { force: true })
       .withHttpMiddleware(this.options.getHttpOptions())
       .build();
   }
@@ -125,16 +139,16 @@ class ApiClient {
     this.currentClient = this.defaultClient;
   }
 
-  public switchToAnonFlow(): void {
-    console.log(anonID);
-    //   if (!anonID) {
-    //   this.currentClient = new ClientBuilder()
-    //   .withProjectKey(projectKey)
-    //   .withAnonymousSessionFlow(this.options.getAnonCredentialOptions())
-    //   .withHttpMiddleware(this.options.getHttpOptions())
-    //   .withLoggerMiddleware()
-    //   .build();
-    //   }
+  public async switchToAnonFlow(): Promise<void> {
+    const anonIDExitCheck = localStorage.getItem('anon_id');
+    if (!anonIDExitCheck) {
+      this.currentClient = new ClientBuilder()
+        .withProjectKey(projectKey)
+        .withAnonymousSessionFlow(this.options.getAnonCredentialOptions())
+        .withHttpMiddleware(this.options.getHttpOptions())
+        .withLoggerMiddleware()
+        .build();
+    }
   }
 }
 

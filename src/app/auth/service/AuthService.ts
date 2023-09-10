@@ -1,4 +1,4 @@
-import type { Customer, CustomerDraft } from '@commercetools/platform-sdk';
+import type { Customer, CustomerDraft, Project } from '@commercetools/platform-sdk';
 import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
 import { ApiClient } from '@shared/api/core';
 
@@ -7,7 +7,7 @@ export type AuthResponse = { success: true; data: Customer } | { success: false;
 export class AuthService {
   private client: ApiClient;
 
-  public user: Customer | null = null;
+  public user: Customer | null | Project = null;
 
   constructor() {
     this.client = ApiClient.getInstance();
@@ -79,8 +79,7 @@ export class AuthService {
       await this.client.revokeToken();
       localStorage.removeItem('auth');
     }
-
-    this.client.switchToAnonFlow();
+    await this.client.switchToAnonFlow();
     this.user = await this.client.init();
   }
 }

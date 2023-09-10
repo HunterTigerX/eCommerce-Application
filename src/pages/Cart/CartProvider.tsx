@@ -11,6 +11,8 @@ interface CartProviderValue {
   updateCart: (newCart: Cart) => void;
   clearCart: () => Promise<CartResponse>;
   reloadCart: () => Promise<void>;
+  has: (id: string) => boolean;
+  count: () => number;
 }
 
 const CartContext = createContext<CartProviderValue>({
@@ -19,6 +21,8 @@ const CartContext = createContext<CartProviderValue>({
   updateCart: () => Promise.resolve({ success: false, message: '' }),
   clearCart: () => Promise.resolve({ success: false, message: '' }),
   reloadCart: () => Promise.resolve(),
+  has: () => false,
+  count: () => 0,
 });
 
 const CartProvider = ({ children }: { children: ReactNode }) => {
@@ -44,12 +48,32 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
     cartService.init();
   };
 
+  const has = (id: string) => {
+    if (cart) {
+      const item = cart.lineItems.find((lineItem) => lineItem.productId === id);
+
+      return !!item;
+    }
+
+    return false;
+  };
+
+  const count = () => {
+    if (cart) {
+      return cart.lineItems.length;
+    }
+
+    return 0;
+  };
+
   const value: CartProviderValue = {
     cart: cart,
     getCart,
     updateCart,
     clearCart,
     reloadCart,
+    has,
+    count,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

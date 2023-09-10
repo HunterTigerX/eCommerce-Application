@@ -12,9 +12,10 @@ import { useCart } from './useCart';
 import './cart.css';
 
 export const Cart = () => {
-  const { cart, updateCart, clearCart } = useCart();
+  const { cart, updateCart, clearCart, reloadCart } = useCart();
 
   const apiClient = ApiClient.getInstance();
+  reloadCart();
   console.log(cart);
   const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
   function successMessage(result: 'success' | 'error', errorMessage: string): void {
