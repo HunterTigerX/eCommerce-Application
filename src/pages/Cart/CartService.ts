@@ -8,6 +8,23 @@ export class CartService {
 
   public AllCarts: Cart | undefined;
 
+  private async createCart(): Promise<string> {
+    const result = await ApiClient.getInstance()
+      .requestBuilder.me()
+      .carts()
+      .post({
+        body: {
+          currency: 'EUR',
+        },
+      })
+      .execute()
+      .then((response) => {
+        this.cart = response.body;
+        return 'success';
+      });
+    return result === 'success' ? 'success' : 'error';
+  }
+
   public async init(): Promise<void> {
     await ApiClient.getInstance()
       .requestBuilder.me()
@@ -17,22 +34,8 @@ export class CartService {
       .then((response) => {
         this.cart = response.body;
       })
-      .catch(() => {
-        ApiClient.getInstance()
-          .requestBuilder.me()
-          .carts()
-          .post({
-            body: {
-              currency: 'EUR',
-            },
-          })
-          .execute()
-          .then((response) => {
-            this.cart = response.body;
-          })
-          .catch((error2) => {
-            console.log(error2);
-          });
+      .catch(async () => {
+        await this.createCart();
       });
   }
 
@@ -68,7 +71,7 @@ export class CartService {
           },
         })
         .execute();
-
+    await this.createCart();
     return this.getCart();
   }
 }

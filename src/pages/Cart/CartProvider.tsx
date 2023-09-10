@@ -29,7 +29,6 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateCart = (newCart: Cart): void => {
-    console.log();
     setCart(newCart);
   };
 
