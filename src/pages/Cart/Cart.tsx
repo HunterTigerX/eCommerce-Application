@@ -16,7 +16,7 @@ export const Cart = () => {
 
   const apiClient = ApiClient.getInstance();
   reloadCart();
-  console.log(cart);
+  // console.log(cart);
   const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
   function successMessage(result: 'success' | 'error', errorMessage: string): void {
     messageApi.open({

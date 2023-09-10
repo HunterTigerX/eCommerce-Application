@@ -43,14 +43,14 @@ export class CartService {
     try {
       const response = await ApiClient.getInstance().requestBuilder.me().activeCart().get().execute();
       this.cart = response.body;
-      console.log('this.cartExisted', this.cart);
+      // console.log('this.cartExisted', this.cart);
       return {
         success: true,
         data: response.body,
       };
     } catch (error: unknown) {
       await this.init();
-      console.log('this.cartDidNotExist', this.cart);
+      // console.log('this.cartDidNotExist', this.cart);
       return {
         success: false,
         message: error instanceof Error ? error.message : 'Failed to retreive cart',
