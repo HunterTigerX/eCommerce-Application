@@ -1,21 +1,21 @@
-import { useCart } from './useCart';
-import { ApiClient } from '@shared/api/core';
-import { Button, InputNumber, Input, Image, message } from 'antd';
-import { EuroCircleOutlined } from '@ant-design/icons';
-import { LineItem } from '@commercetools/platform-sdk';
-import './cart.css';
-import { NavLink } from 'react-router-dom';
 import {
   // ChangeEventHandler,
   KeyboardEventHandler,
   // useState
 } from 'react';
+import { NavLink } from 'react-router-dom';
+import { Button, InputNumber, Input, Image, message } from 'antd';
+import { ApiClient } from '@shared/api/core';
+import { EuroCircleOutlined } from '@ant-design/icons';
+import { LineItem } from '@commercetools/platform-sdk';
+import { useCart } from './useCart';
+import './cart.css';
 
 export const Cart = () => {
   const { cart, updateCart, clearCart } = useCart();
-  const apiClient = ApiClient.getInstance();
 
-  // console.log(cart);
+  const apiClient = ApiClient.getInstance();
+  console.log(cart);
   const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
   function successMessage(result: 'success' | 'error', errorMessage: string): void {
     messageApi.open({

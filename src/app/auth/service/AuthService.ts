@@ -28,6 +28,7 @@ export class AuthService {
           body: {
             ...credentials,
             email: credentials.username,
+            activeCartSignInMode: 'MergeWithExistingCustomerCart',
           },
         })
         .execute();
@@ -79,7 +80,7 @@ export class AuthService {
       localStorage.removeItem('auth');
     }
 
-    this.client.switchToDefaultClient();
-    this.user = null;
+    this.client.switchToAnonFlow();
+    this.user = await this.client.init();
   }
 }

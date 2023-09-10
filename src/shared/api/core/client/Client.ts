@@ -6,7 +6,7 @@ import { ClientOptions } from './ClientOptions';
 const projectKey = import.meta.env.VITE_CTP_PROJECT_KEY;
 const anonID = localStorage.getItem('anon_id');
 const token = localStorage.getItem('auth');
-console.log(anonID, token);
+
 class ApiClient {
   private static instance: ApiClient;
 
@@ -47,13 +47,13 @@ class ApiClient {
       .build();
 
     this.currentClient =
-      !anonID && !token
+      !anonID && !token // Если нет ни анонимного айди ни токена, входим в анонимную сессию
         ? this.anonClient
-        : anonID && token
+        : anonID && token // Если есть анонимный айди и токен, то обновляем анонимный токен
         ? this.refreshAnonClient
-        : !anonID && token
+        : !anonID && token // Если нету анонимного айди, но есть токен, то мы залогинены
         ? this.defaultClient
-        : this.defaultClient;
+        : this.anonClient; // Если разлогинились и у нас только свежий анонимный айди, входим в анонимную сессию
   }
 
   public static getInstance() {
@@ -69,12 +69,6 @@ class ApiClient {
   }
 
   public async init(): Promise<Customer | null> {
-    if (!this.currentClient && anonID && !token) {
-      this.currentClient = this.anonClient;
-    }
-    if (!this.currentClient && anonID && token) {
-      this.currentClient = this.refreshAnonClient;
-    }
     if (token && !anonID) {
       try {
         this.switchToAccessTokenClient();
@@ -129,6 +123,18 @@ class ApiClient {
 
   public switchToDefaultClient(): void {
     this.currentClient = this.defaultClient;
+  }
+
+  public switchToAnonFlow(): void {
+    console.log(anonID);
+    //   if (!anonID) {
+    //   this.currentClient = new ClientBuilder()
+    //   .withProjectKey(projectKey)
+    //   .withAnonymousSessionFlow(this.options.getAnonCredentialOptions())
+    //   .withHttpMiddleware(this.options.getHttpOptions())
+    //   .withLoggerMiddleware()
+    //   .build();
+    //   }
   }
 }
 

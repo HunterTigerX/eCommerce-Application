@@ -10,6 +10,7 @@ interface CartProviderValue {
   getCart: () => Promise<CartResponse>;
   updateCart: (newCart: Cart) => void;
   clearCart: () => Promise<CartResponse>;
+  reloadCart: () => Promise<void>;
 }
 
 const CartContext = createContext<CartProviderValue>({
@@ -17,6 +18,7 @@ const CartContext = createContext<CartProviderValue>({
   getCart: () => Promise.resolve({ success: false, message: '' }),
   updateCart: () => Promise.resolve({ success: false, message: '' }),
   clearCart: () => Promise.resolve({ success: false, message: '' }),
+  reloadCart: () => Promise.resolve(),
 });
 
 const CartProvider = ({ children }: { children: ReactNode }) => {
@@ -38,11 +40,16 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
     return result;
   };
 
+  const reloadCart = async (): Promise<void> => {
+    cartService.init();
+  };
+
   const value: CartProviderValue = {
     cart: cart,
     getCart,
     updateCart,
     clearCart,
+    reloadCart,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
