@@ -3,7 +3,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Badge, Dropdown, MenuProps, Space } from 'antd';
 import { DownOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { useAuth } from '@shared/hooks';
-import { UserAvatar } from '@widgets/UserAvatar';
+import { UserAvatar } from '@widgets/userAvatar';
 import styles from './UserMenu.module.css';
 
 export const UserMenu = ({ onCloseMenu }: { onCloseMenu: () => void }) => {
@@ -70,6 +70,9 @@ export const UserMenu = ({ onCloseMenu }: { onCloseMenu: () => void }) => {
         ) : (
           <>
             <div className={styles.userLogin}>
+              <NavLink className={styles.userLoginLink} to="/cart" onClick={handleLinkClick}>
+                Cart
+              </NavLink>
               <NavLink className={styles.userLoginLink} to="/signin" onClick={handleLinkClick}>
                 Sign In
               </NavLink>

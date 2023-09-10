@@ -8,6 +8,7 @@ import {
   ShoppingOutlined,
   UserAddOutlined,
   UserOutlined,
+  ShoppingCartOutlined,
 } from '@ant-design/icons';
 
 const items: MenuProps['items'] = [
@@ -25,6 +26,11 @@ const items: MenuProps['items'] = [
     label: <Link to="/about">About</Link>,
     key: 'about',
     icon: <ReadOutlined />,
+  },
+  {
+    label: <Link to="/cart">Cart</Link>,
+    key: 'cart',
+    icon: <ShoppingCartOutlined />,
   },
   {
     label: <Link to="/signin">Sign In</Link>,
