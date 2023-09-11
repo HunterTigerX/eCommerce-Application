@@ -30,6 +30,7 @@ const Pagination = ({ count, loading, currentPage, onPageChange }: PaginationPro
         pageSize={20}
         onChange={onPageChange}
         showSizeChanger={false}
+        showQuickJumper={total > 100}
         hideOnSinglePage
       />
     </>
