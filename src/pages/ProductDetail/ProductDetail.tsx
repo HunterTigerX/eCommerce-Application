@@ -228,6 +228,7 @@ const ProductDetail = () => {
             id={(itemData.product && itemData.product?.masterData.current.categories.at(0))?.id || undefined}
             tree={categoriesTree}
             loading={itemData.loading}
+            includeLast={true}
           />
           {addCarousel()}
         </div>
