@@ -77,6 +77,7 @@ class ClientOptions {
       }
       return result;
     }
+
     if (!token) {
       localStorage.setItem('anon_id', generateUniqId());
     }

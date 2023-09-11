@@ -26,6 +26,7 @@ export class CartService {
   }
 
   public async init(): Promise<void> {
+    // Если нет корзины, создаём корзину.
     await ApiClient.getInstance()
       .requestBuilder.me()
       .activeCart()

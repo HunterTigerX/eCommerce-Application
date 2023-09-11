@@ -1,13 +1,15 @@
-import type { Customer, CustomerDraft, Project } from '@commercetools/platform-sdk';
+import type { Customer, CustomerDraft } from '@commercetools/platform-sdk';
 import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
 import { ApiClient } from '@shared/api/core';
+import { CartService } from 'pages/Cart/CartService';
+const cartService = new CartService();
 
 export type AuthResponse = { success: true; data: Customer } | { success: false; message: string };
 
 export class AuthService {
   private client: ApiClient;
 
-  public user: Customer | null | Project = null;
+  public user: Customer | null = null;
 
   constructor() {
     this.client = ApiClient.getInstance();
@@ -18,17 +20,21 @@ export class AuthService {
   }
 
   public async signIn(credentials: UserAuthOptions): Promise<AuthResponse> {
+    await cartService.init();
+    const cartData = cartService.cart;
     try {
       this.client.switchToPasswordClient(credentials);
 
       const response = await this.client.requestBuilder
-        .me()
         .login()
         .post({
           body: {
             ...credentials,
             email: credentials.username,
-            activeCartSignInMode: 'MergeWithExistingCustomerCart',
+            anonymousId: cartData?.anonymousId,
+            anonymousCartId: cartData?.id,
+            anonymousCartSignInMode: 'MergeWithExistingCustomerCart',
+            updateProductData: true,
           },
         })
         .execute();
@@ -78,8 +84,8 @@ export class AuthService {
     if (token) {
       await this.client.revokeToken();
       localStorage.removeItem('auth');
+      await this.client.switchToAnonFlow();
+      this.user = await this.client.init();
     }
-    await this.client.switchToAnonFlow();
-    this.user = await this.client.init();
   }
 }
