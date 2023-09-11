@@ -6,6 +6,8 @@ import Modal from 'react-modal';
 import { EuroCircleOutlined } from '@ant-design/icons';
 import { useProduct } from '@shared/api/products';
 import './carousel.css';
+import { useCategories } from '@shared/api/categories';
+import { Breadcrumbs } from '@features/Breadcrumbs';
 
 interface IDimentions {
   w: number;
@@ -30,6 +32,7 @@ const ProductDetail = () => {
   const [carousel1Index, setCarousel1Index] = useState(0);
   const carouselRefModal = useRef<CarouselRef>(null);
   const carouselRefSmall = useRef<CarouselRef>(null);
+  const { categoriesTree } = useCategories();
 
   useEffect(() => {}, [carousel1Index]);
 
@@ -215,7 +218,22 @@ const ProductDetail = () => {
     }
   }
 
-  return <>{itemData.error ? <Navigate to={'/catalog'} replace={true} /> : <div>{addCarousel()}</div>}</>;
+  return (
+    <>
+      {itemData.error ? (
+        <Navigate to={'/catalog'} replace={true} />
+      ) : (
+        <div>
+          <Breadcrumbs
+            id={(itemData.product && itemData.product?.masterData.current.categories.at(0))?.id || undefined}
+            tree={categoriesTree}
+            loading={itemData.loading}
+          />
+          {addCarousel()}
+        </div>
+      )}
+    </>
+  );
 };
 
 export { ProductDetail };
