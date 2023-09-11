@@ -25,7 +25,7 @@ interface IAttributesArr {
 }
 
 export const ProductDetail = () => {
-  const { cart, updateCart } = useCart();
+  const { cart, initCart } = useCart();
   const { productId } = useParams<{ productId: string }>();
   const itemData = useProduct(productId);
   const [isBigPicModalOpened, bigPicModalIsOpen] = useState(false);
@@ -95,8 +95,8 @@ export const ProductDetail = () => {
           },
         })
         .execute()
-        .then((response) => {
-          updateCart(response.body);
+        .then(() => {
+          initCart();
         })
         .catch((error) => {
           console.error(error);

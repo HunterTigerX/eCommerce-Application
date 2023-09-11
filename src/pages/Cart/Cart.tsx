@@ -12,11 +12,11 @@ import { useCart } from './useCart';
 import './cart.css';
 
 export const Cart = () => {
-  const { cart, updateCart, clearCart, reloadCart } = useCart();
+  const { cart, clearCart, initCart } = useCart();
 
   const apiClient = ApiClient.getInstance();
-  reloadCart();
-  // console.log(cart);
+
+  // console.log('cart', cart);
   const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
   function successMessage(result: 'success' | 'error', errorMessage: string): void {
     messageApi.open({
@@ -61,9 +61,8 @@ export const Cart = () => {
           },
         })
         .execute()
-        .then((response) => {
-          // console.log(response);
-          updateCart(response.body);
+        .then(() => {
+          initCart();
         })
         .catch((error) => {
           successMessage('error', error.message);
@@ -95,8 +94,8 @@ export const Cart = () => {
           },
         })
         .execute()
-        .then((response) => {
-          updateCart(response.body);
+        .then(() => {
+          initCart();
         })
         .catch((error) => {
           successMessage('error', error.message);
@@ -279,7 +278,7 @@ export const Cart = () => {
         {cart ? fillCartWithGoods(cart.lineItems) : null}
         {cart ? fillTotalArray() : null}
       </div>
-      {cart ? (cart.lineItems.length === 0 ? returnEmptyCart() : null) : null}
+      {cart ? (cart.lineItems.length === 0 ? returnEmptyCart() : null) : returnEmptyCart()}
     </>
   );
 };

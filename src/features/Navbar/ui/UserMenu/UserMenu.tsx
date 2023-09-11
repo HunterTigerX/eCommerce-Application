@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Badge, Dropdown, MenuProps, Space } from 'antd';
+import { useCart } from 'pages/Cart/useCart';
 import { DownOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { useAuth } from '@shared/hooks';
 import { UserAvatar } from '@widgets/userAvatar';
@@ -10,6 +11,7 @@ export const UserMenu = ({ onCloseMenu }: { onCloseMenu: () => void }) => {
   const { user, signOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const { initCart } = useCart();
 
   const handleLinkClick = () => {
     onCloseMenu();
@@ -26,6 +28,7 @@ export const UserMenu = ({ onCloseMenu }: { onCloseMenu: () => void }) => {
       navigate('/', {
         state: { bye: username },
       });
+      initCart();
     });
     handleLinkClick();
   };

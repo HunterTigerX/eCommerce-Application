@@ -8,59 +8,32 @@ export class CartService {
 
   public AllCarts: Cart | undefined;
 
-  private async createCart(): Promise<string> {
-    const result = await ApiClient.getInstance()
-      .requestBuilder.me()
-      .carts()
-      .post({
-        body: {
-          currency: 'EUR',
-        },
-      })
-      .execute()
-      .then((response) => {
-        this.cart = response.body;
-        return 'success';
-      });
-    return result === 'success' ? 'success' : 'error';
-  }
-
-  public async init(): Promise<void> {
+  public async initCart(): Promise<Cart | undefined> {
     // Если нет корзины, создаём корзину.
-    await ApiClient.getInstance()
-      .requestBuilder.me()
-      .activeCart()
-      .get()
-      .execute()
-      .then((response) => {
-        this.cart = response.body;
-      })
-      .catch(async () => {
-        await this.createCart();
-      });
-  }
-
-  public async getCart(): Promise<CartResponse> {
     try {
       const response = await ApiClient.getInstance().requestBuilder.me().activeCart().get().execute();
       this.cart = response.body;
-      // console.log('this.cartExisted', this.cart);
-      return {
-        success: true,
-        data: response.body,
-      };
+      return this.cart;
     } catch (error: unknown) {
-      await this.init();
-      // console.log('this.cartDidNotExist', this.cart);
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Failed to retreive cart',
-      };
+      await ApiClient.getInstance()
+        .requestBuilder.me()
+        .carts()
+        .post({
+          body: {
+            currency: 'EUR',
+          },
+        })
+        .execute()
+        .then((response) => {
+          this.cart = response.body;
+          return this.cart;
+        });
+      return this.cart;
     }
   }
 
-  public async clearCart(): Promise<CartResponse> {
-    await this.init();
+  public async clearCart(): Promise<void> {
+    await this.initCart();
     if (this.cart)
       await ApiClient.getInstance()
         .requestBuilder.me()
@@ -74,7 +47,5 @@ export class CartService {
           },
         })
         .execute();
-    await this.createCart();
-    return this.getCart();
   }
 }

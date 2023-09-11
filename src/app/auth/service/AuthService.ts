@@ -20,7 +20,7 @@ export class AuthService {
   }
 
   public async signIn(credentials: UserAuthOptions): Promise<AuthResponse> {
-    await cartService.init();
+    await cartService.initCart();
     const cartData = cartService.cart;
     try {
       this.client.switchToPasswordClient(credentials);

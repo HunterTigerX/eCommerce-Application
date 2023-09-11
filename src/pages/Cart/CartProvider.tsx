@@ -1,26 +1,22 @@
 import { createContext, type ReactNode, useState } from 'react';
 import type { Cart } from '@commercetools/platform-sdk';
-import { CartService, type CartResponse } from './CartService';
+import { CartService } from './CartService';
 
 const cartService = new CartService();
-await cartService.init();
+await cartService.initCart();
 
 interface CartProviderValue {
   cart: Cart | undefined;
-  getCart: () => Promise<CartResponse>;
-  updateCart: (newCart: Cart) => void;
-  clearCart: () => Promise<CartResponse>;
-  reloadCart: () => Promise<void>;
+  initCart: () => Promise<void>;
+  clearCart: () => Promise<void>;
   has: (id: string) => boolean;
   count: () => number;
 }
 
 const CartContext = createContext<CartProviderValue>({
   cart: cartService.cart,
-  getCart: () => Promise.resolve({ success: false, message: '' }),
-  updateCart: () => Promise.resolve({ success: false, message: '' }),
-  clearCart: () => Promise.resolve({ success: false, message: '' }),
-  reloadCart: () => Promise.resolve(),
+  initCart: () => Promise.resolve(),
+  clearCart: () => Promise.resolve(),
   has: () => false,
   count: () => 0,
 });
@@ -28,24 +24,13 @@ const CartContext = createContext<CartProviderValue>({
 const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<Cart | undefined>(cartService.cart);
 
-  const getCart = async (): Promise<CartResponse> => {
-    const result: CartResponse = await cartService.getCart();
-    if (result.success) setCart(result.data);
-    return result;
+  const initCart = async (): Promise<void> => {
+    const testCart = await cartService.initCart();
+    setCart(testCart);
   };
 
-  const updateCart = (newCart: Cart): void => {
-    setCart(newCart);
-  };
-
-  const clearCart = async (): Promise<CartResponse> => {
-    const result: CartResponse = await cartService.clearCart();
-    if (result.success) setCart(result.data);
-    return result;
-  };
-
-  const reloadCart = async (): Promise<void> => {
-    cartService.init();
+  const clearCart = async (): Promise<void> => {
+    await cartService.clearCart();
   };
 
   const has = (id: string) => {
@@ -68,10 +53,9 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const value: CartProviderValue = {
     cart: cart,
-    getCart,
-    updateCart,
+    initCart,
+
     clearCart,
-    reloadCart,
     has,
     count,
   };
