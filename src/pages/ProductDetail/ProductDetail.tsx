@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Carousel } from 'antd';
 import { CarouselRef } from 'antd/es/carousel';
+import { useCart } from 'pages/Cart/useCart';
 import { useParams, Navigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { EuroCircleOutlined } from '@ant-design/icons';
 import { useProduct } from '@shared/api/products';
+import { ApiClient } from '@shared/api/core';
 import './carousel.css';
-// import { router } from '@app/router';
-
 interface IDimentions {
   w: number;
   h: number;
@@ -25,13 +25,14 @@ interface IAttributesArr {
 }
 
 export const ProductDetail = () => {
+  const { cart, initCart } = useCart();
   const { productId } = useParams<{ productId: string }>();
   const itemData = useProduct(productId);
   const [isBigPicModalOpened, bigPicModalIsOpen] = useState(false);
   const [carousel1Index, setCarousel1Index] = useState(0);
   const carouselRefModal = useRef<CarouselRef>(null);
   const carouselRefSmall = useRef<CarouselRef>(null);
-  const [isProductInCard, setProductInCard] = useState(false); //todo
+  const apiClient = ApiClient.getInstance();
 
   useEffect(() => {}, [carousel1Index]);
 
@@ -72,6 +73,35 @@ export const ProductDetail = () => {
   }
   function sliderChangedPage(currentSlide: number) {
     setCarousel1Index(currentSlide);
+  }
+
+  function addToCart() {
+    if (cart) {
+      apiClient.requestBuilder
+        .me()
+        .carts()
+        .withId({
+          ID: cart.id,
+        })
+        .post({
+          body: {
+            version: cart.version,
+            actions: [
+              {
+                action: 'addLineItem',
+                productId,
+              },
+            ],
+          },
+        })
+        .execute()
+        .then(() => {
+          initCart();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
   }
 
   function addCarousel() {
@@ -172,16 +202,6 @@ export const ProductDetail = () => {
         </Modal>
       );
 
-      const addProductCart = () => {
-        // console.log(`add to cart: ${id}`);
-        //Todo api;
-        setProductInCard(true);
-      };
-
-      const removeProductFromCart = () => {
-        //Todo api;
-        setProductInCard(false);
-      };
       return (
         <>
           <div className="product-container">
@@ -200,16 +220,9 @@ export const ProductDetail = () => {
                   Only for {prodPrice} <EuroCircleOutlined />
                 </div>
               ) : null}
-
-              {isProductInCard ? (
-                <Button type="primary" danger className="someButtons" onClick={removeProductFromCart}>
-                  Remove from Cart
-                </Button>
-              ) : (
-                <Button type="primary" className="someButtons" onClick={addProductCart}>
-                  Add to cart
-                </Button>
-              )}
+              <Button type="primary" className="someButtons" onClick={addToCart}>
+                Add to cart
+              </Button>
             </div>
             <Carousel
               ref={carouselRefSmall}
