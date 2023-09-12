@@ -31,6 +31,7 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const clearCart = async (): Promise<void> => {
     await cartService.clearCart();
+    initCart();
   };
 
   const has = (id: string) => {
@@ -54,7 +55,6 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
   const value: CartProviderValue = {
     cart: cart,
     initCart,
-
     clearCart,
     has,
     count,
