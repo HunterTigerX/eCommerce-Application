@@ -329,7 +329,6 @@ export const Cart = () => {
                           <div>
                             Total discounts are{' '}
                             {(
-                              itemPrice * obj.quantity -
                               shopDiscount * obj.quantity +
                               promocodeDiscount * obj.discountedPricePerQuantity[0].quantity
                             ).toFixed(2)}{' '}
