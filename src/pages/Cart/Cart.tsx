@@ -1,6 +1,6 @@
 import { ChangeEventHandler, KeyboardEventHandler, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Button, InputNumber, Input, Image, message, Tooltip } from 'antd';
+import { Button, InputNumber, Input, Image, message, Tooltip, Popconfirm } from 'antd';
 import { ApiClient } from '@shared/api/core';
 import { EuroCircleOutlined, PercentageOutlined, SafetyOutlined } from '@ant-design/icons';
 import { LineItem, MyCartUpdateAction } from '@commercetools/platform-sdk';
@@ -380,7 +380,14 @@ export const Cart = () => {
         if (i === arrayOfGoods.length - 1) {
           productsArray.push(
             <div className="clearCart-button-wrapper" key="removeAllGoods">
-              <Button onClick={clearCart}>Clear all cart</Button>
+              <Popconfirm
+                title="Are you sure you want to remove all items from the cart?"
+                onConfirm={clearCart}
+                okText="Yes"
+                cancelText="No"
+              >
+                <Button>Clear all cart</Button>
+              </Popconfirm>
             </div>
           );
         }
