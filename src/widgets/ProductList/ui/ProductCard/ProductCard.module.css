@@ -20,10 +20,28 @@
 
 .product-img {
   height: 200px;
+  position: relative;
 }
+
 .product-img img {
   max-width: 100%;
   max-height: 100%;
+  transition: opacity 0.25s ease-in-out;
+}
+
+.product-img img.hidden {
+  opacity: 0;
+}
+
+.product-img img.visible {
+  opacity: 1;
+}
+
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .product-info {

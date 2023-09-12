@@ -1,6 +1,8 @@
+import { useState } from 'react';
+import { Spin } from 'antd';
 import { EuroCircleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import style from './ProductCard.module.css';
+import styles from './ProductCard.module.css';
 
 interface ProductCardMap {
   id: string;
@@ -13,18 +15,26 @@ interface ProductCardMap {
 
 const ProductCard = ({ product }: { product: ProductCardMap }) => {
   const { id, title, description, urlImg, price, discount } = product;
+  const [loading, setImgLoading] = useState(true);
 
   return (
-    <Link to={`/product/${id}`} className={style.productCard}>
-      <div className={style.productImg}>
-        <img src={urlImg} alt={title} loading="lazy" />
+    <Link to={`/product/${id}`} className={styles.productCard}>
+      <div className={styles.productImg}>
+        {loading && <Spin size="large" className={styles.loader} />}
+        <img
+          className={loading ? styles.hidden : styles.visible}
+          src={urlImg}
+          alt={title}
+          loading="lazy"
+          onLoad={() => setImgLoading(false)}
+        />
       </div>
-      <div className={style.productInfo}>
+      <div className={styles.productInfo}>
         <h4>{title}</h4>
-        {description && <p className={style.productDescription}>{description}</p>}
+        {description && <p className={styles.productDescription}>{description}</p>}
 
         {price && (
-          <div className={style.productPrice}>
+          <div className={styles.productPrice}>
             {discount ? (
               <>
                 <small>
