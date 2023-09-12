@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Badge, Button, Checkbox, Drawer, Select, Slider } from 'antd';
+import { Badge, Button, Checkbox, Drawer, InputNumber, Select, Slider } from 'antd';
 import { ProductProjectionsActionTypes } from '@shared/api/products';
 import Title from 'antd/es/typography/Title';
 import { FilterOutlined } from '@ant-design/icons';
@@ -51,6 +51,8 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
   const [filterState, setFilterState] = useState<FilterFields>(initialValue);
   const [selectedSort, setSelectedSort] = useState('default');
   const [countFilters, setCountFilters] = useState(0);
+  const [countFilterOne, setCountFilterOne] = useState(0);
+  const [countFilterTwo, setCountFilterTwo] = useState(9999);
 
   const disabled =
     !filterState.color.length &&
@@ -75,10 +77,53 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
   };
 
   const handlePriceChange = (value: [number, number]) => {
-    setFilterState((prev) => ({
-      ...prev,
-      priceRange: value,
-    }));
+    if (!Number.isNaN(value[0]) && !Number.isNaN(value[1])) {
+      setCountFilterOne(Math.min(...value));
+      setCountFilterTwo(Math.max(...value));
+
+      setFilterState((prev) => ({
+        ...prev,
+        priceRange: value,
+      }));
+    }
+  };
+
+  const sliderRangeInputOne = (event: EventTarget & HTMLInputElement) => {
+    let number = +event.value;
+    if (!Number.isNaN(number)) {
+      if (number > 9999) {
+        number = 9999;
+      } else if (number < 0) {
+        number = 0;
+      }
+      if (number > countFilterTwo) {
+        setCountFilterOne(countFilterTwo);
+        setCountFilterTwo(number);
+        handlePriceChange([countFilterTwo, number]);
+      } else {
+        setCountFilterOne(number);
+        handlePriceChange([number, countFilterTwo]);
+      }
+    }
+  };
+
+  const sliderRangeInputTwo = (event: EventTarget & HTMLInputElement) => {
+    let number = +event.value;
+    if (!Number.isNaN(number)) {
+      if (number > 9999) {
+        number = 9999;
+      } else if (number < 0) {
+        number = 0;
+      }
+      if (number < countFilterOne) {
+        setCountFilterTwo(countFilterOne);
+        setCountFilterOne(number);
+        handlePriceChange([number, countFilterOne]);
+      } else {
+        setCountFilterTwo(number);
+        handlePriceChange([countFilterOne, number]);
+      }
+    }
   };
 
   const onColorList = (list: CheckboxValueType[]) => {
@@ -214,6 +259,22 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
         <Drawer title="Filter" placement="right" onClose={onClose} open={isOpen}>
           <div className={styles.filterSection}>
             <Title level={4}>Price</Title>
+            <div>
+              <div className="range-input">
+                <InputNumber
+                  min={0}
+                  max={9999}
+                  value={countFilterOne}
+                  onBlur={(event) => sliderRangeInputOne(event.target)}
+                />
+                <InputNumber
+                  min={0}
+                  max={9999}
+                  value={countFilterTwo}
+                  onBlur={(event) => sliderRangeInputTwo(event.target)}
+                />
+              </div>
+            </div>
             <Slider
               range
               marks={{ 0: '€0', 9999: '€9999' }}
