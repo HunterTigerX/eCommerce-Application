@@ -12,7 +12,7 @@ export const Cart = () => {
 
   const apiClient = ApiClient.getInstance();
 
-  console.log('cart', cart);
+  // console.log('cart', cart);
   const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
   function successMessage(result: 'success' | 'error', errorMessage: string): void {
     messageApi.open({
@@ -78,14 +78,12 @@ export const Cart = () => {
             },
           })
           .execute()
-          .then((response) => {
-            console.log('response', response);
+          .then(() => {
             initCart();
             successMessage('success', 'Promocode applied successfully');
           })
           .catch((error) => {
             successMessage('error', error);
-            console.error();
           });
       } else {
         // Если промокод не валиден
@@ -240,7 +238,7 @@ export const Cart = () => {
         const haveShopDiscount = obj.price.discounted;
         const havePromocode = obj.discountedPricePerQuantity.length !== 0;
         const itemPrice = obj.price.value.centAmount / 100;
-        const shopDiscount = haveShopDiscount ? haveShopDiscount.value.centAmount / 100 : 0;
+        const shopDiscount = haveShopDiscount ? itemPrice - haveShopDiscount.value.centAmount / 100 : 0;
         const promocodeDiscount = havePromocode
           ? obj.discountedPricePerQuantity[0].discountedPrice.includedDiscounts[0].discountedAmount.centAmount / 100
           : 0;
@@ -268,8 +266,7 @@ export const Cart = () => {
                         </div>
                         {haveShopDiscount ? (
                           <div>
-                            <PercentageOutlined /> Shop discount is {(itemPrice - shopDiscount).toFixed(2)}{' '}
-                            <EuroCircleOutlined />
+                            <PercentageOutlined /> Shop discount is {shopDiscount.toFixed(2)} <EuroCircleOutlined />
                           </div>
                         ) : null}
                         {havePromocode ? (
@@ -280,8 +277,7 @@ export const Cart = () => {
                         ) : null}
                         {haveShopDiscount && havePromocode ? (
                           <div>
-                            Total discounts are {(itemPrice - shopDiscount + promocodeDiscount).toFixed(2)}{' '}
-                            <EuroCircleOutlined />
+                            Total discounts are {(shopDiscount + promocodeDiscount).toFixed(2)} <EuroCircleOutlined />
                           </div>
                         ) : null}
                         {haveShopDiscount || havePromocode ? (
@@ -304,8 +300,7 @@ export const Cart = () => {
                               <span className="outlined">{itemPrice.toFixed(2)}</span>
                               <span>
                                 {' '}
-                                {(itemPrice - (itemPrice - shopDiscount) - promocodeDiscount).toFixed(2)}{' '}
-                                <EuroCircleOutlined />
+                                {(itemPrice - shopDiscount - promocodeDiscount).toFixed(2)} <EuroCircleOutlined />
                               </span>
                             </div>
                           ) : (
