@@ -140,6 +140,8 @@ export const SingUpForm = () => {
               hi: result.data.firstName,
             },
           });
+          localStorage.removeItem('anon_id');
+          localStorage.removeItem('anon_refresh_token');
           initCart();
         }
       })

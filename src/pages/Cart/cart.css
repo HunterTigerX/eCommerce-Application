@@ -87,7 +87,6 @@
 .line-cart-summary {
     border-color: rgba(0, 0, 0, 0.514);
     width: 100%;
-    height: 2px;
 }
 
 .cart-checkout {
@@ -107,8 +106,9 @@
 
 .card-price {
     display: flex;
-    align-self: center;
-    align-items: center;
+    flex-direction: column;
+    /* align-self: center;
+    align-items: center; */
     gap: 5px;
 }
 
@@ -155,4 +155,43 @@
         gap: 5px;
     }
 
+}
+
+
+.discountDescription {
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    list-style: none;
+}
+
+.prices-block {
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.boldText {
+    font-weight: 900;
+}
+
+.navToCatalog {
+    color: black;
+}
+
+.navToCatalog:hover {
+    cursor: pointer;
+    color: rgb(107, 107, 107);
+}
+
+.outlined {
+    text-decoration: line-through;
+}
+
+.discountDescriptionMain {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin-top: 30px;
 }

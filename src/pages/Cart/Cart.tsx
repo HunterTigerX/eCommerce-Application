@@ -1,13 +1,9 @@
-import {
-  // ChangeEventHandler,
-  KeyboardEventHandler,
-  // useState
-} from 'react';
+import { ChangeEventHandler, KeyboardEventHandler, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Button, InputNumber, Input, Image, message } from 'antd';
+import { Button, InputNumber, Input, Image, message, Tooltip } from 'antd';
 import { ApiClient } from '@shared/api/core';
-import { EuroCircleOutlined } from '@ant-design/icons';
-import { LineItem } from '@commercetools/platform-sdk';
+import { EuroCircleOutlined, PercentageOutlined, SafetyOutlined } from '@ant-design/icons';
+import { LineItem, MyCartUpdateAction } from '@commercetools/platform-sdk';
 import { useCart } from './useCart';
 import './cart.css';
 
@@ -16,7 +12,7 @@ export const Cart = () => {
 
   const apiClient = ApiClient.getInstance();
 
-  // console.log('cart', cart);
+  console.log('cart', cart);
   const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
   function successMessage(result: 'success' | 'error', errorMessage: string): void {
     messageApi.open({
@@ -26,81 +22,172 @@ export const Cart = () => {
     });
   }
 
-  // const [promocode, setPromocode] = useState('');
-  // const handleInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-  //   if (event.target) {
-  //     setPromocode(event.target.value);
-  //   }
-  // };
-  // Phone promocode
-  // 69.53
+  function tooltipText() {
+    return "It won't work ;)";
+  }
 
-  function applyPromocode() {
-    // console.log(promocode);
+  const [promocode, setPromocode] = useState('');
+  const handleInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    if (event.target) {
+      setPromocode(event.target.value);
+    }
+  };
+
+  async function applyPromocode() {
     if (cart) {
-      apiClient.requestBuilder
-        .me()
-        .carts()
-        .withId({
-          ID: cart.id,
-        })
-        .post({
-          body: {
-            version: cart.version,
-            actions: [
-              {
-                action: 'addDiscountCode',
-                // code: promocode,
-                code: 'Phone discount',
-              },
-              {
-                action: 'recalculate',
-                updateProductData: true,
-              },
-            ],
-          },
-        })
+      // Применённые промокоды
+      const appliedPromocodes = cart.discountCodes.map((code) => {
+        return code.discountCode.id;
+      });
+
+      // Все рабочие промокоды
+      const listOfPromodes: string[] = [];
+
+      // Промокоды, которые ещё не использованы
+      const listOfValidPromocodes = await apiClient.requestBuilder
+        .discountCodes()
+        .get()
         .execute()
-        .then(() => {
-          initCart();
-        })
-        .catch((error) => {
-          successMessage('error', error.message);
-          console.error(error);
+        .then((response) => {
+          return response.body.results.map((promocodesList) => {
+            listOfPromodes.push(promocodesList.code);
+            if (!appliedPromocodes.includes(promocodesList.id)) {
+              return promocodesList.code;
+            }
+          });
         });
+
+      // Если не применяли промокоды и пользователь вписал валидный промокод
+      if (listOfValidPromocodes.includes(promocode) && appliedPromocodes.length === 0) {
+        apiClient.requestBuilder
+          .me()
+          .carts()
+          .withId({
+            ID: cart.id,
+          })
+          .post({
+            body: {
+              version: cart.version,
+              actions: [
+                {
+                  action: 'addDiscountCode',
+                  // codes: promocode, 5EUROFF
+                  code: promocode,
+                },
+              ],
+            },
+          })
+          .execute()
+          .then((response) => {
+            console.log('response', response);
+            initCart();
+            successMessage('success', 'Promocode applied successfully');
+          })
+          .catch((error) => {
+            successMessage('error', error);
+            console.error();
+          });
+      } else {
+        // Если промокод не валиден
+        if (!listOfPromodes.includes(promocode)) {
+          successMessage('error', 'This is NOT a valid promocode');
+        }
+        // Если промокод валиден, но у нас уже применён другой промокод
+        else if (appliedPromocodes.length > 0 && listOfValidPromocodes.includes(promocode)) {
+          successMessage('error', 'You already applied another promocode. Remove it first');
+        }
+        // Если введённый промокод пытаются использовать повторно
+        else if (listOfPromodes.includes(promocode)) {
+          successMessage('error', 'This promocode was already applied');
+        }
+      }
+    }
+  }
+
+  function removePromocode() {
+    if (cart) {
+      if (cart.discountCodes.length !== 0) {
+        const actionsArray: MyCartUpdateAction[] = [];
+        cart.discountCodes.map((code) => {
+          actionsArray.push({
+            action: 'removeDiscountCode',
+            discountCode: {
+              typeId: 'discount-code',
+              id: code.discountCode.id,
+            },
+          });
+        });
+
+        apiClient.requestBuilder
+          .me()
+          .carts()
+          .withId({
+            ID: cart.id,
+          })
+          .post({
+            body: {
+              version: cart.version,
+              actions: actionsArray,
+            },
+          })
+          .execute()
+          .then(() => {
+            initCart();
+            successMessage('success', 'Promocode removed successfully');
+          })
+          .catch((error) => {
+            successMessage('error', error);
+            console.error();
+          });
+      } else {
+        successMessage('error', 'There are no cart promocodes applied');
+      }
     }
   }
 
   // lineItems отвечает за количество предметов в корзине
   // key в body - Уникальный идентификатор корзины
   function updateItemInCart(newCount: string, itemId: string) {
-    if (cart) {
-      apiClient.requestBuilder
-        .me()
-        .carts()
-        .withId({
-          ID: cart.id,
-        })
-        .post({
-          body: {
-            version: cart.version,
-            actions: [
-              {
-                action: 'changeLineItemQuantity',
-                lineItemId: itemId,
-                quantity: Number(newCount),
-              },
-            ],
-          },
-        })
-        .execute()
-        .then(() => {
-          initCart();
-        })
-        .catch((error) => {
-          successMessage('error', error.message);
-          console.error(error);
-        });
+    const isNumber = +newCount;
+    if (Number.isNaN(isNumber)) {
+      successMessage('error', `Please provide correct input. Your input is not a number`);
+    } else {
+      if (isNumber > 999) {
+        newCount = String(999);
+        successMessage('error', `Mail us for wholesale purchases`);
+      }
+      if (cart) {
+        apiClient.requestBuilder
+          .me()
+          .carts()
+          .withId({
+            ID: cart.id,
+          })
+          .post({
+            body: {
+              version: cart.version,
+              actions: [
+                {
+                  action: 'changeLineItemQuantity',
+                  lineItemId: itemId,
+                  quantity: Number(newCount),
+                },
+                {
+                  action: 'recalculate',
+                  updateProductData: true,
+                },
+              ],
+            },
+          })
+          .execute()
+          .then(() => {
+            initCart();
+          })
+          .catch((error) => {
+            successMessage('error', error.message);
+            console.error(error);
+          });
+      }
     }
   }
 
@@ -149,6 +236,15 @@ export const Cart = () => {
         const image = obj.variant.images ? obj.variant.images[0].url : '';
         const attr1 = obj.variant.attributes ? obj.variant.attributes[0].value : null;
         const atrr2 = obj.variant.attributes ? obj.variant.attributes[1].value : null;
+        const moreThanOneItem = obj.quantity > 1;
+        const haveShopDiscount = obj.price.discounted;
+        const havePromocode = obj.discountedPricePerQuantity.length !== 0;
+        const itemPrice = obj.price.value.centAmount / 100;
+        const shopDiscount = haveShopDiscount ? haveShopDiscount.value.centAmount / 100 : 0;
+        const promocodeDiscount = havePromocode
+          ? obj.discountedPricePerQuantity[0].discountedPrice.includedDiscounts[0].discountedAmount.centAmount / 100
+          : 0;
+
         if (obj) {
           productsArray.push(
             <div className="cart-item-block" key={`card${i}`}>
@@ -163,23 +259,105 @@ export const Cart = () => {
                   {attr1} | {atrr2}
                 </div>
                 <div className="card-price">
-                  {obj.price.discounted ? (
-                    <>
-                      <span className="strike">{obj.price.value.centAmount / 100}</span>
-                      <span> {obj.price.discounted.value.centAmount / 100}</span> <EuroCircleOutlined />
-                    </>
-                  ) : (
-                    <>
-                      <span>{obj.price.value.centAmount / 100}</span>
-                      <EuroCircleOutlined />
-                    </>
-                  )}
+                  <div className="prices-block">
+                    {!moreThanOneItem ? (
+                      // Если один товар
+                      <>
+                        <div>
+                          Single item price: {itemPrice.toFixed(2)} <EuroCircleOutlined />
+                        </div>
+                        {haveShopDiscount ? (
+                          <div>
+                            <PercentageOutlined /> Shop discount is {(itemPrice - shopDiscount).toFixed(2)}{' '}
+                            <EuroCircleOutlined />
+                          </div>
+                        ) : null}
+                        {havePromocode ? (
+                          <div>
+                            <PercentageOutlined /> Promocode discount is {promocodeDiscount.toFixed(2)}{' '}
+                            <EuroCircleOutlined />
+                          </div>
+                        ) : null}
+                        {haveShopDiscount && havePromocode ? (
+                          <div>
+                            Total discounts are {(itemPrice - shopDiscount + promocodeDiscount).toFixed(2)}{' '}
+                            <EuroCircleOutlined />
+                          </div>
+                        ) : null}
+                        {haveShopDiscount || havePromocode ? (
+                          <div className="boldText">
+                            Total price for this item is <span className="outlined">{itemPrice.toFixed(2)}</span>{' '}
+                            {(obj.totalPrice.centAmount / 100).toFixed(2)} <EuroCircleOutlined />
+                          </div>
+                        ) : null}
+                      </>
+                    ) : (
+                      // Если более одного товара
+                      <>
+                        <div>
+                          Single item price: {itemPrice.toFixed(2)} <EuroCircleOutlined />
+                        </div>
+                        <div>
+                          Single item price with discounts:{' '}
+                          {havePromocode || haveShopDiscount ? (
+                            <div>
+                              <span className="outlined">{itemPrice.toFixed(2)}</span>
+                              <span>
+                                {' '}
+                                {(itemPrice - (itemPrice - shopDiscount) - promocodeDiscount).toFixed(2)}{' '}
+                                <EuroCircleOutlined />
+                              </span>
+                            </div>
+                          ) : (
+                            <div>
+                              {itemPrice.toFixed(2)} <EuroCircleOutlined />
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          Total price without discounts: {(itemPrice * obj.quantity).toFixed(2)} <EuroCircleOutlined />
+                        </div>
+                        {haveShopDiscount ? (
+                          <div>
+                            <PercentageOutlined /> Total shop discount is{' '}
+                            {(itemPrice * obj.quantity - shopDiscount * obj.quantity).toFixed(2)} <EuroCircleOutlined />{' '}
+                          </div>
+                        ) : null}
+                        {havePromocode ? (
+                          <div>
+                            <PercentageOutlined /> Total promocode discount is{' '}
+                            {(promocodeDiscount * obj.discountedPricePerQuantity[0].quantity).toFixed(2)}{' '}
+                            <EuroCircleOutlined />
+                          </div>
+                        ) : null}
+                        {havePromocode && haveShopDiscount ? (
+                          <div>
+                            Total discounts are{' '}
+                            {(
+                              itemPrice * obj.quantity -
+                              shopDiscount * obj.quantity +
+                              promocodeDiscount * obj.discountedPricePerQuantity[0].quantity
+                            ).toFixed(2)}{' '}
+                            <EuroCircleOutlined />
+                          </div>
+                        ) : null}
+                        {havePromocode || haveShopDiscount ? (
+                          <div className="boldText">
+                            Total price for all items:{' '}
+                            <span className="outlined">{(itemPrice * obj.quantity).toFixed(2)}</span>{' '}
+                            {(obj.totalPrice.centAmount / 100).toFixed(2)} <EuroCircleOutlined />
+                          </div>
+                        ) : null}
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="card-items-count">
                 <InputNumber
                   id={obj.id}
                   min={1}
+                  max={999}
                   value={obj.quantity}
                   controls={false}
                   onFocus={(event) => inputNumberFocused(event.target)}
@@ -208,8 +386,6 @@ export const Cart = () => {
         }
       }
     }
-
-    // <div className="cart-items-list">{fillCartWithGoods(cart.lineItems)}
     return productsArray.length > 0 ? <div className="cart-items-list">{productsArray}</div> : null;
   }
 
@@ -235,12 +411,27 @@ export const Cart = () => {
               <div className="promocode-wrapper">
                 <Input
                   placeholder="Enter promocode"
-                  value="Phone promocode"
                   className="promocode-input"
-                  // onChange={handleInputChange}
+                  onChange={handleInputChange}
+                  onPressEnter={applyPromocode}
                 ></Input>
                 <Button onClick={applyPromocode}>Apply</Button>
+
+                <Button onClick={removePromocode}>Remove</Button>
               </div>
+              {cart.discountCodes.length !== 0 ? (
+                <div>
+                  <SafetyOutlined /> You applied a promocode <SafetyOutlined />
+                </div>
+              ) : null}
+              <ul className="discountDescription">
+                <li>
+                  P.S. If the price already has a shop discount, promocode discount applies to the discounted price, not
+                  the original.
+                </li>
+                <li>5EUROFF - 5 EUR discount if a price of one item is more than 5 EUR</li>
+                <li>25%OFF - 25% discount to all products in the cart</li>
+              </ul>
               <hr className="line-cart-summary" />
               <div className="cart-summary-block">
                 <span>Discounts</span>
@@ -249,11 +440,17 @@ export const Cart = () => {
               <hr className="line-cart-summary" />
               <div className="cart-summary-block">
                 <span>Order total</span>
-                <span>{cart.totalPrice.centAmount / 100} EUR</span>
+                <span>{(cart.totalPrice.centAmount / 100).toFixed(2)} EUR</span>
               </div>
-              <Button type="primary" className="cart-checkout">
-                Checkout
-              </Button>
+              <Tooltip placement="bottom" title={tooltipText}>
+                <Button type="primary" className="cart-checkout">
+                  Checkout
+                </Button>
+              </Tooltip>
+              <div className="discountDescription">
+                Чтобы не было 1000000 запросов, изменение количества продуктов происходит после потери фокуса или после
+                нажатия на Enter
+              </div>
             </div>
           </div>
         </>
@@ -265,7 +462,9 @@ export const Cart = () => {
     return (
       <div className="emptyCart">
         Nothing here yet. Please visit our<div>&nbsp;</div>
-        <NavLink to="/catalog">Catalogue</NavLink>
+        <NavLink className="boldText navToCatalog" to="/catalog">
+          Catalog
+        </NavLink>
       </div>
     );
   }

@@ -60,7 +60,6 @@ class ApiClient {
     if (!ApiClient.instance) {
       ApiClient.instance = new ApiClient();
     }
-
     return ApiClient.instance;
   }
 
