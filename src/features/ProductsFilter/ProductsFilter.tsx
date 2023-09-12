@@ -107,6 +107,8 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
     }
   };
 
+  const fixRange = () => {};
+
   const sliderRangeInputTwo = (event: EventTarget & HTMLInputElement) => {
     let number = +event.value;
     if (!Number.isNaN(number)) {
@@ -141,7 +143,11 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
   };
 
   const countFilter = (reset?: boolean) => {
-    if (reset) return setCountFilters(0);
+    if (reset) {
+      setCountFilterOne(0);
+      setCountFilterTwo(9999);
+      return setCountFilters(0);
+    }
     const { color, discountedProducts, priceRange, releaseDate } = filterState;
 
     const colorCount = color.length;
@@ -164,7 +170,8 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
     setFilterState(initialValue);
     countFilter(true);
     setIsOpen(false);
-
+    setCountFilterTwo(9999);
+    setCountFilterOne(0);
     if (filter) {
       dispatch({ type: ProductProjectionsActionTypes.CLEAR_FILTER });
     }
@@ -256,7 +263,7 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
             Filter
           </Button>
         </Badge>
-        <Drawer title="Filter" placement="right" onClose={onClose} open={isOpen}>
+        <Drawer title="Filter" placement="right" onClose={onClose} afterOpenChange={fixRange} open={isOpen}>
           <div className={styles.filterSection}>
             <Title level={4}>Price</Title>
             <div>
@@ -264,12 +271,14 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
                 <InputNumber
                   min={0}
                   max={9999}
+                  controls={false}
                   value={countFilterOne}
                   onBlur={(event) => sliderRangeInputOne(event.target)}
                 />
                 <InputNumber
                   min={0}
                   max={9999}
+                  controls={false}
                   value={countFilterTwo}
                   onBlur={(event) => sliderRangeInputTwo(event.target)}
                 />
