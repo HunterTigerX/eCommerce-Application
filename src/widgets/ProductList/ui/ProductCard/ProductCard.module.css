@@ -44,6 +44,11 @@
   transform: translate(-50%, -50%);
 }
 
+.skeleton {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 .product-info {
   padding: 10px;
 }
