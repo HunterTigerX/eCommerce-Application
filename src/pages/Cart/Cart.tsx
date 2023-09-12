@@ -314,8 +314,8 @@ export const Cart = () => {
                         </div>
                         {haveShopDiscount ? (
                           <div>
-                            <PercentageOutlined /> Total shop discount is{' '}
-                            {(itemPrice * obj.quantity - shopDiscount * obj.quantity).toFixed(2)} <EuroCircleOutlined />{' '}
+                            <PercentageOutlined /> Total shop discount is {(shopDiscount * obj.quantity).toFixed(2)}{' '}
+                            <EuroCircleOutlined />{' '}
                           </div>
                         ) : null}
                         {havePromocode ? (
