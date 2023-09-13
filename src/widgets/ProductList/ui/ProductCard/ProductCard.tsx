@@ -18,7 +18,7 @@ const ProductCard = ({ product }: { product: ProductCardMap }) => {
   const [loading, setImgLoading] = useState(true);
 
   const { ref, inView } = useInView({
-    threshold: 0.5,
+    threshold: 0.3,
     triggerOnce: true,
   });
 
