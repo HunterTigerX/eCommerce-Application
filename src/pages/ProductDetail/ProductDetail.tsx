@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Carousel } from 'antd';
+import { message } from 'antd';
 import { CarouselRef } from 'antd/es/carousel';
 import { useCart } from 'pages/Cart/useCart';
 import { useParams, Navigate } from 'react-router-dom';
@@ -43,6 +44,15 @@ export const ProductDetail = () => {
   const isProductInCart = has(productId);
 
   useEffect(() => {}, [carousel1Index]);
+
+  const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
+  function successMessage(result: 'success' | 'error', errorMessage: string): void {
+    messageApi.open({
+      type: result,
+      content: errorMessage,
+      duration: 2,
+    });
+  }
 
   const openPicModal = (slideNumber: number) => {
     setCarousel1Index(slideNumber);
@@ -140,9 +150,11 @@ export const ProductDetail = () => {
         .execute()
         .then(() => {
           initCart();
+          successMessage('success', 'Product removed from the cart');
         })
         .catch((error) => {
           console.error(error);
+          successMessage('error', 'Unable to delete the product');
         });
     }
   }
@@ -292,6 +304,7 @@ export const ProductDetail = () => {
               ) : null
             ) : null}
             {modalWindow}
+            {contextHolder}
           </div>
         </>
       );
