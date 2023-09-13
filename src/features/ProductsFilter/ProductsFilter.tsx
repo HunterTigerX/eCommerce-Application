@@ -228,7 +228,8 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
           priceRange: [filter.priceRange[0] / 100, filter.priceRange[1] / 100],
         });
       }
-
+      setCountFilterOne(filter.priceRange[0] / 100);
+      setCountFilterTwo(filter.priceRange[1] / 100);
       return setIsOpen(false);
     }
 
@@ -268,6 +269,7 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
             <Title level={4}>Price</Title>
             <div>
               <div className="range-input">
+                From:{' '}
                 <InputNumber
                   min={0}
                   max={9999}
@@ -275,6 +277,7 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
                   value={countFilterOne}
                   onBlur={(event) => sliderRangeInputOne(event.target)}
                 />
+                To:{' '}
                 <InputNumber
                   min={0}
                   max={9999}
