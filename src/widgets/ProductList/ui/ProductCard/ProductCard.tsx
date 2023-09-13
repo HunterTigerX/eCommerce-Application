@@ -2,7 +2,9 @@ import { EuroCircleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import style from './ProductCard.module.css';
 import { Button } from 'antd';
-import { useState } from 'react';
+
+import { ApiClient } from '@shared/api/core';
+import { useCart } from 'pages/Cart/useCart';
 
 interface ProductCardMap {
   id: string;
@@ -14,14 +16,47 @@ interface ProductCardMap {
 }
 
 const ProductCard = ({ product }: { product: ProductCardMap }) => {
+  const { cart, initCart } = useCart();
   const { id, title, description, urlImg, price, discount } = product;
-  const [isButtonDisabled, setButtonDisabled] = useState(false);
+  const apiClient = ApiClient.getInstance();
+
+  const has = (prodId: string) => {
+    if (cart) {
+      return cart.lineItems.some((prod) => prod.productId === prodId);
+    }
+    return false;
+  };
+  const isDisabled = has(id);
 
   const addProductCart = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    console.log(`add to cart: ${id}`);
 
-    setButtonDisabled(true);
+    if (cart) {
+      apiClient.requestBuilder
+        .me()
+        .carts()
+        .withId({
+          ID: cart.id,
+        })
+        .post({
+          body: {
+            version: cart.version,
+            actions: [
+              {
+                action: 'addLineItem',
+                productId: id,
+              },
+            ],
+          },
+        })
+        .execute()
+        .then(() => {
+          initCart();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
   };
 
   return (
@@ -55,7 +90,7 @@ const ProductCard = ({ product }: { product: ProductCardMap }) => {
             </span>
           )}
         </div>
-        <Button type="primary" onClick={addProductCart} disabled={isButtonDisabled}>
+        <Button type="primary" onClick={addProductCart} disabled={isDisabled}>
           add to cart
         </Button>
       </div>

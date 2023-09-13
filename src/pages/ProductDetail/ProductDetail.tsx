@@ -33,6 +33,13 @@ export const ProductDetail = () => {
   const carouselRefModal = useRef<CarouselRef>(null);
   const carouselRefSmall = useRef<CarouselRef>(null);
   const apiClient = ApiClient.getInstance();
+  const has = (prodId: string | undefined) => {
+    if (cart && prodId) {
+      return cart.lineItems.some((prod) => prod.productId === prodId);
+    }
+    return false;
+  };
+  const isProductInCart = has(productId);
 
   useEffect(() => {}, [carousel1Index]);
 
@@ -90,6 +97,41 @@ export const ProductDetail = () => {
               {
                 action: 'addLineItem',
                 productId,
+              },
+            ],
+          },
+        })
+        .execute()
+        .then(() => {
+          initCart();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }
+
+  function removeProductFromCart() {
+    if (cart) {
+      const product = cart.lineItems.find((prod) => prod.productId === productId);
+      apiClient.requestBuilder
+        .me()
+        .carts()
+        .withId({
+          ID: cart.id,
+        })
+        .post({
+          body: {
+            version: cart.version,
+            actions: [
+              {
+                action: 'changeLineItemQuantity',
+                lineItemId: product?.id,
+                quantity: Number(0),
+              },
+              {
+                action: 'recalculate',
+                updateProductData: true,
               },
             ],
           },
@@ -220,9 +262,16 @@ export const ProductDetail = () => {
                   Only for {prodPrice} <EuroCircleOutlined />
                 </div>
               ) : null}
-              <Button type="primary" className="someButtons" onClick={addToCart}>
-                Add to cart
-              </Button>
+
+              {isProductInCart ? (
+                <Button type="primary" danger className="someButtons" onClick={removeProductFromCart}>
+                  Remove from cart
+                </Button>
+              ) : (
+                <Button type="primary" className="someButtons" onClick={addToCart}>
+                  Add to cart
+                </Button>
+              )}
             </div>
             <Carousel
               ref={carouselRefSmall}

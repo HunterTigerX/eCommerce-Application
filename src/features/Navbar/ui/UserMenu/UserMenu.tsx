@@ -11,7 +11,7 @@ export const UserMenu = ({ onCloseMenu }: { onCloseMenu: () => void }) => {
   const { user, signOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const { initCart } = useCart();
+  const { cart, initCart } = useCart();
 
   const handleLinkClick = () => {
     onCloseMenu();
@@ -53,8 +53,7 @@ export const UserMenu = ({ onCloseMenu }: { onCloseMenu: () => void }) => {
   return (
     <div className={styles.userBlock}>
       <Space size="large" align="center">
-        {/* Доставать количество товарок которые лежат в корзине */}
-        <Badge count={0} color="#137dc5">
+        <Badge count={cart?.lineItems.length} offset={[5, 4]} color="#137dc5">
           <NavLink className={styles.cartLink} to="cart" onClick={handleLinkClick}>
             <ShoppingCartOutlined />
           </NavLink>
@@ -73,9 +72,6 @@ export const UserMenu = ({ onCloseMenu }: { onCloseMenu: () => void }) => {
         ) : (
           <>
             <div className={styles.userLogin}>
-              <NavLink className={styles.userLoginLink} to="/cart" onClick={handleLinkClick}>
-                Cart
-              </NavLink>
               <NavLink className={styles.userLoginLink} to="/signin" onClick={handleLinkClick}>
                 Sign In
               </NavLink>
