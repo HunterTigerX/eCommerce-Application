@@ -236,6 +236,7 @@ export const Cart = () => {
     if (clickedNumber !== newNumber) {
       updateItemInCart(newNumber, goodsKey);
     }
+    setCrementButtonsState(false);
   }
 
   function buttonWasClicked(event: EventTarget) {
@@ -261,10 +262,12 @@ export const Cart = () => {
     if (clickedNumber !== newNumber) {
       updateItemInCart(newNumber, goodsKey);
     }
+    setCrementButtonsState(false);
   };
 
   function inputNumberFocused(event: EventTarget & HTMLInputElement) {
     clickedNumber = event.value;
+    setCrementButtonsState(true);
   }
 
   function crementItem(event: React.MouseEvent<HTMLElement, MouseEvent>, type: string) {
