@@ -8,7 +8,7 @@ await cartService.initCart();
 interface CartProviderValue {
   cart: Cart | undefined;
   initCart: () => Promise<void>;
-  clearCart: () => Promise<void>;
+  deleteCart: () => Promise<void>;
   has: (id: string) => boolean;
   count: () => number;
 }
@@ -16,7 +16,7 @@ interface CartProviderValue {
 const CartContext = createContext<CartProviderValue>({
   cart: cartService.cart,
   initCart: () => Promise.resolve(),
-  clearCart: () => Promise.resolve(),
+  deleteCart: () => Promise.resolve(),
   has: () => false,
   count: () => 0,
 });
@@ -29,8 +29,8 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
     setCart(testCart);
   };
 
-  const clearCart = async (): Promise<void> => {
-    await cartService.clearCart();
+  const deleteCart = async (): Promise<void> => {
+    await cartService.deleteCart();
     initCart();
   };
 
@@ -55,7 +55,7 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
   const value: CartProviderValue = {
     cart: cart,
     initCart,
-    clearCart,
+    deleteCart,
     has,
     count,
   };

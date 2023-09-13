@@ -8,7 +8,8 @@ import { useCart } from './useCart';
 import './cart.css';
 
 export const Cart = () => {
-  const { cart, clearCart, initCart } = useCart();
+  const { cart, initCart } = useCart();
+  const [crementEnable, setCrementButtonsState] = useState(false);
 
   const apiClient = ApiClient.getInstance();
 
@@ -24,6 +25,41 @@ export const Cart = () => {
 
   function tooltipText() {
     return "It won't work ;)";
+  }
+
+  function clearCartAll() {
+    if (cart) {
+      const itemsKeysArray = cart.lineItems.map((item) => item.id);
+      const actionsArray = itemsKeysArray.map((productId) => {
+        if (productId) {
+          return {
+            action: 'changeLineItemQuantity',
+            lineItemId: productId,
+            quantity: 0,
+          };
+        }
+      });
+
+      apiClient.requestBuilder
+        .me()
+        .carts()
+        .withId({
+          ID: cart.id,
+        })
+        .post({
+          body: {
+            version: cart.version,
+            actions: actionsArray as MyCartUpdateAction[],
+          },
+        })
+        .execute()
+        .then(() => {
+          initCart();
+        })
+        .catch((error) => {
+          successMessage('error', error.message);
+        });
+    }
   }
 
   const [promocode, setPromocode] = useState('');
@@ -145,7 +181,7 @@ export const Cart = () => {
 
   // lineItems отвечает за количество предметов в корзине
   // key в body - Уникальный идентификатор корзины
-  function updateItemInCart(newCount: string, itemId: string) {
+  function updateItemInCart(newCount: string, itemId: string, crements?: 'clicked') {
     const isNumber = +newCount;
     if (Number.isNaN(isNumber)) {
       successMessage('error', `Please provide correct input. Your input is not a number`);
@@ -178,8 +214,11 @@ export const Cart = () => {
             },
           })
           .execute()
-          .then(() => {
-            initCart();
+          .then(async () => {
+            await initCart();
+            if (crements === 'clicked') {
+              setCrementButtonsState(false);
+            }
           })
           .catch((error) => {
             successMessage('error', error.message);
@@ -200,15 +239,16 @@ export const Cart = () => {
 
   function buttonWasClicked(event: EventTarget) {
     const htmlElement = event as HTMLButtonElement | HTMLSpanElement;
-    let inputParent: HTMLButtonElement;
     if (htmlElement) {
       if (htmlElement.tagName === 'BUTTON') {
-        inputParent = htmlElement.previousSibling as HTMLButtonElement;
-        const elementID = inputParent.children[0].children[0].children[0].id as string;
-        updateItemInCart('0', elementID);
+        if (htmlElement.previousSibling) {
+          const inputParent = htmlElement.previousSibling as HTMLElement;
+          const elementID = inputParent.children[1].children[0].children[0].id as string;
+          updateItemInCart('0', elementID);
+        }
       } else if (htmlElement.tagName === 'SPAN') {
-        inputParent = (htmlElement.parentElement as HTMLSpanElement).previousSibling as HTMLButtonElement;
-        const elementID = inputParent.children[0].children[0].children[0].id as string;
+        const inputParent = (htmlElement.parentElement as HTMLSpanElement).previousSibling as HTMLElement;
+        const elementID = inputParent.children[1].children[0].children[0].id as string;
         updateItemInCart('0', elementID);
       }
     }
@@ -224,6 +264,35 @@ export const Cart = () => {
 
   function inputNumberFocused(event: EventTarget & HTMLInputElement) {
     clickedNumber = event.value;
+  }
+
+  function crementItem(event: React.MouseEvent<HTMLElement, MouseEvent>, type: string) {
+    setCrementButtonsState(true);
+
+    const htmlElement = event.target as HTMLButtonElement | HTMLSpanElement;
+    if (htmlElement) {
+      if (htmlElement.tagName === 'BUTTON') {
+        if (type === 'de') {
+          const input = htmlElement.nextSibling?.firstChild?.firstChild as HTMLInputElement;
+          updateItemInCart(String(+input.value - 1), input.id, 'clicked');
+        } else if (type === 'en') {
+          const input = htmlElement.previousSibling?.firstChild?.firstChild as HTMLInputElement;
+          updateItemInCart(String(+input.value + 1), input.id, 'clicked');
+        }
+      } else if (htmlElement.tagName === 'SPAN') {
+        if (type === 'de') {
+          if (htmlElement.parentElement) {
+            const input = htmlElement.parentElement.nextSibling?.firstChild?.firstChild as HTMLInputElement;
+            updateItemInCart(String(+input.value - 1), input.id, 'clicked');
+          }
+        } else if (type === 'en') {
+          if (htmlElement.parentElement) {
+            const input = htmlElement.parentElement.previousSibling?.firstChild?.firstChild as HTMLInputElement;
+            updateItemInCart(String(+input.value + 1), input.id, 'clicked');
+          }
+        }
+      }
+    }
   }
 
   function fillCartWithGoods(arrayOfGoods: LineItem[]) {
@@ -348,6 +417,15 @@ export const Cart = () => {
                 </div>
               </div>
               <div className="card-items-count">
+                <Button
+                  className="items-button"
+                  disabled={crementEnable}
+                  onClick={(event) => {
+                    crementItem(event, 'de');
+                  }}
+                >
+                  -
+                </Button>
                 <InputNumber
                   id={obj.id}
                   min={1}
@@ -358,6 +436,15 @@ export const Cart = () => {
                   onBlur={(event) => inputNumberChanged(event.target)}
                   onPressEnter={inputNumberEnterPressed}
                 ></InputNumber>
+                <Button
+                  className="items-button"
+                  disabled={crementEnable}
+                  onClick={(event) => {
+                    crementItem(event, 'en');
+                  }}
+                >
+                  +
+                </Button>
               </div>
               <Button
                 className="cart-remove-item"
@@ -376,7 +463,7 @@ export const Cart = () => {
             <div className="clearCart-button-wrapper" key="removeAllGoods">
               <Popconfirm
                 title="Are you sure you want to remove all items from the cart?"
-                onConfirm={clearCart}
+                onConfirm={clearCartAll}
                 okText="Yes"
                 cancelText="No"
               >

@@ -139,6 +139,15 @@ class ApiClient {
       .withLoggerMiddleware()
       .build();
   }
+
+  public async switchToRefreshFlow(): Promise<void> {
+    this.currentClient = new ClientBuilder()
+      .withProjectKey(projectKey)
+      .withRefreshTokenFlow(this.options.getRefreshCredentialOptions())
+      .withHttpMiddleware(this.options.getHttpOptions())
+      .withLoggerMiddleware()
+      .build();
+  }
 }
 
 export { ApiClient };

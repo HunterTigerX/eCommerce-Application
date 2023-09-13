@@ -8,6 +8,7 @@ import { EuroCircleOutlined } from '@ant-design/icons';
 import { useProduct } from '@shared/api/products';
 import { ApiClient } from '@shared/api/core';
 import './carousel.css';
+
 interface IDimentions {
   w: number;
   h: number;

@@ -46,7 +46,7 @@ export class AuthService {
         data: response.body.customer,
       };
     } catch (error: unknown) {
-      this.client.switchToDefaultClient();
+      this.client.switchToRefreshFlow();
 
       return {
         success: false,
