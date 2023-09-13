@@ -13,15 +13,6 @@ export class CartService {
   public AllCarts: Cart | undefined;
 
   public async initCart(): Promise<Cart | undefined> {
-    const allCarts = await ApiClient.getInstance()
-      .requestBuilder.me()
-      .carts()
-      .get()
-      .execute()
-      .then((cartsList) => {
-        console.log(cartsList);
-      });
-    console.log('Hello there', allCarts);
     // Если нет корзины, создаём корзину.
     try {
       const response = await ApiClient.getInstance().requestBuilder.me().activeCart().get().execute();
