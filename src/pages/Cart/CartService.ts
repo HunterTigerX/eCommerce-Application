@@ -32,7 +32,7 @@ export class CartService {
     }
   }
 
-  public async clearCart(): Promise<void> {
+  public async deleteCart(): Promise<void> {
     await this.initCart();
     if (this.cart)
       await ApiClient.getInstance()
