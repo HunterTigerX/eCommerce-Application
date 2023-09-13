@@ -1,19 +1,18 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Badge, Dropdown, MenuProps, Space } from 'antd';
 import { useCart } from 'pages/Cart/useCart';
 import { DownOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { useAuth } from '@shared/hooks';
 import { UserAvatar } from '@widgets/userAvatar';
-import { CartContext } from 'pages/Cart/CartProvider';
+
 import styles from './UserMenu.module.css';
 
 export const UserMenu = ({ onCloseMenu }: { onCloseMenu: () => void }) => {
-  const { cart } = useContext(CartContext);
   const { user, signOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const { initCart } = useCart();
+  const { initCart, cart } = useCart();
 
   const handleLinkClick = () => {
     onCloseMenu();

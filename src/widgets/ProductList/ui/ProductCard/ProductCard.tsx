@@ -16,7 +16,7 @@ interface ProductCardMap {
 }
 
 const ProductCard = ({ product }: { product: ProductCardMap }) => {
-  const { cart, initCart } = useCart();
+  const { cart, initCart, getCurrentCart } = useCart();
   const { id, title, description, urlImg, price, discount } = product;
   const apiClient = ApiClient.getInstance();
 
@@ -28,19 +28,19 @@ const ProductCard = ({ product }: { product: ProductCardMap }) => {
   };
   const isDisabled = has(id);
 
-  const addProductCart = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const addProductCart = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-
-    if (cart) {
+    const renewedCart = (await getCurrentCart()).data ? (await getCurrentCart()).data : cart;
+    if (renewedCart) {
       apiClient.requestBuilder
         .me()
         .carts()
         .withId({
-          ID: cart.id,
+          ID: renewedCart.id,
         })
         .post({
           body: {
-            version: cart.version,
+            version: renewedCart.version,
             actions: [
               {
                 action: 'addLineItem',
