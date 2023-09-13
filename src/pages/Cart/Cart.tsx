@@ -239,15 +239,16 @@ export const Cart = () => {
 
   function buttonWasClicked(event: EventTarget) {
     const htmlElement = event as HTMLButtonElement | HTMLSpanElement;
-    let inputParent: HTMLButtonElement;
     if (htmlElement) {
       if (htmlElement.tagName === 'BUTTON') {
-        inputParent = htmlElement.previousSibling as HTMLButtonElement;
-        const elementID = inputParent.children[0].children[0].children[0].id as string;
-        updateItemInCart('0', elementID);
+        if (htmlElement.previousSibling) {
+          const inputParent = htmlElement.previousSibling as HTMLElement;
+          const elementID = inputParent.children[1].children[0].children[0].id as string;
+          updateItemInCart('0', elementID);
+        }
       } else if (htmlElement.tagName === 'SPAN') {
-        inputParent = (htmlElement.parentElement as HTMLSpanElement).previousSibling as HTMLButtonElement;
-        const elementID = inputParent.children[0].children[0].children[0].id as string;
+        const inputParent = (htmlElement.parentElement as HTMLSpanElement).previousSibling as HTMLElement;
+        const elementID = inputParent.children[1].children[0].children[0].id as string;
         updateItemInCart('0', elementID);
       }
     }
