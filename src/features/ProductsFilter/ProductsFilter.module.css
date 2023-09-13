@@ -5,6 +5,16 @@
   column-gap: var(--spacing-md);
 }
 
+.infinum,
+.supremum {
+  margin-left: var(--spacing-xs);
+}
+
+.price-currency svg {
+  fill: var(--primary-color);
+  font-size: var(--spacing-md);
+}
+
 @media only screen and (max-width: 430px) {
   .product-filter {
     min-width: 350px;

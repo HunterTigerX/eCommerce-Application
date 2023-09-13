@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Badge, Button, Checkbox, Drawer, Select, Slider } from 'antd';
+import { Badge, Button, Checkbox, Drawer, Select, Slider, InputNumber, Space } from 'antd';
+import { EuroCircleOutlined } from '@ant-design/icons';
 import { ProductProjectionsActionTypes } from '@shared/api/products';
 import Title from 'antd/es/typography/Title';
 import { FilterOutlined } from '@ant-design/icons';
@@ -37,10 +38,15 @@ const areFiltersEqual = (current: FilterFields, applied: FilterFields) => {
   return areColorsEqual && areReleaseDatesEqual && arePriceRangesEqual && areDiscountedProductsEqual;
 };
 
+const price = {
+  from: 0,
+  to: 9999,
+};
+
 const initialValue: FilterFields = {
   color: [],
   releaseDate: [],
-  priceRange: [0, 9999],
+  priceRange: [price.from, price.to],
   discountedProducts: false,
 };
 
@@ -56,7 +62,7 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
     !filterState.color.length &&
     !filterState.releaseDate.length &&
     !filterState.discountedProducts &&
-    filterState.priceRange.toString() === '0,9999';
+    filterState.priceRange.toString() === [price.from, price.to].toString();
 
   const handleSort = (value: string) => {
     if (value === 'default') {
@@ -74,11 +80,33 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
     setIsOpen(true);
   };
 
-  const handlePriceChange = (value: [number, number]) => {
+  const handleSliderChange = (value: [number, number]) => {
     setFilterState((prev) => ({
       ...prev,
       priceRange: value,
     }));
+  };
+
+  const handleInfinumChange = (value: number | null) => {
+    if (value) {
+      if (value > filterState.priceRange[1]) return;
+
+      return setFilterState((prev) => ({
+        ...prev,
+        priceRange: [value, prev.priceRange[1]],
+      }));
+    }
+  };
+
+  const handleSupremumChange = (value: number | null) => {
+    if (value) {
+      if (value < filterState.priceRange[0]) return;
+
+      return setFilterState((prev) => ({
+        ...prev,
+        priceRange: [prev.priceRange[0], value],
+      }));
+    }
   };
 
   const onColorList = (list: CheckboxValueType[]) => {
@@ -213,15 +241,40 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
         </Badge>
         <Drawer title="Filter" placement="right" onClose={onClose} open={isOpen}>
           <div className={styles.filterSection}>
-            <Title level={4}>Price</Title>
+            <Space align="baseline">
+              <Title level={4}>Price</Title>
+              <EuroCircleOutlined className={styles.priceCurrency} />
+            </Space>
             <Slider
               range
-              marks={{ 0: '€0', 9999: '€9999' }}
+              marks={{ [price.from]: price.from, [price.to]: price.to }}
               value={filterState.priceRange as [number, number]}
-              min={0}
-              max={9999}
-              onChange={handlePriceChange}
+              min={price.from}
+              max={price.to}
+              onChange={handleSliderChange}
             />
+            <Space>
+              <label>
+                From:
+                <InputNumber
+                  className={styles.infinum}
+                  min={price.from}
+                  max={price.to}
+                  value={filterState.priceRange[0]}
+                  onChange={handleInfinumChange}
+                />
+              </label>
+              <label>
+                to:
+                <InputNumber
+                  className={styles.supremum}
+                  min={price.from}
+                  max={price.to}
+                  value={filterState.priceRange[1]}
+                  onChange={handleSupremumChange}
+                />
+              </label>
+            </Space>
           </div>
           <div className={styles.filterSection}>
             <Title level={4}>Color</Title>
