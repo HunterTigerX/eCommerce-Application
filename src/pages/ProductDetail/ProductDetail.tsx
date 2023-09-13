@@ -27,7 +27,7 @@ interface IAttributesArr {
 }
 
 export const ProductDetail = () => {
-  const { cart, initCart } = useCart();
+  const { cart, initCart, getCurrentCart } = useCart();
   const { productId } = useParams<{ productId: string }>();
   const itemData = useProduct(productId);
   const [isBigPicModalOpened, bigPicModalIsOpen] = useState(false);
@@ -93,17 +93,18 @@ export const ProductDetail = () => {
     setCarousel1Index(currentSlide);
   }
 
-  function addToCart() {
-    if (cart) {
-      apiClient.requestBuilder
+  async function addToCart() {
+    const renewedCart = (await getCurrentCart()).data ? (await getCurrentCart()).data : cart;
+    if (renewedCart) {
+      await apiClient.requestBuilder
         .me()
         .carts()
         .withId({
-          ID: cart.id,
+          ID: renewedCart.id,
         })
         .post({
           body: {
-            version: cart.version,
+            version: renewedCart.version,
             actions: [
               {
                 action: 'addLineItem',
@@ -122,18 +123,19 @@ export const ProductDetail = () => {
     }
   }
 
-  function removeProductFromCart() {
-    if (cart) {
-      const product = cart.lineItems.find((prod) => prod.productId === productId);
+  async function removeProductFromCart() {
+    const renewedCart = (await getCurrentCart()).data ? (await getCurrentCart()).data : cart;
+    if (renewedCart) {
+      const product = renewedCart.lineItems.find((prod) => prod.productId === productId);
       apiClient.requestBuilder
         .me()
         .carts()
         .withId({
-          ID: cart.id,
+          ID: renewedCart.id,
         })
         .post({
           body: {
-            version: cart.version,
+            version: renewedCart.version,
             actions: [
               {
                 action: 'changeLineItemQuantity',
