@@ -5,6 +5,7 @@ import { Button } from 'antd';
 
 import { ApiClient } from '@shared/api/core';
 import { useCart } from 'pages/Cart/useCart';
+import { useState } from 'react';
 
 interface ProductCardMap {
   id: string;
@@ -18,6 +19,7 @@ interface ProductCardMap {
 const ProductCard = ({ product }: { product: ProductCardMap }) => {
   const { cart, initCart, getCurrentCart } = useCart();
   const { id, title, description, urlImg, price, discount } = product;
+  const [cartLoading, cartLoadingState] = useState(false);
   const apiClient = ApiClient.getInstance();
 
   const has = (prodId: string) => {
@@ -29,6 +31,7 @@ const ProductCard = ({ product }: { product: ProductCardMap }) => {
   const isDisabled = has(id);
 
   const addProductCart = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    cartLoadingState(true);
     event.preventDefault();
     const renewedCart = (await getCurrentCart()).data ? (await getCurrentCart()).data : cart;
     if (renewedCart) {
@@ -52,6 +55,10 @@ const ProductCard = ({ product }: { product: ProductCardMap }) => {
         .execute()
         .then(() => {
           initCart();
+          // 300мс стоят для того, чтобы успел появиться индкатор загрузки, который при слишком быстром ответе от сервера, быстро пропадает
+          setTimeout(function () {
+            cartLoadingState(false);
+          }, 300);
         })
         .catch((error) => {
           console.error(error);
@@ -90,7 +97,13 @@ const ProductCard = ({ product }: { product: ProductCardMap }) => {
             </span>
           )}
         </div>
-        <Button type="primary" onClick={addProductCart} disabled={isDisabled}>
+        <Button
+          type="primary"
+          className="catalogAddToCartBtn"
+          onClick={addProductCart}
+          disabled={isDisabled}
+          loading={cartLoading}
+        >
           add to cart
         </Button>
       </div>
