@@ -15,7 +15,7 @@ export const About = () => {
         <p className={styles.text}>
           Hello, we are pleased to present you this website created by a team of three talented developers. Their
           unwavering commitment and tireless efforts, backed up by the knowledge gained at{' '}
-          <span className={styles.blueText}>RS School</span> , have led to the creation of an outstanding and functional
+          <span className={styles.blueText}>RS School</span>, have led to the creation of an outstanding and functional
           application.
         </p>
         <p className={styles.text}>
