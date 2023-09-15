@@ -1,9 +1,7 @@
 import AboutUs from '@assets/about.jpg';
-import styles from './About.module.css';
-import { TeamMember, team } from './dataTeam';
 import { TeamMemberCart } from './ui/TeamMemberCart';
-
-const teamList: TeamMember[] = team;
+import { TeamMember, team } from './dataTeam';
+import styles from './About.module.css';
 
 export const About = () => {
   return (
@@ -54,7 +52,7 @@ export const About = () => {
         </p>
         <h2 className={styles.h2}>Meet the Team:</h2>
         <ul className={styles.team}>
-          {teamList && teamList.map((member: TeamMember) => <TeamMemberCart key={member.id} member={member} />)}
+          {team && team.map((member: TeamMember) => <TeamMemberCart key={member.id} member={member} />)}
         </ul>
       </div>
     </>

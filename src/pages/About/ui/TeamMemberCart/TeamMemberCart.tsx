@@ -3,12 +3,12 @@ import { TeamMember } from 'pages/About/dataTeam';
 import styles from './TeamMemberCart.module.css';
 
 export const TeamMemberCart = ({ member }: { member: TeamMember }) => {
-  const { id, name, avatar, nickname, githubLink, role, description } = member;
+  const { name, avatar, nickname, githubLink, role, description } = member;
 
-  const classCard = id % 2 === 0 ? `${styles.teamCard} ${styles.teamInverted}` : styles.teamCard;
+  // const classCard = id % 2 === 0 ? `${styles.teamCard} ${styles.teamInverted}` : styles.teamCard;
 
   return (
-    <li className={classCard}>
+    <li className={styles.teamCard}>
       <a className={styles.teamImage} href={githubLink} target="_blank" rel="noreferrer">
         <img className={styles.imgFluid} src={avatar} alt="avatar" />
       </a>
