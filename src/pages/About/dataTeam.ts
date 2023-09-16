@@ -30,7 +30,7 @@ export const team: TeamMember[] = [
     githubLink: 'https://github.com/h3nnessey',
     role: 'API Integration Architect',
     description:
-      'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totamreiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolorelaudantium consectetur!',
+      'A resident of Perm, a young IT specialist, was born with a keyboard in his hands and has knowledge of all mathematical formulas. On the project, my task was to integrate the Commerce Tools API. I wrote auxiliary Hooks and Reducers to manage the client, categories, and products. Additionally, I implemented components for product search, category selection, pagination, and breadcrumbs. I handled the overall routing configuration and was responsible for build and deployment.',
   },
   {
     id: 3,
@@ -40,7 +40,7 @@ export const team: TeamMember[] = [
     githubLink: 'https://github.com/kostik-omsk',
     role: 'API Integration Architect',
     description:
-      'Born, attended kindergarten, then school, university, and finally started working. As part of the project, my responsibilities included general work on the creation of components and their design, including the navigation bar, catalog pages, product cards and product filter. I have also developed a registration page and a form, as well as an &quot;About&quot; page.',
+      'Born, attended kindergarten, then school, university, and finally started working. As part of the project, my responsibilities included general work on the creation of components and their design, including the navigation bar, catalog pages, product cards and product filter. I have also developed a registration page and a form, as well as an About page.',
   },
   {
     id: 4,
