@@ -1,9 +1,52 @@
-import AboutUs from '@assets/about.jpg';
+import { useLayoutEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { TeamMemberCart } from './ui/TeamMemberCart';
 import { TeamMember, team } from './dataTeam';
+import AboutUs from '@assets/about.jpg';
 import styles from './About.module.css';
 
+gsap.registerPlugin(ScrollTrigger);
+
+const animateFrom = (elem: HTMLLIElement) => {
+  const x = 0,
+    y = 150;
+  elem.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+  elem.style.opacity = '0';
+  gsap.fromTo(
+    elem,
+    { x: x, y: y, autoAlpha: 0 },
+    {
+      duration: 1.25,
+      x: 0,
+      y: 0,
+      autoAlpha: 1,
+      ease: 'expo',
+      overwrite: 'auto',
+    }
+  );
+};
+
 export const About = () => {
+  const teamRef = useRef<HTMLUListElement | null>(null);
+
+  useLayoutEffect(() => {
+    if (teamRef.current) {
+      const children = teamRef.current.children;
+
+      if (children.length > 0) {
+        const teamElements = Array.from(children) as HTMLLIElement[];
+
+        teamElements.forEach((elem) => {
+          ScrollTrigger.create({
+            trigger: elem,
+            onEnter: () => animateFrom(elem),
+          });
+        });
+      }
+    }
+  }, []);
+
   return (
     <>
       <div className={styles.about}>
@@ -51,7 +94,7 @@ export const About = () => {
           and helping us reach our goals.
         </p>
         <h2 className={styles.h2}>Meet the Team:</h2>
-        <ul className={styles.team}>
+        <ul className={styles.team} ref={teamRef}>
           {team && team.map((member: TeamMember) => <TeamMemberCart key={member.id} member={member} />)}
         </ul>
       </div>
