@@ -1,9 +1,9 @@
-import style from './IntroMain.module.css';
 import react from '@assets/react.svg';
 import typescript from '@assets/typescript.svg';
 import vitejs from '@assets/vitejs.svg';
 import ecommerce from '@assets/Ecommerce.svg';
 import ant from '@assets/ant.svg';
+import style from './IntroMain.module.css';
 
 export const IntroMain = () => {
   return (
