@@ -45,7 +45,7 @@ const routes: RouteObject[] = [
       },
       {
         path: '/cart',
-        Component: lazy(() => import('@pages/Сart')),
+        Component: lazy(() => import('@pages/Cart')),
         caseSensitive: true,
       },
       {
