@@ -14,7 +14,6 @@ const SignUp = () => {
         <>
           <div className={styles.signUpForm}>
             <h2>Registration</h2>
-
             <SingUpForm />
           </div>
         </>

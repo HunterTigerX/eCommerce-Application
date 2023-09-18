@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { Badge, Button, Checkbox, Drawer, Select, Slider, InputNumber, Space } from 'antd';
-import { EuroCircleOutlined } from '@ant-design/icons';
+import { Badge, Button, Checkbox, Drawer, InputNumber, Select, Slider } from 'antd';
 import { ProductProjectionsActionTypes } from '@shared/api/products';
 import Title from 'antd/es/typography/Title';
 import { FilterOutlined } from '@ant-design/icons';
@@ -38,15 +37,10 @@ const areFiltersEqual = (current: FilterFields, applied: FilterFields) => {
   return areColorsEqual && areReleaseDatesEqual && arePriceRangesEqual && areDiscountedProductsEqual;
 };
 
-const price = {
-  from: 0,
-  to: 9999,
-};
-
 const initialValue: FilterFields = {
   color: [],
   releaseDate: [],
-  priceRange: [price.from, price.to],
+  priceRange: [0, 9999],
   discountedProducts: false,
 };
 
@@ -57,12 +51,14 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
   const [filterState, setFilterState] = useState<FilterFields>(initialValue);
   const [selectedSort, setSelectedSort] = useState('default');
   const [countFilters, setCountFilters] = useState(0);
+  const [countFilterOne, setCountFilterOne] = useState(0);
+  const [countFilterTwo, setCountFilterTwo] = useState(9999);
 
   const disabled =
     !filterState.color.length &&
     !filterState.releaseDate.length &&
     !filterState.discountedProducts &&
-    filterState.priceRange.toString() === [price.from, price.to].toString();
+    filterState.priceRange.toString() === '0,9999';
 
   const handleSort = (value: string) => {
     if (value === 'default') {
@@ -80,32 +76,55 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
     setIsOpen(true);
   };
 
-  const handleSliderChange = (value: [number, number]) => {
-    setFilterState((prev) => ({
-      ...prev,
-      priceRange: value,
-    }));
-  };
+  const handlePriceChange = (value: [number, number]) => {
+    if (!Number.isNaN(value[0]) && !Number.isNaN(value[1])) {
+      setCountFilterOne(Math.min(...value));
+      setCountFilterTwo(Math.max(...value));
 
-  const handleInfinumChange = (value: number | null) => {
-    if (value) {
-      if (value > filterState.priceRange[1]) return;
-
-      return setFilterState((prev) => ({
+      setFilterState((prev) => ({
         ...prev,
-        priceRange: [value, prev.priceRange[1]],
+        priceRange: value,
       }));
     }
   };
 
-  const handleSupremumChange = (value: number | null) => {
-    if (value) {
-      if (value < filterState.priceRange[0]) return;
+  const sliderRangeInputOne = (event: EventTarget & HTMLInputElement) => {
+    let number = +event.value;
+    if (!Number.isNaN(number)) {
+      if (number > 9999) {
+        number = 9999;
+      } else if (number < 0) {
+        number = 0;
+      }
+      if (number > countFilterTwo) {
+        setCountFilterOne(countFilterTwo);
+        setCountFilterTwo(number);
+        handlePriceChange([countFilterTwo, number]);
+      } else {
+        setCountFilterOne(number);
+        handlePriceChange([number, countFilterTwo]);
+      }
+    }
+  };
 
-      return setFilterState((prev) => ({
-        ...prev,
-        priceRange: [prev.priceRange[0], value],
-      }));
+  const fixRange = () => {};
+
+  const sliderRangeInputTwo = (event: EventTarget & HTMLInputElement) => {
+    let number = +event.value;
+    if (!Number.isNaN(number)) {
+      if (number > 9999) {
+        number = 9999;
+      } else if (number < 0) {
+        number = 0;
+      }
+      if (number < countFilterOne) {
+        setCountFilterTwo(countFilterOne);
+        setCountFilterOne(number);
+        handlePriceChange([number, countFilterOne]);
+      } else {
+        setCountFilterTwo(number);
+        handlePriceChange([countFilterOne, number]);
+      }
     }
   };
 
@@ -124,7 +143,11 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
   };
 
   const countFilter = (reset?: boolean) => {
-    if (reset) return setCountFilters(0);
+    if (reset) {
+      setCountFilterOne(0);
+      setCountFilterTwo(9999);
+      return setCountFilters(0);
+    }
     const { color, discountedProducts, priceRange, releaseDate } = filterState;
 
     const colorCount = color.length;
@@ -147,7 +170,8 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
     setFilterState(initialValue);
     countFilter(true);
     setIsOpen(false);
-
+    setCountFilterTwo(9999);
+    setCountFilterOne(0);
     if (filter) {
       dispatch({ type: ProductProjectionsActionTypes.CLEAR_FILTER });
     }
@@ -204,7 +228,8 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
           priceRange: [filter.priceRange[0] / 100, filter.priceRange[1] / 100],
         });
       }
-
+      setCountFilterOne(filter.priceRange[0] / 100);
+      setCountFilterTwo(filter.priceRange[1] / 100);
       return setIsOpen(false);
     }
 
@@ -239,42 +264,37 @@ const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
             Filter
           </Button>
         </Badge>
-        <Drawer title="Filter" placement="right" onClose={onClose} open={isOpen}>
+        <Drawer title="Filter" placement="right" onClose={onClose} afterOpenChange={fixRange} open={isOpen}>
           <div className={styles.filterSection}>
-            <Space align="baseline">
-              <Title level={4}>Price</Title>
-              <EuroCircleOutlined className={styles.priceCurrency} />
-            </Space>
+            <Title level={4}>Price</Title>
+            <div>
+              <div className="range-input">
+                From:{' '}
+                <InputNumber
+                  min={0}
+                  max={9999}
+                  controls={false}
+                  value={countFilterOne}
+                  onBlur={(event) => sliderRangeInputOne(event.target)}
+                />
+                To:{' '}
+                <InputNumber
+                  min={0}
+                  max={9999}
+                  controls={false}
+                  value={countFilterTwo}
+                  onBlur={(event) => sliderRangeInputTwo(event.target)}
+                />
+              </div>
+            </div>
             <Slider
               range
-              marks={{ [price.from]: price.from, [price.to]: price.to }}
+              marks={{ 0: '€0', 9999: '€9999' }}
               value={filterState.priceRange as [number, number]}
-              min={price.from}
-              max={price.to}
-              onChange={handleSliderChange}
+              min={0}
+              max={9999}
+              onChange={handlePriceChange}
             />
-            <Space>
-              <label>
-                From:
-                <InputNumber
-                  className={styles.infinum}
-                  min={price.from}
-                  max={price.to}
-                  value={filterState.priceRange[0]}
-                  onChange={handleInfinumChange}
-                />
-              </label>
-              <label>
-                to:
-                <InputNumber
-                  className={styles.supremum}
-                  min={price.from}
-                  max={price.to}
-                  value={filterState.priceRange[1]}
-                  onChange={handleSupremumChange}
-                />
-              </label>
-            </Space>
           </div>
           <div className={styles.filterSection}>
             <Title level={4}>Color</Title>

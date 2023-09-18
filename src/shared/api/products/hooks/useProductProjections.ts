@@ -38,7 +38,7 @@ const mapResults = (results: ProductProjection[]) => {
 
 const mapFilter = (filter: string[]): FilterFields => {
   const result: FilterFields = {
-    priceRange: [0, 999900],
+    priceRange: [0, 9999],
     color: [],
     releaseDate: [],
     discountedProducts: false,
