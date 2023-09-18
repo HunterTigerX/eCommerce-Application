@@ -1,5 +1,6 @@
 import rss from '@assets/rss.jpg';
 import nikita from '@assets/nikita.png';
+import vitaliy from '@assets/Vitaliy.jpg';
 
 export interface TeamMember {
   id: number;
@@ -25,7 +26,7 @@ export const team: TeamMember[] = [
   {
     id: 2,
     name: 'Vitaly Schneider',
-    avatar: 'https://avatars.githubusercontent.com/u/87146694?v=4',
+    avatar: vitaliy,
     nickname: 'h3nnessey',
     githubLink: 'https://github.com/h3nnessey',
     role: 'API Integration Architect',
