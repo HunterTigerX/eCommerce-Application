@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Carousel } from 'antd';
+import { message } from 'antd';
 import { CarouselRef } from 'antd/es/carousel';
+import { useCart } from 'pages/Cart/useCart';
 import { useParams, Navigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { EuroCircleOutlined } from '@ant-design/icons';
 import { useProduct } from '@shared/api/products';
+import { ApiClient } from '@shared/api/core';
 import './carousel.css';
 
 interface IDimentions {
@@ -24,14 +27,32 @@ interface IAttributesArr {
 }
 
 export const ProductDetail = () => {
+  const { cart, initCart, getCurrentCart } = useCart();
   const { productId } = useParams<{ productId: string }>();
   const itemData = useProduct(productId);
   const [isBigPicModalOpened, bigPicModalIsOpen] = useState(false);
   const [carousel1Index, setCarousel1Index] = useState(0);
   const carouselRefModal = useRef<CarouselRef>(null);
   const carouselRefSmall = useRef<CarouselRef>(null);
+  const apiClient = ApiClient.getInstance();
+  const has = (prodId: string | undefined) => {
+    if (cart && prodId) {
+      return cart.lineItems.some((prod) => prod.productId === prodId);
+    }
+    return false;
+  };
+  const isProductInCart = has(productId);
 
   useEffect(() => {}, [carousel1Index]);
+
+  const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
+  function successMessage(result: 'success' | 'error', errorMessage: string): void {
+    messageApi.open({
+      type: result,
+      content: errorMessage,
+      duration: 2,
+    });
+  }
 
   const openPicModal = (slideNumber: number) => {
     setCarousel1Index(slideNumber);
@@ -72,6 +93,74 @@ export const ProductDetail = () => {
     setCarousel1Index(currentSlide);
   }
 
+  async function addToCart() {
+    const renewedCart = (await getCurrentCart()).data ? (await getCurrentCart()).data : cart;
+    if (renewedCart) {
+      await apiClient.requestBuilder
+        .me()
+        .carts()
+        .withId({
+          ID: renewedCart.id,
+        })
+        .post({
+          body: {
+            version: renewedCart.version,
+            actions: [
+              {
+                action: 'addLineItem',
+                productId,
+              },
+            ],
+          },
+        })
+        .execute()
+        .then(() => {
+          initCart();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }
+
+  async function removeProductFromCart() {
+    const renewedCart = (await getCurrentCart()).data ? (await getCurrentCart()).data : cart;
+    if (renewedCart) {
+      const product = renewedCart.lineItems.find((prod) => prod.productId === productId);
+      apiClient.requestBuilder
+        .me()
+        .carts()
+        .withId({
+          ID: renewedCart.id,
+        })
+        .post({
+          body: {
+            version: renewedCart.version,
+            actions: [
+              {
+                action: 'changeLineItemQuantity',
+                lineItemId: product?.id,
+                quantity: Number(0),
+              },
+              {
+                action: 'recalculate',
+                updateProductData: true,
+              },
+            ],
+          },
+        })
+        .execute()
+        .then(() => {
+          initCart();
+          successMessage('success', 'Product removed from the cart');
+        })
+        .catch((error) => {
+          console.error(error);
+          successMessage('error', 'Unable to delete the product');
+        });
+    }
+  }
+
   function addCarousel() {
     const imageStyle: React.CSSProperties = {
       margin: 0,
@@ -105,8 +194,8 @@ export const ProductDetail = () => {
     if (masterData) {
       prodTitle = masterData.name.en;
       prodDescription = masterData.metaDescription ? masterData.metaDescription.en : null;
-      color = (masterData.masterVariant as IAttributesArr).attributes[0].value;
-      releaseDate = (masterData.masterVariant as IAttributesArr).attributes[1].value;
+      color = (masterData.masterVariant as IAttributesArr).attributes[5].value;
+      releaseDate = (masterData.masterVariant as IAttributesArr).attributes[4].value;
       // specialAttr = (masterData.masterVariant as IAttributesArr).attributes[2].value;
       // Цена в центах идёт, но на странице указываем в долларах
       prodPrice = masterData.masterVariant.prices ? masterData.masterVariant.prices[0].value.centAmount / 100 : null;
@@ -169,6 +258,7 @@ export const ProductDetail = () => {
           ) : null}
         </Modal>
       );
+
       return (
         <>
           <div className="product-container">
@@ -187,9 +277,16 @@ export const ProductDetail = () => {
                   Only for {prodPrice} <EuroCircleOutlined />
                 </div>
               ) : null}
-              <Button type="primary" className="someButtons">
-                Add to cart
-              </Button>
+
+              {isProductInCart ? (
+                <Button type="primary" danger className="someButtons" onClick={removeProductFromCart}>
+                  Remove from cart
+                </Button>
+              ) : (
+                <Button type="primary" className="someButtons" onClick={addToCart}>
+                  Add to cart
+                </Button>
+              )}
             </div>
             <Carousel
               ref={carouselRefSmall}
@@ -209,6 +306,7 @@ export const ProductDetail = () => {
               ) : null
             ) : null}
             {modalWindow}
+            {contextHolder}
           </div>
         </>
       );

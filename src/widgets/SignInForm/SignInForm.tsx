@@ -1,9 +1,11 @@
-import { Button, Form, Input, message } from 'antd';
+import { Button, Divider, Form, Input, message } from 'antd';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
+import { useCart } from 'pages/Cart/useCart';
 import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
 import { useAuth } from '@shared/hooks';
 import { validateEmail, validatePassword } from '@features/Validation';
+import styles from './SignInForm.module.css';
 
 type FieldType = {
   email: string;
@@ -14,6 +16,8 @@ const SignInInputForm = () => {
   const [messageApi, contextHolder] = message.useMessage({ maxCount: 1 });
   const { signIn } = useAuth();
   const navigate = useNavigate();
+  const { initCart } = useCart();
+
   const onFinish = async (values: FieldType) => {
     const email = values.email;
     const password = values.password;
@@ -40,50 +44,52 @@ const SignInInputForm = () => {
             hi: result.data.firstName,
           },
         });
+        initCart();
       }
     });
   };
 
   return (
     <>
-      <Form
-        name="login_form"
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
-        style={{ maxWidth: 600 }}
-        initialValues={{ remember: true }}
-        onFinish={onFinish}
-        autoComplete="off"
-      >
-        {contextHolder}
-        <Form.Item<FieldType>
-          label="Email"
-          name="email"
-          rules={[
-            { required: true, message: 'Please input your Email!' },
-            {
-              validator: validateEmail,
-            },
-          ]}
+      <div className={styles.container}>
+        <Form
+          className={styles.form}
+          name="login_form"
+          layout="vertical"
+          initialValues={{ remember: true }}
+          onFinish={onFinish}
         >
-          <Input />
-        </Form.Item>
-        <Form.Item<FieldType>
-          label="Password"
-          name="password"
-          rules={[{ required: true, message: 'Please input your password!' }, { validator: validatePassword }]}
-        >
-          <Input.Password />
-        </Form.Item>
-        <Form.Item wrapperCol={{ offset: 4, span: 16 }}>
-          <Button type="primary" htmlType="submit">
+          {contextHolder}
+          <Form.Item<FieldType>
+            className={styles.formItem}
+            label="Email"
+            name="email"
+            rules={[
+              { required: true, message: 'Please input your Email!' },
+              {
+                validator: validateEmail,
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item<FieldType>
+            className={styles.formItem}
+            label="Password"
+            name="password"
+            rules={[{ required: true, message: 'Please input your password!' }, { validator: validatePassword }]}
+          >
+            <Input.Password />
+          </Form.Item>
+          <Button className={styles.submit} type="primary" htmlType="submit">
             Submit
           </Button>
-        </Form.Item>
-        <div>
-          You don&apos;t have an account? <Link to="/signup">Sign Up</Link>
-        </div>
-      </Form>
+          <Divider />
+          <div className={styles.signupRedirect}>
+            You don&apos;t have an account?<Link to="/signup">Sign Up</Link>
+          </div>
+        </Form>
+      </div>
     </>
   );
 };

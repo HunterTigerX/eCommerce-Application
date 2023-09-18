@@ -1,6 +1,6 @@
 import type { QueryParam } from '@commercetools/sdk-client-v2';
 import type { Key } from 'rc-tree/lib/interface';
-import type { CheckboxValueType } from 'antd/es/checkbox/Group';
+import type { FilterFields } from '@features/ProductsFilter';
 
 type ProductProjectionsQueryArgs = {
   fuzzy?: boolean;
@@ -11,8 +11,8 @@ type ProductProjectionsQueryArgs = {
   'filter.query'?: string | string[];
   facet?: string | string[];
   sort?: string | string[];
-  limit?: number;
-  offset?: number;
+  limit: number;
+  offset: number;
   withTotal?: boolean;
   staged?: boolean;
   priceCurrency?: string;
@@ -22,6 +22,7 @@ type ProductProjectionsQueryArgs = {
   localeProjection?: string | string[];
   storeProjection?: string;
   expand?: string | string[];
+  'text.en'?: string;
   [key: string]: QueryParam;
 };
 
@@ -29,19 +30,12 @@ const enum ProductProjectionsActionTypes {
   SET_SEARCH = 'SET_SEARCH',
   CLEAR_SEARCH = 'CLEAR_SEARCH',
   SET_CATEGORY = 'SET_CATEGORY',
-  CLEAR_CATEGORY = 'CLEAR_CATEGORY',
+  SET_DEFAULT_CATEGORY = 'SET_DEFAULT_CATEGORY',
   SET_SORT = 'SET_SORT',
   CLEAR_SORT = 'CLEAR_SORT',
   SET_FILTER = 'SET_FILTER',
   CLEAR_FILTER = 'CLEAR_FILTER',
-  RESET = 'RESET',
-}
-
-interface ProductProjectionsFilterParameters {
-  price: number[];
-  color: CheckboxValueType[];
-  release: CheckboxValueType[];
-  discountedProducts: boolean;
+  SET_PAGE = 'SET_PAGE',
 }
 
 type SetSearchAction = {
@@ -60,7 +54,7 @@ type SetCategoryAction = {
 };
 
 type ClearCategoryAction = {
-  type: ProductProjectionsActionTypes.CLEAR_CATEGORY;
+  type: ProductProjectionsActionTypes.SET_DEFAULT_CATEGORY;
   payload?: undefined;
 };
 
@@ -74,19 +68,19 @@ type ClearSortAction = {
   payload?: undefined;
 };
 
-type ResetAction = {
-  type: ProductProjectionsActionTypes.RESET;
-  payload?: undefined;
-};
-
 type SetFilterAction = {
   type: ProductProjectionsActionTypes.SET_FILTER;
-  payload: ProductProjectionsFilterParameters;
+  payload: FilterFields;
 };
 
 type ClearFilterAction = {
   type: ProductProjectionsActionTypes.CLEAR_FILTER;
   payload?: undefined;
+};
+
+type SetPageAction = {
+  type: ProductProjectionsActionTypes.SET_PAGE;
+  payload: number;
 };
 
 type ProductProjectionsQueryArgsActions =
@@ -98,7 +92,7 @@ type ProductProjectionsQueryArgsActions =
   | ClearSortAction
   | SetFilterAction
   | ClearFilterAction
-  | ResetAction;
+  | SetPageAction;
 
 const productProjectionsQueryArgsReducer = (
   state: ProductProjectionsQueryArgs,
@@ -115,6 +109,7 @@ const productProjectionsQueryArgsReducer = (
         ...state,
         fuzzy: true,
         'text.en': payload,
+        offset: 0,
       };
     }
     case ProductProjectionsActionTypes.CLEAR_SEARCH: {
@@ -123,19 +118,29 @@ const productProjectionsQueryArgsReducer = (
 
       return {
         ...state,
+        offset: 0,
       };
     }
     case ProductProjectionsActionTypes.SET_CATEGORY: {
+      delete state.fuzzy;
+      delete state['text.en'];
+
       return {
         ...state,
+        offset: 0,
         'filter.query': `categories.id:subtree("${payload}")`,
       };
     }
-    case ProductProjectionsActionTypes.CLEAR_CATEGORY: {
+    case ProductProjectionsActionTypes.SET_DEFAULT_CATEGORY: {
+      if (state['text.en']) {
+        return state;
+      }
+
       delete state['filter.query'];
 
       return {
         ...state,
+        offset: 0,
       };
     }
     case ProductProjectionsActionTypes.SET_SORT: {
@@ -145,6 +150,7 @@ const productProjectionsQueryArgsReducer = (
         if (sortType === 'price') {
           return {
             ...state,
+            offset: 0,
             sort: `price ${order}`,
           };
         }
@@ -152,6 +158,7 @@ const productProjectionsQueryArgsReducer = (
         if (sortType === 'name') {
           return {
             ...state,
+            offset: 0,
             sort: `name.en ${order}`,
           };
         }
@@ -159,6 +166,7 @@ const productProjectionsQueryArgsReducer = (
 
       return {
         ...state,
+        offset: 0,
       };
     }
     case ProductProjectionsActionTypes.CLEAR_SORT: {
@@ -166,10 +174,11 @@ const productProjectionsQueryArgsReducer = (
 
       return {
         ...state,
+        offset: 0,
       };
     }
     case ProductProjectionsActionTypes.SET_FILTER: {
-      const { color, discountedProducts, price, release } = payload;
+      const { color, discountedProducts, priceRange, releaseDate } = payload;
       const filter = [];
 
       delete state.filter;
@@ -182,16 +191,17 @@ const productProjectionsQueryArgsReducer = (
         filter.push('variants.scopedPriceDiscounted:true');
       }
 
-      if (price.length) {
-        filter.push(`variants.scopedPrice.value.centAmount:range (${price[0]} to ${price[1]})`);
+      if (priceRange.length) {
+        filter.push(`variants.scopedPrice.value.centAmount:range (${priceRange[0]} to ${priceRange[1]})`);
       }
 
-      if (release.length) {
-        filter.push(`variants.attributes.releaseDate:${release.map((value) => `"${value}"`).join(', ')}`);
+      if (releaseDate.length) {
+        filter.push(`variants.attributes.releaseDate:${releaseDate.map((value) => `"${value}"`).join(', ')}`);
       }
 
       return {
         ...state,
+        offset: 0,
         filter: filter,
       };
     }
@@ -200,12 +210,13 @@ const productProjectionsQueryArgsReducer = (
 
       return {
         ...state,
+        offset: 0,
       };
     }
-    case ProductProjectionsActionTypes.RESET: {
+    case ProductProjectionsActionTypes.SET_PAGE: {
       return {
-        limit: 20,
-        priceCurrency: import.meta.env.VITE_CTP_DEFAULT_CURRENCY,
+        ...state,
+        offset: state.limit * payload - state.limit,
       };
     }
     default: {

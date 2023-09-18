@@ -1,66 +1,64 @@
 import { useState } from 'react';
-import { Badge, Button, Checkbox, Drawer, Select, Slider } from 'antd';
+import { Badge, Button, Checkbox, Drawer, InputNumber, Select, Slider } from 'antd';
 import { ProductProjectionsActionTypes } from '@shared/api/products';
 import Title from 'antd/es/typography/Title';
 import { FilterOutlined } from '@ant-design/icons';
 import { CheckboxValueType } from 'antd/es/checkbox/Group';
-import { type ProductProjectionsQueryArgsActions } from '@shared/api/products';
+import type { ProductProjectionsQueryArgsActions } from '@shared/api/products';
 import { ProductsSearch } from '@features/ProductsSearch';
+import { colors, years, sort } from './data/options.json';
 import styles from './ProductsFilter.module.css';
+
+interface FilterFields {
+  color: string[] | CheckboxValueType[];
+  releaseDate: string[] | CheckboxValueType[];
+  priceRange: number[] | [number, number];
+  discountedProducts: boolean;
+}
 
 interface ProductsFilterProps {
   dispatch: React.Dispatch<ProductProjectionsQueryArgsActions>;
   id: string | undefined;
+  filter: FilterFields | null;
 }
 
-const CheckboxGroup = Checkbox.Group;
-const optionsColor = [
-  'red',
-  'blue',
-  'green',
-  'yellow',
-  'purple',
-  'pink',
-  'orange',
-  'brown',
-  'black',
-  'white',
-  'gray',
-  'gold',
-  'silver',
-  'navy blue',
-  'sky blue',
-  'lime green',
-  'teal',
-  'indigo',
-  'magenta',
-  'violet',
-  'khaki',
-  'salmon',
-  'crimson',
-  'lavender',
-  'plum',
-  'blue violet',
-  'olive',
-  'cyan',
-  'maroon',
-  'beige',
-];
-const years = ['2023', '2022', '2021', '2020', '2019', '2018', '2017', '2016', '2015', '2014'];
+const areFiltersEqual = (current: FilterFields, applied: FilterFields) => {
+  const areColorsEqual =
+    current.color.length === applied.color.length && current.color.every((entry) => applied.color.includes(`${entry}`));
 
-export const ProductsFilter = ({ dispatch, id }: ProductsFilterProps) => {
-  const [open, setOpen] = useState(false);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 9999]);
-  const [checkedColorList, setCheckedColorList] = useState<CheckboxValueType[]>([]);
-  const [checkedReleaseDate, setCheckedReleaseDate] = useState<CheckboxValueType[]>([]);
+  const areReleaseDatesEqual =
+    current.releaseDate.length === applied.releaseDate.length &&
+    current.releaseDate.every((entry) => applied.releaseDate.includes(`${entry}`));
+
+  const arePriceRangesEqual = current.priceRange.toString() === applied.priceRange.toString();
+
+  const areDiscountedProductsEqual = current.discountedProducts === applied.discountedProducts;
+
+  return areColorsEqual && areReleaseDatesEqual && arePriceRangesEqual && areDiscountedProductsEqual;
+};
+
+const initialValue: FilterFields = {
+  color: [],
+  releaseDate: [],
+  priceRange: [0, 9999],
+  discountedProducts: false,
+};
+
+const CheckboxGroup = Checkbox.Group;
+
+const ProductsFilter = ({ dispatch, id, filter }: ProductsFilterProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [filterState, setFilterState] = useState<FilterFields>(initialValue);
   const [selectedSort, setSelectedSort] = useState('default');
-  const [isDiscountedProducts, setIsDiscountedProducts] = useState(false);
   const [countFilters, setCountFilters] = useState(0);
-  const disabledButton =
-    !checkedColorList.length &&
-    !checkedReleaseDate.length &&
-    !isDiscountedProducts &&
-    priceRange.toString() === '0,9999';
+  const [countFilterOne, setCountFilterOne] = useState(0);
+  const [countFilterTwo, setCountFilterTwo] = useState(9999);
+
+  const disabled =
+    !filterState.color.length &&
+    !filterState.releaseDate.length &&
+    !filterState.discountedProducts &&
+    filterState.priceRange.toString() === '0,9999';
 
   const handleSort = (value: string) => {
     if (value === 'default') {
@@ -75,30 +73,92 @@ export const ProductsFilter = ({ dispatch, id }: ProductsFilterProps) => {
   };
 
   const showDrawer = () => {
-    setOpen(true);
+    setIsOpen(true);
   };
 
   const handlePriceChange = (value: [number, number]) => {
-    setPriceRange(value);
+    if (!Number.isNaN(value[0]) && !Number.isNaN(value[1])) {
+      setCountFilterOne(Math.min(...value));
+      setCountFilterTwo(Math.max(...value));
+
+      setFilterState((prev) => ({
+        ...prev,
+        priceRange: value,
+      }));
+    }
+  };
+
+  const sliderRangeInputOne = (event: EventTarget & HTMLInputElement) => {
+    let number = +event.value;
+    if (!Number.isNaN(number)) {
+      if (number > 9999) {
+        number = 9999;
+      } else if (number < 0) {
+        number = 0;
+      }
+      if (number > countFilterTwo) {
+        setCountFilterOne(countFilterTwo);
+        setCountFilterTwo(number);
+        handlePriceChange([countFilterTwo, number]);
+      } else {
+        setCountFilterOne(number);
+        handlePriceChange([number, countFilterTwo]);
+      }
+    }
+  };
+
+  const fixRange = () => {};
+
+  const sliderRangeInputTwo = (event: EventTarget & HTMLInputElement) => {
+    let number = +event.value;
+    if (!Number.isNaN(number)) {
+      if (number > 9999) {
+        number = 9999;
+      } else if (number < 0) {
+        number = 0;
+      }
+      if (number < countFilterOne) {
+        setCountFilterTwo(countFilterOne);
+        setCountFilterOne(number);
+        handlePriceChange([number, countFilterOne]);
+      } else {
+        setCountFilterTwo(number);
+        handlePriceChange([countFilterOne, number]);
+      }
+    }
   };
 
   const onColorList = (list: CheckboxValueType[]) => {
-    setCheckedColorList(list);
+    setFilterState((prev) => ({
+      ...prev,
+      color: list,
+    }));
   };
 
   const onReleaseList = (list: CheckboxValueType[]) => {
-    setCheckedReleaseDate(list);
+    setFilterState((prev) => ({
+      ...prev,
+      releaseDate: list,
+    }));
   };
 
   const countFilter = (reset?: boolean) => {
-    if (reset) return setCountFilters(0);
-    const colorCount = checkedColorList.length;
-    const sizeCount = checkedReleaseDate.length;
-    let count = colorCount + sizeCount;
+    if (reset) {
+      setCountFilterOne(0);
+      setCountFilterTwo(9999);
+      return setCountFilters(0);
+    }
+    const { color, discountedProducts, priceRange, releaseDate } = filterState;
+
+    const colorCount = color.length;
+    const dateCount = releaseDate.length;
+
+    let count = colorCount + dateCount;
+
     if (priceRange[0] !== 0 || priceRange[1] !== 9999) {
       count += 1;
       setCountFilters(count);
-    } else if (isDiscountedProducts) {
+    } else if (discountedProducts) {
       count += 1;
       setCountFilters(count);
     } else {
@@ -107,44 +167,82 @@ export const ProductsFilter = ({ dispatch, id }: ProductsFilterProps) => {
   };
 
   const clearFilters = () => {
-    setCheckedColorList([]);
-    setCheckedReleaseDate([]);
-    setPriceRange([0, 9999]);
-    setIsDiscountedProducts(false);
+    setFilterState(initialValue);
     countFilter(true);
-    setOpen(false);
-    dispatch({ type: ProductProjectionsActionTypes.CLEAR_FILTER });
-  };
-
-  const applyFilters = () => {
-    const filterParameters = {
-      price: priceRange.map((number) => number * 100),
-      color: checkedColorList,
-      release: checkedReleaseDate,
-      discountedProducts: isDiscountedProducts,
-    };
-    countFilter();
-    setOpen(false);
-    dispatch({ type: ProductProjectionsActionTypes.SET_FILTER, payload: filterParameters });
-  };
-
-  const onClose = () => {
-    setOpen(false);
-    if (disabledButton) {
-      clearFilters();
+    setIsOpen(false);
+    setCountFilterTwo(9999);
+    setCountFilterOne(0);
+    if (filter) {
+      dispatch({ type: ProductProjectionsActionTypes.CLEAR_FILTER });
     }
-  };
-  const onDiscountedProducts = () => {
-    setIsDiscountedProducts(!isDiscountedProducts);
   };
 
   const reset = () => {
-    setCheckedColorList([]);
-    setCheckedReleaseDate([]);
-    setPriceRange([0, 9999]);
-    setIsDiscountedProducts(false);
+    setFilterState(initialValue);
     countFilter(true);
-    setOpen(false);
+    setIsOpen(false);
+  };
+
+  const applyFilters = () => {
+    const current: FilterFields = {
+      ...filterState,
+      priceRange: filterState.priceRange.map((number) => number * 100),
+    };
+
+    const setFilter = () =>
+      dispatch({
+        type: ProductProjectionsActionTypes.SET_FILTER,
+        payload: current,
+      });
+
+    if (filter) {
+      const isEquals = areFiltersEqual(current, filter);
+
+      if (!isEquals) {
+        setFilter();
+      }
+    } else {
+      setFilter();
+    }
+
+    countFilter();
+    setIsOpen(false);
+  };
+
+  const onClose = () => {
+    if (!filter) {
+      return reset();
+    }
+
+    if ((disabled && filter) || filter) {
+      const current = {
+        ...filterState,
+        priceRange: filterState.priceRange.map((number) => number * 100),
+      };
+
+      const isEquals = areFiltersEqual(current, filter);
+
+      if (!isEquals) {
+        setFilterState({
+          ...filter,
+          priceRange: [filter.priceRange[0] / 100, filter.priceRange[1] / 100],
+        });
+      }
+      setCountFilterOne(filter.priceRange[0] / 100);
+      setCountFilterTwo(filter.priceRange[1] / 100);
+      return setIsOpen(false);
+    }
+
+    if (disabled) {
+      return clearFilters();
+    }
+  };
+
+  const onDiscountedProducts = () => {
+    setFilterState((prev) => ({
+      ...prev,
+      discountedProducts: !prev.discountedProducts,
+    }));
   };
 
   return (
@@ -158,28 +256,7 @@ export const ProductsFilter = ({ dispatch, id }: ProductsFilterProps) => {
             defaultValue={'Default'}
             onChange={(value) => handleSort(value)}
             value={selectedSort}
-            options={[
-              {
-                value: 'price asc',
-                label: 'Price: Low to High',
-              },
-              {
-                value: 'price desc',
-                label: 'Price: High to Low',
-              },
-              {
-                value: 'name asc',
-                label: 'Name: a-z',
-              },
-              {
-                value: 'name desc',
-                label: 'Name: z-a',
-              },
-              {
-                value: 'default',
-                label: 'Default',
-              },
-            ]}
+            options={sort}
           />
         </div>
         <Badge offset={[-10, 0]} count={countFilters}>
@@ -187,13 +264,33 @@ export const ProductsFilter = ({ dispatch, id }: ProductsFilterProps) => {
             Filter
           </Button>
         </Badge>
-        <Drawer style={{ paddingRight: '17px' }} title="Filter" placement="right" onClose={onClose} open={open}>
+        <Drawer title="Filter" placement="right" onClose={onClose} afterOpenChange={fixRange} open={isOpen}>
           <div className={styles.filterSection}>
             <Title level={4}>Price</Title>
+            <div>
+              <div className="range-input">
+                From:{' '}
+                <InputNumber
+                  min={0}
+                  max={9999}
+                  controls={false}
+                  value={countFilterOne}
+                  onBlur={(event) => sliderRangeInputOne(event.target)}
+                />
+                To:{' '}
+                <InputNumber
+                  min={0}
+                  max={9999}
+                  controls={false}
+                  value={countFilterTwo}
+                  onBlur={(event) => sliderRangeInputTwo(event.target)}
+                />
+              </div>
+            </div>
             <Slider
               range
               marks={{ 0: '€0', 9999: '€9999' }}
-              value={priceRange}
+              value={filterState.priceRange as [number, number]}
               min={0}
               max={9999}
               onChange={handlePriceChange}
@@ -204,8 +301,8 @@ export const ProductsFilter = ({ dispatch, id }: ProductsFilterProps) => {
             <CheckboxGroup
               className={styles.checkboxGroupList}
               style={{ flexDirection: 'column' }}
-              options={optionsColor}
-              value={checkedColorList}
+              options={colors}
+              value={filterState.color}
               onChange={onColorList}
             />
           </div>
@@ -215,22 +312,22 @@ export const ProductsFilter = ({ dispatch, id }: ProductsFilterProps) => {
               className={styles.checkboxGroupList}
               style={{ flexDirection: 'column' }}
               options={years}
-              value={checkedReleaseDate}
+              value={filterState.releaseDate}
               onChange={onReleaseList}
             />
           </div>
           <div className={styles.filterSection}>
             <Title level={4}>Discounted</Title>
-            <Checkbox onChange={onDiscountedProducts} checked={isDiscountedProducts}>
+            <Checkbox onChange={onDiscountedProducts} checked={filterState.discountedProducts}>
               Show discounted products.
             </Checkbox>
           </div>
 
           <div className={`${styles.controll} ${styles.filterSection}`}>
-            <Button onClick={applyFilters} disabled={disabledButton}>
+            <Button onClick={applyFilters} disabled={disabled}>
               Apply
             </Button>
-            <Button onClick={clearFilters} disabled={disabledButton}>
+            <Button onClick={clearFilters} disabled={disabled}>
               Clear
             </Button>
           </div>
@@ -239,3 +336,5 @@ export const ProductsFilter = ({ dispatch, id }: ProductsFilterProps) => {
     </>
   );
 };
+
+export { ProductsFilter, type FilterFields };
