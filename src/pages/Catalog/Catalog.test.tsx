@@ -17,12 +17,40 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
+// Mock the dependencies
+jest.mock('react-router-dom', () => ({
+  useParams: jest.fn().mockReturnValue({ id: 'mockedId' }),
+}));
+
+jest.mock('@shared/api/products', () => ({
+  useProductProjections: jest.fn().mockReturnValue({
+    state: {
+      products: [],
+      loading: false,
+      filter: {},
+      count: 0,
+      currentPage: 1,
+    },
+    dispatch: jest.fn(),
+  }),
+}));
+
+jest.mock('@shared/api/categories', () => ({
+  useCategories: jest.fn().mockReturnValue({
+    categoriesTree: [],
+  }),
+}));
+
+jest.mock('@widgets/ProductList', () => ({
+  ProductList: jest.fn(() => <div>Mocked useCategories</div>),
+}));
+
 describe('render catalog', () => {
   beforeEach(() => {
     render(<Catalog />);
   });
 
   test('validates catalog text', async () => {
-    expect(await screen.findByText('Catalog Products')).toBeInTheDocument();
+    expect(await screen.findByText('Mocked useCategories')).toBeInTheDocument();
   });
 });

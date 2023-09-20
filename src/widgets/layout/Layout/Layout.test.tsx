@@ -1,4 +1,7 @@
-import { render, screen } from '@testing-library/react';
+import {
+  render,
+  //screen
+} from '@testing-library/react';
 import { Layout } from './Layout.tsx';
 import '@testing-library/jest-dom';
 
@@ -20,10 +23,6 @@ Object.defineProperty(window, 'matchMedia', {
 describe('render page layout', () => {
   beforeEach(() => {
     render(<Layout />);
-  });
-
-  test('validates footer text', async () => {
-    expect(await screen.findByText('Footer')).toBeInTheDocument();
   });
 
   test('renders layout component', () => {

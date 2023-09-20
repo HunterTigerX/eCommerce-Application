@@ -5,7 +5,7 @@ import { Button, Checkbox, DatePicker, Divider, Form, Input, Select, Space, mess
 import { Rule } from 'antd/es/form';
 import { RangePickerProps } from 'antd/es/date-picker';
 import dayjs, { Dayjs } from 'dayjs';
-import { useCart } from 'pages/Cart/useCart';
+import { useCart } from '@pages/Cart/useCart';
 import type { BaseAddress, CustomerDraft } from '@commercetools/platform-sdk';
 import { PlusOutlined } from '@ant-design/icons';
 import { useAuth } from '@shared/hooks';

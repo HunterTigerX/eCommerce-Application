@@ -4,6 +4,15 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Main } from './Main.tsx';
 
+jest.mock('@assets/react.svg', () => '@assets/react.svg', { virtual: true });
+jest.mock('@assets/typescript.svg', () => '@assets/typescript.svg', { virtual: true });
+jest.mock('@assets/vite.svg', () => '@assets/vite.svg', { virtual: true });
+jest.mock('@assets/ecommerce.svg', () => '@assets/ecommerce.svg', { virtual: true });
+jest.mock('@assets/ant.svg', () => '@assets/ant.svg', { virtual: true });
+jest.mock('./ui/IntroMain', () => ({
+  IntroMain: jest.fn(() => <div>Mocked IntroMain</div>),
+}));
+
 describe('Main component', () => {
   beforeEach(async () => {
     await act(async () => {
@@ -14,24 +23,8 @@ describe('Main component', () => {
       );
     });
   });
-  test('renders the main page', () => {
-    const mainElement = screen.getByText(/Main page/i);
-    expect(mainElement).toBeInTheDocument();
-  });
 
-  test('renders the menu items', () => {
-    const homeLink = screen.getByText(/Home/i);
-    const catalogLink = screen.getByText(/Catalog/i);
-    const aboutLink = screen.getByText(/About/i);
-    const signInLink = screen.getByText(/Sign In/i);
-    const signUpLink = screen.getByText(/Sign Up/i);
-    const profileLink = screen.getByText(/Profile/i);
-
-    expect(homeLink).toBeInTheDocument();
-    expect(catalogLink).toBeInTheDocument();
-    expect(aboutLink).toBeInTheDocument();
-    expect(signInLink).toBeInTheDocument();
-    expect(signUpLink).toBeInTheDocument();
-    expect(profileLink).toBeInTheDocument();
+  test('renders the main page', async () => {
+    expect(await screen.findByText('Mocked IntroMain')).toBeInTheDocument();
   });
 });

@@ -20,6 +20,13 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
+jest.mock('@pages/Cart/useCart');
+jest.mock('@pages/Cart/useCart', () => ({
+  useCart: jest.fn().mockReturnValue({
+    initCart: jest.fn(),
+  }),
+}));
+
 describe('SignInInputForm', () => {
   beforeEach(() => {
     render(

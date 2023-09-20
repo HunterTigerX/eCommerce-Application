@@ -1,7 +1,7 @@
 import { Button, Divider, Form, Input, message } from 'antd';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
-import { useCart } from 'pages/Cart/useCart';
+import { useCart } from '@pages/Cart/useCart';
 import type { UserAuthOptions } from '@commercetools/sdk-client-v2/dist/declarations/src/types/sdk';
 import { useAuth } from '@shared/hooks';
 import { validateEmail, validatePassword } from '@features/Validation';

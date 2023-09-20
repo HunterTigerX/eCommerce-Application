@@ -134,6 +134,6 @@
       }
     ]
   },
-  "include": ["src", "setupTests.js", "vite-plugins"],
+  "include": ["src", "setupTests.js", "vite-plugins", "custom.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

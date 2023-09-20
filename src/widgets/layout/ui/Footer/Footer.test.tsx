@@ -23,6 +23,6 @@ describe('render footer', () => {
   });
 
   test('validates footer text', async () => {
-    expect(await screen.findByText('Footer')).toBeInTheDocument();
+    expect(await screen.findByText('Placeholder team © 2023')).toBeInTheDocument();
   });
 });

@@ -33,7 +33,7 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const deleteCart = async (): Promise<void> => {
     await cartService.deleteCart();
-    initCart();
+    await initCart();
   };
 
   const has = (id: string) => {
