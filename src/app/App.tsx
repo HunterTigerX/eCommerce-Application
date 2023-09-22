@@ -4,7 +4,7 @@ import { router } from './router/';
 import './styles/color-variables.css';
 import './styles/margin-padding-variables.css';
 import './styles/App.css';
-import { CartProvider } from 'pages/Cart/CartProvider';
+import { CartProvider } from '@pages/Cart/CartProvider';
 
 const App = () => {
   return (

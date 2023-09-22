@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { About } from './About.tsx';
+import { BrowserRouter } from 'react-router-dom';
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -17,12 +18,26 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
+jest.mock('@assets/about.jpg', () => '@assets/about.jpg', { virtual: true });
+jest.mock('gsap/ScrollTrigger', () => ({
+  ScrollTrigger: {
+    create: jest.fn(),
+  },
+}));
+jest.mock('@assets/rss.jpg', () => '@assets/rss.jpg', { virtual: true });
+jest.mock('@assets/nikita.png', () => '@assets/nikita.png', { virtual: true });
+jest.mock('@assets/Vitaliy.jpg', () => '@assets/Vitaliy.jpg', { virtual: true });
+
 describe('render about', () => {
   beforeEach(() => {
-    render(<About />);
+    render(
+      <BrowserRouter>
+        <About />
+      </BrowserRouter>
+    );
   });
 
   test('validates about text', async () => {
-    expect(await screen.findByText('About')).toBeInTheDocument();
+    expect(await screen.findByText('Discord')).toBeInTheDocument();
   });
 });

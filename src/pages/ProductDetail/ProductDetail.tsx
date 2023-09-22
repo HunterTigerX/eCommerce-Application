@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button, Carousel } from 'antd';
 import { message } from 'antd';
 import { CarouselRef } from 'antd/es/carousel';
-import { useCart } from 'pages/Cart/useCart';
+import { useCart } from '@pages/Cart/useCart';
 import { useParams, Navigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { EuroCircleOutlined } from '@ant-design/icons';

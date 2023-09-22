@@ -1,8 +1,8 @@
 import { GithubOutlined } from '@ant-design/icons';
 import { TeamMember } from 'pages/About/dataTeam';
-import styles from './TeamMemberCart.module.css';
+import styles from './TeamMemberCard.module.css';
 
-export const TeamMemberCart = ({ member }: { member: TeamMember }) => {
+export const TeamMemberCard = ({ member }: { member: TeamMember }) => {
   const { name, avatar, nickname, githubLink, role, description } = member;
 
   // const classCard = id % 2 === 0 ? `${styles.teamCard} ${styles.teamInverted}` : styles.teamCard;

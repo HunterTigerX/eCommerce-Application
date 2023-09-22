@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { TeamMemberCart } from './ui/TeamMemberCart';
+import { TeamMemberCard } from './ui/TeamMemberCard';
 import { TeamMember, team } from './dataTeam';
 import AboutUs from '@assets/about.jpg';
 import styles from './About.module.css';
@@ -95,7 +95,7 @@ const About = () => {
         </p>
         <h2 className={styles.h2}>Meet the Team:</h2>
         <ul className={styles.team} ref={teamRef}>
-          {team && team.map((member: TeamMember) => <TeamMemberCart key={member.id} member={member} />)}
+          {team && team.map((member: TeamMember) => <TeamMemberCard key={member.id} member={member} />)}
         </ul>
       </div>
     </>
