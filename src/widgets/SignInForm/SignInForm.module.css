@@ -1,0 +1,36 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  width: 375px;
+  border-radius: 15px;
+  padding: 2em;
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.2);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  max-width: 600px;
+  width: 100%;
+}
+
+.form-item {
+  margin-bottom: 0;
+}
+
+.submit {
+  margin-top: 26px;
+  width: 100%;
+  align-self: center;
+}
+
+.signup-redirect {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-xs);
+}

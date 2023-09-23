@@ -1,0 +1,3 @@
+.footer {
+  padding: calc(var(--spacing-lg) / 2) 0;
+}
